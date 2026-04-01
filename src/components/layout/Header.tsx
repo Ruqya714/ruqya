@@ -83,10 +83,10 @@ export default function Header() {
       {/* Mobile Navigation */}
       <div
         className={`lg:hidden border-t border-border bg-white transition-all duration-300 overflow-hidden ${
-          isMenuOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+          isMenuOpen ? "max-h-[600px] opacity-100 shadow-xl" : "max-h-0 opacity-0"
         }`}
       >
-        <nav className="px-4 py-4 space-y-1">
+        <nav className="px-4 py-6 space-y-2 max-h-[80vh] overflow-y-auto">
           {PUBLIC_NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -98,7 +98,7 @@ export default function Header() {
                   block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                   ${
                     isActive
-                      ? "text-primary bg-primary/5"
+                      ? "text-primary bg-primary/5 border border-primary/10"
                       : "text-text-secondary hover:text-primary hover:bg-primary/5"
                   }
                 `}
@@ -107,13 +107,16 @@ export default function Header() {
               </Link>
             );
           })}
-          <Link
-            href="/booking"
-            onClick={() => setIsMenuOpen(false)}
-            className="block mt-3 px-4 py-3 rounded-lg bg-accent text-white text-sm font-medium text-center hover:bg-accent-light transition-colors"
-          >
-            سجّل حالتك
-          </Link>
+          <div className="pt-4 mt-2 border-t border-gray-100">
+            <Link
+              href="/booking"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex justify-center items-center gap-2 w-full px-4 py-3.5 rounded-lg bg-accent text-white text-sm font-bold text-center hover:bg-accent-light hover:-translate-y-0.5 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              <Phone size={18} />
+              سجّل حالتك الآن
+            </Link>
+          </div>
         </nav>
       </div>
     </header>
