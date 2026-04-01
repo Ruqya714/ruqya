@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -260,11 +261,11 @@ export default function AdminBookingsPage() {
               </div>
             </div>
 
-            {/* Previous Ruqya */}
-            {selectedBooking.patient_previous_ruqya && (
+            {/* Notes & Previous Ruqya */}
+            {selectedBooking.patient_notes && (
               <div className="bg-bg rounded-lg p-4">
-                <p className="text-xs text-text-muted mb-1">التجربة السابقة والأعراض</p>
-                <p className="text-sm">{selectedBooking.patient_previous_ruqya}</p>
+                <p className="text-xs text-text-muted mb-1">ملاحظات والتجربة السابقة</p>
+                <p className="text-sm whitespace-pre-wrap">{selectedBooking.patient_notes}</p>
               </div>
             )}
 

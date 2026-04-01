@@ -33,7 +33,7 @@ export default function HealerSidebar() {
     router.push("/login");
   };
 
-  const SidebarContent = () => (
+  const renderSidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
@@ -127,12 +127,12 @@ export default function HealerSidebar() {
         >
           <X size={20} />
         </button>
-        <SidebarContent />
+        {renderSidebarContent()}
       </aside>
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:block fixed top-0 right-0 h-full w-64 bg-primary-dark z-30">
-        <SidebarContent />
+        {renderSidebarContent()}
       </aside>
     </>
   );

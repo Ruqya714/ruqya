@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -45,7 +46,10 @@ export default function HealerDashboard() {
     setIsLoading(false);
   }, [supabase]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+     
+    load();
+  }, [load]);
 
   const statusBadge: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
     pending: "warning", confirmed: "info", completed: "success", cancelled: "error", no_show: "error",

@@ -46,7 +46,7 @@ export default function AdminSidebar() {
     router.push("/login");
   };
 
-  const SidebarContent = () => (
+  const renderSidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
@@ -147,7 +147,7 @@ export default function AdminSidebar() {
         >
           <X size={20} />
         </button>
-        <SidebarContent />
+        {renderSidebarContent()}
       </aside>
 
       {/* Desktop sidebar */}
@@ -158,7 +158,7 @@ export default function AdminSidebar() {
           ${isCollapsed ? "w-[72px]" : "w-64"}
         `}
       >
-        <SidebarContent />
+        {renderSidebarContent()}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="absolute -left-3 top-20 w-6 h-6 rounded-full bg-primary-dark border-2 border-bg flex items-center justify-center text-gray-400 hover:text-white transition-colors"

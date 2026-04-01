@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Stepper, MiniCalendar, TimeSlotPicker } from "@/components/ui";
 import type { TimeSlot } from "@/components/ui/TimeSlotPicker";
@@ -106,6 +107,7 @@ export default function BookingPage() {
     patient_previous_ruqya: "",
     patient_can_travel: "" as "" | "yes" | "no",
     patient_need_type: "",
+    consultation_type: "" as "" | "urgent" | "normal",
     patient_phone_code: "+90",
     patient_phone_number: "",
   });
@@ -121,6 +123,11 @@ export default function BookingPage() {
         .eq("is_active", true)
         .order("display_order");
       setServices(data || []);
+      
+      const consultationService = data?.find(s => s.name.includes("الاستشارة"));
+      if (consultationService) {
+        setForm(prev => ({ ...prev, service_id: consultationService.id }));
+      }
       setIsLoading(false);
     }
     load();
@@ -129,19 +136,49 @@ export default function BookingPage() {
   // Load available dates (slots with remaining capacity)
   const loadAvailableDates = useCallback(async () => {
     if (!form.service_id) return;
-    const today = new Date().toISOString().split("T")[0];
-    const { data } = await supabase
+    
+    // Check if the selected service is the "Consultation" service
+    const isConsultation = services.find(s => s.id === form.service_id)?.name.includes('الاستشارة');
+    
+    let minDate = new Date();
+    let maxDate: Date | null = null;
+    
+    if (isConsultation && form.consultation_type) {
+      if (form.consultation_type === 'urgent') {
+        // Urgent: within 48 hours
+        minDate = new Date();
+        
+        maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 2);
+      } else if (form.consultation_type === 'normal') {
+        // Normal: after 10 days
+        minDate = new Date();
+        minDate.setDate(minDate.getDate() + 10);
+      }
+    }
+
+    const minDateStr = minDate.toISOString().split("T")[0];
+
+    let query = supabase
       .from("available_slots")
       .select("slot_date, max_capacity, current_bookings")
       .eq("is_booked", false)
-      .gte("slot_date", today)
-      .order("slot_date");
+      .gte("slot_date", minDateStr);
+
+    if (maxDate) {
+      const maxDateStr = maxDate.toISOString().split("T")[0];
+      query = query.lte("slot_date", maxDateStr);
+    }
+    
+    query = query.order("slot_date");
+
+    const { data } = await query;
 
     // Only include dates that have at least one slot with remaining capacity
     const availableSlots = data?.filter((s) => s.current_bookings < s.max_capacity) || [];
     const uniqueDates = [...new Set(availableSlots.map((s) => s.slot_date))];
     setAvailableDates(uniqueDates);
-  }, [form.service_id, supabase]);
+  }, [form.service_id, form.consultation_type, services, supabase]);
 
   useEffect(() => {
     if (currentStep === 2 && form.service_id) {
@@ -236,7 +273,9 @@ export default function BookingPage() {
         patient_previous_ruqya: form.patient_previous_ruqya || null,
         patient_can_travel: form.patient_can_travel === "yes" ? true : form.patient_can_travel === "no" ? false : null,
         patient_need_type: form.patient_need_type || null,
-        patient_notes: form.patient_previous_ruqya || null,
+        patient_notes: selectedService?.name.includes('الاستشارة') && form.consultation_type 
+          ? `نوع الاستشارة: ${form.consultation_type === 'urgent' ? 'مستعجلة (خلال 48 ساعة)' : 'عادية (بعد 10 أيام)'}\n\n${form.patient_previous_ruqya || ''}`
+          : form.patient_previous_ruqya || null,
         status: "pending",
         payment_status: "pending",
       });
@@ -289,43 +328,49 @@ export default function BookingPage() {
           </p>
 
           {selectedSlotData && (
-            <div className="bg-primary/5 rounded-xl p-4 mb-6 inline-block text-sm">
-              <p className="font-semibold text-primary mb-1">تفاصيل الموعد</p>
-              <p className="text-text-secondary">
-                📅 {formatDate(selectedSlotData.date)} — 🕐{" "}
-                {formatTime(selectedSlotData.start_time)} إلى{" "}
-                {formatTime(selectedSlotData.end_time)}
-              </p>
-              {selectedSlotData.healer_name && (
-                <p className="text-text-secondary mt-0.5">
-                  👤 {selectedSlotData.healer_name}
-                </p>
-              )}
+            <div className="bg-primary/5 rounded-xl p-6 mb-8 max-w-sm mx-auto text-sm border border-primary/10">
+              <p className="font-semibold text-primary mb-3 text-base">تفاصيل الموعد</p>
+              <div className="flex flex-col gap-2 items-center text-text-secondary">
+                <p>📅 {formatDate(selectedSlotData.date)}</p>
+                <p>🕐 {formatTime(selectedSlotData.start_time)} إلى {formatTime(selectedSlotData.end_time)}</p>
+                {selectedSlotData.healer_name && (
+                  <p className="mt-1 font-medium text-text-primary">
+                    👤 {selectedSlotData.healer_name}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
-          <a
-            href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all"
-          >
-            العودة للرئيسية
-          </a>
+          <div>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all shadow-sm hover:shadow-md"
+            >
+              العودة للرئيسية
+            </Link>
+          </div>
           <p className="text-xs text-text-muted mt-6">نسأل الله لك الشفاء العاجل 🤲</p>
         </div>
       </div>
     );
   }
 
+  const selectedService = services.find((s) => s.id === form.service_id);
+  const isConsultation = selectedService?.name.includes('الاستشارة') || false;
+
   const canProceed = () => {
     switch (currentStep) {
-      case 0: return !!form.service_id;
+      case 0: 
+        if (!form.service_id) return false;
+        if (isConsultation && !form.consultation_type) return false;
+        return true;
       case 1: return !!form.patient_name && !!form.patient_phone_number && !!form.patient_email;
       case 2: return !!selectedSlotId;
       default: return true;
     }
   };
 
-  const selectedService = services.find((s) => s.id === form.service_id);
 
   const maritalLabel = MARITAL_OPTIONS.find((o) => o.value === form.patient_marital_status)?.label;
   const needLabel = NEED_OPTIONS.find((o) => o.value === form.patient_need_type)?.label;
@@ -353,28 +398,56 @@ export default function BookingPage() {
             {/* ========== Step 0: Service ========== */}
             {currentStep === 0 && (
               <div>
-                <h2 className="text-lg font-bold text-text-primary mb-4">اختر الخدمة</h2>
-                <div className="space-y-3">
-                  {services.length === 0 ? (
-                    <p className="text-sm text-text-secondary text-center py-6">لا توجد خدمات متاحة حالياً</p>
-                  ) : (
-                    services.map((s) => (
-                      <label
-                        key={s.id}
-                        className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                          form.service_id === s.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-                        }`}
-                      >
-                        <input type="radio" name="service" value={s.id} checked={form.service_id === s.id} onChange={(e) => setForm({ ...form, service_id: e.target.value })} className="mt-1 accent-primary" />
-                        <div>
-                          <p className="font-semibold text-text-primary">{s.name}</p>
-                          <p className="text-sm text-text-secondary mt-1">{s.description}</p>
-                          <p className="text-xs text-text-muted mt-1">⏱️ {s.duration_minutes} دقيقة</p>
-                        </div>
-                      </label>
-                    ))
-                  )}
+                <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-100 flex gap-3 text-blue-800 text-sm">
+                  <div>
+                    <p className="font-semibold text-blue-900 mb-1">ملاحظة هامة:</p>
+                    <p>
+                      جلسات التشخيص والعلاج غير متاحة للحجز المباشر حالياً لضمان توجيهك بأفضل شكل. بناءً على مخرجات الاستشارة الصوتية، سيتم تقييم الحالة وتحديد ما إذا كان هنالك داعٍ لحجز جلسة تشخيص والبدء بالبرنامج العلاجي.
+                    </p>
+                  </div>
                 </div>
+
+                <h2 className="text-lg font-bold text-text-primary mb-4">اختر نوع الاستشارة الصوتية</h2>
+                
+                {form.service_id ? (
+                  <div className="space-y-3">
+                    <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                      form.consultation_type === "urgent" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30 bg-white"
+                    }`}>
+                      <input 
+                        type="radio" 
+                        name="consultation_type" 
+                        value="urgent" 
+                        checked={form.consultation_type === "urgent"} 
+                        onChange={(e) => setForm({ ...form, consultation_type: "urgent" })} 
+                        className="mt-1 accent-primary" 
+                      />
+                      <div>
+                        <p className="font-semibold text-text-primary">استشارة مستعجلة</p>
+                        <p className="text-sm text-text-secondary mt-1">تتيح لك حجز موعد خلال 48 ساعة</p>
+                      </div>
+                    </label>
+                    
+                    <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                      form.consultation_type === "normal" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30 bg-white"
+                    }`}>
+                      <input 
+                        type="radio" 
+                        name="consultation_type" 
+                        value="normal" 
+                        checked={form.consultation_type === "normal"} 
+                        onChange={(e) => setForm({ ...form, consultation_type: "normal" })} 
+                        className="mt-1 accent-primary" 
+                      />
+                      <div>
+                        <p className="font-semibold text-text-primary">استشارة عادية</p>
+                        <p className="text-sm text-text-secondary mt-1">المواعيد المتاحة بعد 10 أيام</p>
+                      </div>
+                    </label>
+                  </div>
+                ) : (
+                  <p className="text-sm text-text-secondary text-center py-6">جاري تحميل الخدمة...</p>
+                )}
               </div>
             )}
 
@@ -558,7 +631,10 @@ export default function BookingPage() {
                 <div className="space-y-3 bg-bg rounded-xl p-5">
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-sm text-text-secondary">الخدمة</span>
-                    <span className="text-sm font-medium text-text-primary">{selectedService?.name}</span>
+                    <span className="text-sm font-medium text-text-primary">
+                      {selectedService?.name} 
+                      {isConsultation && form.consultation_type && ` - ${form.consultation_type === 'urgent' ? 'مستعجلة' : 'عادية'}`}
+                    </span>
                   </div>
 
                   {selectedSlotData && (

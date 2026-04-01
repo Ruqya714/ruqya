@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Modal, EmptyState } from "@/components/ui";
-import { Plus, Pencil, Trash2, Users, Image as ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Image as ImageIcon } from "lucide-react";
 
 interface Healer {
   id: string;
@@ -159,7 +160,7 @@ export default function AdminHealersPage() {
     load();
   };
 
-  const deleteHealer = async (id: string, profile_id: string | null) => {
+  const deleteHealer = async (id: string) => {
     if (!confirm("هل أنت متأكد من حذف هذا المعالج؟ سيتم حذف بياناته من النظام.")) return;
     await supabase.from("healers").delete().eq("id", id);
     // Optionally alert the admin they might want to delete the user from Auth manually if required.
@@ -248,7 +249,7 @@ export default function AdminHealersPage() {
                   <Pencil size={16} />
                 </button>
                 <button
-                  onClick={() => deleteHealer(h.id, h.profile_id)}
+                  onClick={() => deleteHealer(h.id)}
                   className="p-2 rounded-lg bg-gray-50 hover:bg-red-50 text-text-secondary hover:text-red-600 transition-colors focus:ring-2 focus:ring-red-500/20"
                 >
                   <Trash2 size={16} />

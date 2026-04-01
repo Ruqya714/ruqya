@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -16,7 +17,7 @@ interface Booking {
   patient_gender: string;
   status: string;
   payment_status: string;
-  notes: string;
+  patient_notes: string;
   created_at: string;
   services: { name: string } | null;
 }
@@ -44,7 +45,10 @@ export default function HealerBookingsPage() {
     setIsLoading(false);
   }, [supabase, statusFilter]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+     
+    load();
+  }, [load]);
 
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("bookings").update({ status }).eq("id", id);
@@ -109,7 +113,7 @@ export default function HealerBookingsPage() {
               <div><p className="text-xs text-text-muted mb-1">الجنس</p><p className="font-medium">{selected.patient_gender === "male" ? "ذكر" : "أنثى"}</p></div>
               <div><p className="text-xs text-text-muted mb-1">العمر</p><p className="font-medium">{selected.patient_age || "—"}</p></div>
             </div>
-            {selected.notes && <div className="bg-bg rounded-lg p-4"><p className="text-xs text-text-muted mb-1">ملاحظات</p><p className="text-sm">{selected.notes}</p></div>}
+            {selected.patient_notes && <div className="bg-bg rounded-lg p-4"><p className="text-xs text-text-muted mb-1">ملاحظات والتجربة السابقة</p><p className="text-sm whitespace-pre-wrap">{selected.patient_notes}</p></div>}
             <div>
               <label className="text-xs text-text-muted mb-1.5 block">تحديث الحالة</label>
               <select value={selected.status} onChange={(e) => updateStatus(selected.id, e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">

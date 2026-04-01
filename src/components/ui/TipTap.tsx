@@ -1,4 +1,4 @@
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
@@ -6,13 +6,13 @@ import Image from '@tiptap/extension-image';
 import { 
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, 
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Heading1, Heading2, List, ListOrdered, Quote,
+  List, ListOrdered, Quote,
   Undo, Redo, ImageIcon
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const [isUploading, setIsUploading] = useState(false);
   const supabase = createClient();
 
@@ -28,7 +28,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
       const filePath = `articles/${fileName}`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('public_images')
         .upload(filePath, file);
 
