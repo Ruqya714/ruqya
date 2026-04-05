@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Phone, BookOpen, Heart, Star, Clock, ArrowLeft, CheckCircle, ShieldAlert, Sparkles, UserCheck } from "lucide-react";
+import { Phone, BookOpen, Heart, Star, Clock, ArrowLeft, CheckCircle, ShieldAlert, Sparkles, UserCheck, Activity, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "الخدمات العلاجية",
@@ -71,7 +71,7 @@ export default function ServicesPage() {
       </section>
 
       {/* The ONE Product Funnel: Paid Consultation */}
-      <section className="py-16 mt-[-4rem] relative z-10">
+      <section className="py-16 mt-[-2rem] lg:mt-[-3rem] relative z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-3xl shadow-xl border border-primary/20 overflow-hidden relative animate-[fade-in_0.8s_ease-out_0.3s_both]">
             {/* Background design */}
@@ -84,7 +84,7 @@ export default function ServicesPage() {
                     <Phone className="w-8 h-8" />
                   </div>
                   <h2 className="text-2xl lg:text-4xl font-bold text-text-primary">
-                    الاستشارة الصوتية (المدفوعة)
+                    الاستشارة الصوتية
                   </h2>
                   <p className="text-text-secondary leading-relaxed text-lg">
                     بوابة الدخول الإلزامية لجميع خدماتنا العلاجية والتشخيصية. لأن كل حالة تختلف عن الأخرى، لا يمكننا البدء بأي برنامج علاجي أو استقبال أي مريض بشكل مباشر قبل إجراء تقييم دقيق وشامل لحالته عبر الاستشارة الصوتية.
@@ -96,7 +96,7 @@ export default function ServicesPage() {
                       {[
                         "التأكد من جدية المريض والتزامه بالعلاج",
                         "فهم المشكلة وسبب الاتصال بشكل دقيق",
-                        "تحديد إمكانية التكاليف والميزانية",
+                        "تحديد إمكانية تغطية التكاليف العلاجية",
                         "توضيح شروط العلاج بكل شفافية",
                         "توجيهك للخدمة الأنسب لك",
                         "تحديد الحاجة لحضور مباشر أو عن بعد"
@@ -138,6 +138,61 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* What can be treated */}
+      <section className="py-16 lg:py-24 bg-white relative overflow-hidden">
+        {/* Background Decorative */}
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-2xl lg:text-4xl font-bold text-text-primary mb-4">
+              ما الذي يمكن علاجه بالرقية الشرعية؟
+            </h2>
+            <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-lg">
+              تغطي الرقية الشرعية مجالات واسعة استناداً إلى التوجيهات النبوية الشريفة، لتشمل جميع أنواع الأذى
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            {[
+              {
+                title: "علاج الأمراض الروحية",
+                desc: "تعتبر الرقية من الطرق الشرعية التي تعالج الأمراض الروحية من السحر والمس والعين والحسد التي يكون سببها الأرواح الشيطانية.",
+                icon: <Sparkles className="w-8 h-8 text-white" />
+              },
+              {
+                title: "علاج الامراض النفسية",
+                desc: "لقد ثبت من خلال التعامل مع الحالات التي تعاني من أمراض نفسية أن الرقية الشرعية تساعد على الاستقرار النفسي.",
+                icon: <Heart className="w-8 h-8 text-white" />
+              },
+              {
+                title: "علاج الحالات الصحية",
+                desc: "لقد ثبت من خلال التجربة أن الرقية الشرعية تساهم في علاج بعض الأمراض العضوية وتخفيف الآلام كسبب للشفاء بإذن الله.",
+                icon: <Activity className="w-8 h-8 text-white" /> 
+              },
+              {
+                title: "تحصين النفس والاهل",
+                desc: "تعتبر الرقية الشرعية سبباً وعاملاً مهماً في تحصين النفس والأهل والمال من الشرور الداخلية والخارجية بإذن الله تعالى.",
+                icon: <ShieldCheck className="w-8 h-8 text-white" />
+              }
+            ].map((item, i) => (
+              <div key={i} className="bg-primary text-white rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden group border border-white/10 flex flex-col items-center text-center">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-md border border-white/20 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
+                  <p className="text-gray-100 leading-relaxed text-sm md:text-base font-medium">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Services Overview */}
       <section className="py-16 lg:py-24 bg-bg">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,11 +219,11 @@ export default function ServicesPage() {
                   <h3 className="text-xl font-bold text-text-primary mb-3">
                     {service.title}
                   </h3>
-                  <p className="text-text-secondary leading-relaxed mb-6 flex-1">
+                  <p className="text-text-secondary leading-relaxed mb-6">
                     {service.desc}
                   </p>
                   
-                  <div className="bg-bg rounded-xl p-5 mt-auto border border-border/50">
+                  <div className="bg-bg rounded-xl p-5 border border-border/50">
                     <h4 className="text-sm font-semibold text-text-primary mb-3">
                       ميزات الخدمة:
                     </h4>

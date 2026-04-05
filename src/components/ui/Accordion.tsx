@@ -47,7 +47,7 @@ export default function Accordion({ items, className = "" }: AccordionProps) {
               }`}
             >
               <div className="overflow-hidden">
-                <div className="px-6 pb-4 text-sm text-text-secondary leading-relaxed">
+                <div className="px-6 pb-4 text-sm text-text-secondary leading-relaxed whitespace-pre-line">
                   {item.answer}
                 </div>
               </div>

@@ -137,11 +137,19 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-gray-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-gray-400">
             © {new Date().getFullYear()} {SITE_NAME_SHORT}. جميع الحقوق محفوظة.
           </p>
-          <p className="text-xs text-gray-400">
+          <div className="flex items-center gap-6">
+            <Link href="/privacy-policy" className="text-sm text-gray-400 hover:text-white transition-colors">
+              سياسة الخصوصية
+            </Link>
+            <Link href="/terms-of-service" className="text-sm text-gray-400 hover:text-white transition-colors">
+              شروط الخدمة
+            </Link>
+          </div>
+          <p className="text-sm text-gray-400">
             بسم الله الرحمن الرحيم
           </p>
         </div>

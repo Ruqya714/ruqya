@@ -99,7 +99,7 @@ export default function BookingPage() {
     // Patient fields
     patient_name: "",
     patient_email: "",
-    patient_gender: "male" as "male" | "female",
+    patient_gender: "" as "" | "male" | "female",
     patient_nationality: "",
     patient_age: "",
     patient_residence: "",
@@ -110,6 +110,7 @@ export default function BookingPage() {
     consultation_type: "" as "" | "urgent" | "normal",
     patient_phone_code: "+90",
     patient_phone_number: "",
+    agreed_to_terms: false,
   });
 
   const supabase = createClient();
@@ -365,7 +366,7 @@ export default function BookingPage() {
         if (!form.service_id) return false;
         if (isConsultation && !form.consultation_type) return false;
         return true;
-      case 1: return !!form.patient_name && !!form.patient_phone_number && !!form.patient_email;
+      case 1: return !!form.patient_name && !!form.patient_phone_number && !!form.patient_email && !!form.patient_gender;
       case 2: return !!selectedSlotId;
       default: return true;
     }
@@ -475,15 +476,18 @@ export default function BookingPage() {
                   {/* Gender + Age */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-text-primary mb-1.5">الجنس</label>
-                      <select value={form.patient_gender} onChange={(e) => setForm({ ...form, patient_gender: e.target.value as "male" | "female" })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                      <label className="block text-sm font-medium text-text-primary mb-1.5">
+                        الجنس <span className="text-error">*</span>
+                      </label>
+                      <select value={form.patient_gender} onChange={(e) => setForm({ ...form, patient_gender: e.target.value as "" | "male" | "female" })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                        <option value="" disabled>اختر الجنس</option>
                         <option value="male">ذكر</option>
                         <option value="female">أنثى</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-primary mb-1.5">العمر</label>
-                      <input type="number" value={form.patient_age} onChange={(e) => setForm({ ...form, patient_age: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="مثال: 30" />
+                      <input type="number" value={form.patient_age} onChange={(e) => setForm({ ...form, patient_age: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                     </div>
                   </div>
 
@@ -491,11 +495,11 @@ export default function BookingPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-text-primary mb-1.5">الجنسية</label>
-                      <input value={form.patient_nationality} onChange={(e) => setForm({ ...form, patient_nationality: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="مثال: سعودي" />
+                      <input value={form.patient_nationality} onChange={(e) => setForm({ ...form, patient_nationality: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-primary mb-1.5">الإقامة الحالية</label>
-                      <input value={form.patient_residence} onChange={(e) => setForm({ ...form, patient_residence: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="مثال: إسطنبول، تركيا" />
+                      <input value={form.patient_residence} onChange={(e) => setForm({ ...form, patient_residence: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                     </div>
                   </div>
 
@@ -587,7 +591,6 @@ export default function BookingPage() {
                         value={form.patient_phone_number}
                         onChange={(e) => setForm({ ...form, patient_phone_number: e.target.value })}
                         className="flex-1 px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        placeholder="5XX XXX XXXX"
                       />
                     </div>
                   </div>
@@ -715,6 +718,21 @@ export default function BookingPage() {
                     💳 بوابة الدفع ستُضاف لاحقاً — حالياً يتم تأكيد الحجز مباشرة وسيتم التواصل معك للدفع.
                   </p>
                 </div>
+
+                <div className="mt-6 p-4 rounded-xl border border-border bg-gray-50/50">
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <input 
+                      type="checkbox" 
+                      required
+                      checked={form.agreed_to_terms}
+                      onChange={(e) => setForm({ ...form, agreed_to_terms: e.target.checked })}
+                      className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary accent-primary"
+                    />
+                    <span className="text-sm text-text-secondary leading-relaxed">
+                      أقر بأني قرأت وأوافق على <Link href="/terms-of-service" target="_blank" className="text-primary hover:underline font-medium">شروط الخدمة وسياسة العمل</Link> ورجعت لـ <Link href="/privacy-policy" target="_blank" className="text-primary hover:underline font-medium">سياسة الخصوصية</Link> الخاصة بالمركز.
+                    </span>
+                  </label>
+                </div>
               </div>
             )}
 
@@ -735,7 +753,7 @@ export default function BookingPage() {
                   <ArrowLeft size={16} />
                 </button>
               ) : (
-                <button onClick={handleSubmit} disabled={isSubmitting} className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-light disabled:opacity-50 transition-all">
+                <button onClick={handleSubmit} disabled={isSubmitting || !form.agreed_to_terms} className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-light disabled:opacity-50 transition-all">
                   {isSubmitting ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (

@@ -187,8 +187,8 @@ export default function ContactPage() {
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                        placeholder="+90 XXX XXX XXXX"
-                        dir="ltr"
+                        placeholder="أدخل رقم الهاتف"
+                        dir="rtl"
                       />
                     </div>
 
