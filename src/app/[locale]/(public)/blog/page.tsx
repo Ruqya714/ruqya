@@ -1,10 +1,10 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { Calendar, ArrowLeft, BookOpen } from "lucide-react";
+import { Calendar, ArrowLeft, BookOpen, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+
 import { formatDate, truncateText } from "@/lib/helpers";
 
 interface Article {
@@ -16,6 +16,7 @@ interface Article {
   cover_image: string | null;
   published_at: string | null;
   created_at: string;
+  reading_time?: string;
 }
 
 export default function BlogPage() {
@@ -25,14 +26,19 @@ export default function BlogPage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("articles")
-        .select("id, title, slug, excerpt, category, cover_image, published_at, created_at")
-        .eq("is_published", true)
-        .order("published_at", { ascending: false });
-      setArticles((data as Article[]) || []);
-      setIsLoading(false);
+      try {
+        const response = await fetch('/api/articles');
+        const { articles, error } = await response.json();
+        
+        if (error) throw new Error(error);
+        
+        setArticles(articles || []);
+      } catch (err) {
+        console.error("Failed to load articles:", err);
+        setArticles([]);
+      } finally {
+        setIsLoading(false);
+      }
     }
     load();
   }, []);
@@ -83,21 +89,33 @@ export default function BlogPage() {
                   href={`/blog/${article.slug}` as any}
                   className="group bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300"
                 >
-                  <div className="h-48 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                    <BookOpen size={40} className="text-primary/30 group-hover:scale-110 transition-transform duration-300" />
+                  <div className="h-48 relative overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                    {article.cover_image ? (
+                      <img src={article.cover_image} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <BookOpen size={40} className="text-primary/30 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+                    )}
                   </div>
-                  <div className="p-5">
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium mb-3 ${categoryColors[article.category] || "bg-gray-100 text-gray-700"}`}>
+                  <div className="p-5 flex flex-col flex-1">
+                    <span className={`self-start px-2.5 py-0.5 rounded-full text-xs font-medium mb-3 ${categoryColors[article.category] || "bg-gray-100 text-gray-700"}`}>
                       {categoryLabels[article.category] || article.category}
                     </span>
                     <h3 className="font-semibold text-text-primary mb-2 line-clamp-2 group-hover:text-primary transition-colors">{article.title}</h3>
                     {article.excerpt && (
-                      <p className="text-sm text-text-secondary line-clamp-2 mb-3">{truncateText(article.excerpt, 120)}</p>
+                      <p className="text-sm text-text-secondary line-clamp-2 mb-4 flex-1">{truncateText(article.excerpt, 120)}</p>
                     )}
-                    <div className="flex items-center justify-between pt-3 border-t border-border">
-                      <div className="flex items-center gap-1.5 text-xs text-text-muted">
-                        <Calendar size={12} />
-                        {formatDate(article.published_at || article.created_at)}
+                    <div className="flex items-center justify-between pt-4 mt-auto border-t border-border">
+                      <div className="flex items-center gap-3 text-xs text-text-muted">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar size={12} />
+                          {formatDate(article.published_at || article.created_at)}
+                        </div>
+                        {article.reading_time && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock size={12} />
+                            {article.reading_time}
+                          </div>
+                        )}
                       </div>
                       <span className="text-xs text-primary font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                         {t("readMore")}

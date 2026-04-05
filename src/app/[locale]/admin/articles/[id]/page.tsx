@@ -6,7 +6,7 @@ import { use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { generateSlug } from "@/lib/helpers";
 import { TipTapEditor } from "@/components/ui";
-import { Save, ArrowRight, Eye } from "lucide-react";
+import { Save, ArrowRight, Eye, Image as ImageIcon, Trash2 } from "lucide-react";
 
 export default function ArticleEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -21,6 +21,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
     slug: "",
     excerpt: "",
     content: "",
+    cover_image: "",
     category: "article",
     is_published: false,
   });
@@ -34,6 +35,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
         slug: data.slug || "",
         excerpt: data.excerpt || "",
         content: data.content || "",
+        cover_image: data.cover_image || "",
         category: data.category || "article",
         is_published: data.is_published || false,
       });
@@ -56,6 +58,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
         slug: form.slug || generateSlug(form.title),
         excerpt: form.excerpt,
         content: form.content,
+        cover_image: form.cover_image || null,
         category: form.category,
         is_published: publish ? true : form.is_published,
         published_at: publish ? new Date().toISOString() : undefined,
@@ -71,6 +74,29 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
       router.push("/admin/articles");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `articles/${fileName}`;
+
+      const { error } = await supabase.storage.from('public_images').upload(filePath, file);
+
+      if (error) {
+        alert('حدث خطأ أثناء رفع الصورة');
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage.from('public_images').getPublicUrl(filePath);
+      setForm({ ...form, cover_image: publicUrl });
+    } catch (err) {
+      alert('حدث خطأ أثناء الرفع');
     }
   };
 
@@ -137,6 +163,31 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
 
         {/* Sidebar */}
         <div className="space-y-4">
+          <div className="bg-white rounded-xl border border-border p-5">
+            <h3 className="font-semibold text-text-primary mb-4">صورة الغلاف</h3>
+            <div className="space-y-4">
+              {form.cover_image ? (
+                <div className="relative rounded-lg overflow-hidden border border-border group">
+                  <img src={form.cover_image} alt="صورة الغلاف" className="w-full h-40 object-cover" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <button onClick={() => setForm({ ...form, cover_image: "" })} className="p-2 bg-white text-red-500 rounded-full hover:bg-red-50 transition-colors">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-border rounded-lg hover:bg-gray-50 hover:border-primary/50 cursor-pointer transition-colors">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6 text-text-muted">
+                    <ImageIcon size={32} className="mb-2 opacity-50" />
+                    <p className="text-sm font-medium">اضغط لرفع صورة العرض</p>
+                    <p className="text-xs mt-1">PNG, JPG, WEBP</p>
+                  </div>
+                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                </label>
+              )}
+            </div>
+          </div>
+
           <div className="bg-white rounded-xl border border-border p-5">
             <h3 className="font-semibold text-text-primary mb-4">إعدادات المقال</h3>
 

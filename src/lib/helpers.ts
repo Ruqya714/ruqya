@@ -82,3 +82,24 @@ export function getRelativeTime(date: string | Date): string {
   if (diffDays < 7) return `منذ ${diffDays} يوم`;
   return formatDate(date);
 }
+
+/**
+ * Calculate estimated reading time for HTML content
+ */
+export function getReadingTime(html: string | null | undefined): string {
+  if (!html) return "1 دقيقة قراءة";
+  
+  // Strip HTML tags
+  const text = html.replace(/<[^>]*>?/gm, '');
+  
+  // Average reading speed (words per minute)
+  const wpm = 225;
+  const words = text.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / wpm);
+  
+  // Arabic formatting
+  if (minutes === 1) return "1 دقيقة قراءة";
+  if (minutes === 2) return "دقيقتان قراءة";
+  if (minutes >= 3 && minutes <= 10) return `${minutes} دقائق قراءة`;
+  return `${minutes} دقيقة قراءة`;
+}

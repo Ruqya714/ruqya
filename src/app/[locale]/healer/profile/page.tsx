@@ -91,11 +91,6 @@ export default function HealerProfilePage() {
             <label className="block text-sm font-medium mb-1.5">{t("aboutMe")}</label>
             <textarea rows={4} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder={t("aboutPlaceholder")} />
           </div>
-
-          <div className="flex items-center gap-3 pt-3 border-t border-border">
-            <input type="checkbox" id="available" checked={form.is_available} onChange={(e) => setForm({ ...form, is_available: e.target.checked })} className="accent-primary" />
-            <label htmlFor="available" className="text-sm font-medium">{t("available")}</label>
-          </div>
         </div>
       </div>
     </div>

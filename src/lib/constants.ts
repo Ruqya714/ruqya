@@ -50,10 +50,7 @@ export const ADMIN_NAV_LINKS = [
   { href: "/admin/bookings", label: "الحجوزات", icon: "CalendarCheck" },
   { href: "/admin/slots", label: "المواعيد", icon: "Clock" },
   { href: "/admin/healers", label: "المعالجون", icon: "Users" },
-  { href: "/admin/services", label: "الخدمات", icon: "Briefcase" },
   { href: "/admin/articles", label: "المقالات", icon: "FileText" },
-  { href: "/admin/testimonials", label: "الشهادات", icon: "MessageSquare" },
-  { href: "/admin/faqs", label: "الأسئلة الشائعة", icon: "HelpCircle" },
   { href: "/admin/settings", label: "الإعدادات", icon: "Settings" },
 ] as const;
 

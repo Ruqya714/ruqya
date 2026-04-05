@@ -110,6 +110,7 @@ export default function TipTapEditor({ content, onChange }: { content: string; o
       }),
     ],
     content,
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose-base lg:prose-lg mx-auto focus:outline-none min-h-[300px] p-4 text-right',
