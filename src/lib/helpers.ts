@@ -2,7 +2,7 @@
  * Format a date to Arabic locale string
  */
 export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString("ar-SA", {
+  return new Date(date).toLocaleDateString("ar-EG", {
     year: "numeric",
     month: "long",
     day: "numeric",

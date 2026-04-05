@@ -131,6 +131,7 @@ body {
   font-family: var(--font-body), "IBM Plex Sans Arabic", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-anchor: none;
 }
 
 /* =============================================
@@ -239,4 +240,19 @@ body {
   padding-right: 1em;
   margin: 1em 0;
   color: var(--color-text-secondary);
+}
+
+/* =============================================
+   iOS Auto-Zoom Fix
+   ============================================= */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }

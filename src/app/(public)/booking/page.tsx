@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Stepper, MiniCalendar, TimeSlotPicker } from "@/components/ui";
+import { Stepper, MiniCalendar, TimeSlotPicker, Modal } from "@/components/ui";
 import type { TimeSlot } from "@/components/ui/TimeSlotPicker";
 import { formatDate, formatTime } from "@/lib/helpers";
 import { CheckCircle, Phone, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
@@ -74,8 +74,25 @@ interface SlotRow {
 
 const STEPS = ["الخدمة", "المعلومات", "الموعد", "التأكيد"];
 
+const PRIVACY_POLICY_TEXT = `
+في مركز الرقية الشرعية، نضع خصوصية المرضى والمستفيدين في أعلى درجات الأهمية. نحن ندرك تماماً حساسية المعلومات التي يتم مشاركتها معنا، ونلتزم التزاماً كاملاً بحمايتها وفقاً لأعلى معايير السرية والأمان.
+جميع المعلومات الشخصية والتفاصيل الخاصة بالحالات والأعراض تُعتبر سرية للغاية، ولا يتم مشاركة، أو بيع، أو تأجير أي بيانات شخصية لأي طرف ثالث تحت أي ظرف.
+الوصول إلى سجلات المستفيدين مقتصر فقط على الرقاة والمعالجين المختصين والمصرح لهم بمتابعة الحالة.
+جميع عمليات الدفع الإلكتروني تتم عبر بوابات دفع آمنة ومعتمدة. نحن لا نقوم بتخزين تفاصيل بطاقات الائتمان أو أي بيانات بنكية دقيقة على خوادمنا.
+`;
+
+const TERMS_OF_SERVICE_TEXT = `
+مرحباً بك في مركز الرقية الشرعية. الجلسات المقدمة (سواء أكانت حضورية أو عن بُعد) تعتمد على الرقية الشرعية من الكتاب والسنة. نحن لا نضمن الشفاء، فالشفاء بيد الله وحده، ولكننا نبذل الأسباب المشروعة.
+نقدم حالياً خدمة "الاستشارة الصوتية" كخطوة أولى لتقييم الحالة، وبناءً عليها يتم تحديد ما إذا كانت هناك حاجة لجلسات علاجية أو متابعة.
+يرجى الالتزام بالمواعيد المحددة. في حال التأخير أو الرغبة في الإلغاء، يجب إبلاغنا قبل الموعد بـ 24 ساعة على الأقل.
+تكون الرسوم المحددة للجلسات والاستشارات مستحقة الدفع وفقاً لسياسة التسعير المعتمدة.
+يُتوقع من جميع المستفيدين التعامل بصدق واحترام مع المعالجين وتقديم معلومات دقيقة عن الحالة لضمان أفضل توجيه ممكن.
+`;
+
 export default function BookingPage() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -577,7 +594,7 @@ export default function BookingPage() {
                       <select
                         value={form.patient_phone_code}
                         onChange={(e) => setForm({ ...form, patient_phone_code: e.target.value })}
-                        className="w-[140px] px-2 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white flex-shrink-0"
+                        className="w-[110px] sm:w-[140px] px-2 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white flex-shrink-0"
                       >
                         {COUNTRY_CODES.map((cc) => (
                           <option key={cc.code} value={cc.code}>
@@ -590,7 +607,7 @@ export default function BookingPage() {
                         type="tel"
                         value={form.patient_phone_number}
                         onChange={(e) => setForm({ ...form, patient_phone_number: e.target.value })}
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        className="flex-1 min-w-0 w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       />
                     </div>
                   </div>
@@ -729,7 +746,7 @@ export default function BookingPage() {
                       className="mt-1 w-4 h-4 rounded border-border text-primary focus:ring-primary accent-primary"
                     />
                     <span className="text-sm text-text-secondary leading-relaxed">
-                      أقر بأني قرأت وأوافق على <Link href="/terms-of-service" target="_blank" className="text-primary hover:underline font-medium">شروط الخدمة وسياسة العمل</Link> ورجعت لـ <Link href="/privacy-policy" target="_blank" className="text-primary hover:underline font-medium">سياسة الخصوصية</Link> الخاصة بالمركز.
+                      أقر بأني قرأت وأوافق على <button type="button" onClick={() => setShowTermsModal(true)} className="text-primary hover:underline font-medium focus:outline-none">شروط الخدمة وسياسة العمل</button> ورجعت لـ <button type="button" onClick={() => setShowPrivacyModal(true)} className="text-primary hover:underline font-medium focus:outline-none">سياسة الخصوصية</button> الخاصة بالمركز.
                     </span>
                   </label>
                 </div>
@@ -768,6 +785,29 @@ export default function BookingPage() {
           </div>
         </div>
       </section>
+      <Modal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} title="شروط الخدمة">
+        <div className="text-sm md:text-base text-text-secondary leading-relaxed space-y-4" dir="rtl">
+          {TERMS_OF_SERVICE_TEXT.trim().split('\n').map((p, i) => <p key={i}>{p}</p>)}
+          <div className="pt-4 border-t border-border mt-6">
+            <Link href="/terms-of-service" target="_blank" className="text-primary hover:underline font-medium inline-flex items-center gap-1.5 focus:outline-none">
+              قراءة كافة الشروط والسياسات
+              <ArrowLeft size={16} />
+            </Link>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} title="سياسة الخصوصية">
+        <div className="text-sm md:text-base text-text-secondary leading-relaxed space-y-4" dir="rtl">
+          {PRIVACY_POLICY_TEXT.trim().split('\n').map((p, i) => <p key={i}>{p}</p>)}
+          <div className="pt-4 border-t border-border mt-6">
+            <Link href="/privacy-policy" target="_blank" className="text-primary hover:underline font-medium inline-flex items-center gap-1.5 focus:outline-none">
+              قراءة سياسة الخصوصية كاملة
+              <ArrowLeft size={16} />
+            </Link>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
