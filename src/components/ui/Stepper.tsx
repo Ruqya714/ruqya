@@ -42,7 +42,8 @@ export default function Stepper({
                 {/* Text underneath circle */}
                 <span
                   className={`
-                    absolute top-full mt-2 text-[11px] sm:text-xs font-medium text-center w-24 whitespace-nowrap
+                    absolute top-full mt-2 text-[11px] sm:text-xs font-medium whitespace-nowrap
+                    ${index === 0 ? "right-0 sm:-mr-4 sm:right-1/2 sm:translate-x-1/2" : index === steps.length - 1 ? "left-0 sm:-ml-4 sm:left-1/2 sm:-translate-x-1/2" : "left-1/2 -translate-x-1/2"}
                     ${isCurrent ? "text-primary" : isCompleted ? "text-text-primary" : "text-text-secondary"}
                   `}
                 >
