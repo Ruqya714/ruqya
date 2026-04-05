@@ -1,15 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link, usePathname } from "@/i18n/routing";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { Menu, X, Phone } from "lucide-react";
 import { PUBLIC_NAV_LINKS } from "@/lib/constants";
+import { useTranslations } from "next-intl";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const t = useTranslations("Navigation");
+
+  // Map href to translation keys
+  const getNavKey = (href: string) => {
+    switch(href) {
+      case "/": return "home";
+      case "/about": return "about";
+      case "/services": return "services";
+      case "/treatment-journey": return "journey";
+      case "/blog": return "blog";
+      case "/faq": return "faq";
+      case "/contact": return "contact";
+      default: return "home";
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border">
@@ -38,11 +53,11 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {PUBLIC_NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = pathname === link.href || pathname.startsWith(`/tr${link.href !== '/' ? link.href : 'never'}`);
               return (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={link.href as any}
                   className={`
                     px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${
@@ -52,7 +67,7 @@ export default function Header() {
                     }
                   `}
                 >
-                  {link.label}
+                  {t(getNavKey(link.href))}
                 </Link>
               );
             })}
@@ -60,12 +75,18 @@ export default function Header() {
 
           {/* CTA + Mobile menu */}
           <div className="flex items-center gap-3">
+            {/* Language Switcher (Simple Implementation) */}
+            <div className="flex gap-1 text-xs font-bold items-center border border-border p-1 rounded-lg">
+              <Link href={pathname as any} locale="ar" className={`px-2 py-1 rounded-md text-text-secondary hover:bg-gray-100`}>AR</Link>
+              <Link href={pathname as any} locale="tr" className={`px-2 py-1 rounded-md text-text-secondary hover:bg-gray-100`}>TR</Link>
+            </div>
+
             <Link
               href="/booking"
               className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-light transition-all duration-200 shadow-sm"
             >
               <Phone size={16} />
-              سجّل حالتك
+              {t("booking")}
             </Link>
 
             {/* Mobile menu button */}
@@ -88,11 +109,11 @@ export default function Header() {
       >
         <nav className="px-4 py-6 space-y-2 max-h-[80vh] overflow-y-auto">
           {PUBLIC_NAV_LINKS.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname === link.href || pathname.startsWith(`/tr${link.href !== '/' ? link.href : 'never'}`);
             return (
               <Link
                 key={link.href}
-                href={link.href}
+                href={link.href as any}
                 onClick={() => setIsMenuOpen(false)}
                 className={`
                   block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
@@ -103,7 +124,7 @@ export default function Header() {
                   }
                 `}
               >
-                {link.label}
+                {t(getNavKey(link.href))}
               </Link>
             );
           })}
@@ -114,7 +135,7 @@ export default function Header() {
               className="flex justify-center items-center gap-2 w-full px-4 py-3.5 rounded-lg bg-accent text-white text-sm font-bold text-center hover:bg-accent-light hover:-translate-y-0.5 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <Phone size={18} />
-              سجّل حالتك الآن
+              {t("booking")}
             </Link>
           </div>
         </nav>

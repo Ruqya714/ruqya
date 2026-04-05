@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -14,18 +14,20 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { HEALER_NAV_LINKS, SITE_NAME_SHORT } from "@/lib/constants";
-
-const iconMap: Record<string, React.ReactNode> = {
-  LayoutDashboard: <LayoutDashboard size={20} />,
-  CalendarCheck: <CalendarCheck size={20} />,
-  User: <User size={20} />,
-};
+import { SITE_NAME_SHORT } from "@/lib/constants";
+import { useTranslations } from "next-intl";
 
 export default function HealerSidebar() {
+  const t = useTranslations("HealerSidebar");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  const navLinks = [
+    { href: "/healer", label: t("home"), icon: <LayoutDashboard size={20} /> },
+    { href: "/healer/bookings", label: t("myBookings"), icon: <CalendarCheck size={20} /> },
+    { href: "/healer/profile", label: t("myProfile"), icon: <User size={20} /> },
+  ];
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -37,36 +39,32 @@ export default function HealerSidebar() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
-        <Image src="/logo.png" alt="مركز الرقية" width={44} height={44} className="w-11 h-11 rounded-full flex-shrink-0" />
+        <Image src="/logo.png" alt="Logo" width={44} height={44} className="w-11 h-11 rounded-full flex-shrink-0" />
         <div>
-          <h2 className="text-sm font-bold text-white">لوحة المعالج</h2>
+          <h2 className="text-sm font-bold text-white">{t("panelTitle")}</h2>
           <p className="text-[10px] text-gray-400">{SITE_NAME_SHORT}</p>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-4 px-3 space-y-1">
-        {HEALER_NAV_LINKS.map((link) => {
+        {navLinks.map((link) => {
           const isActive =
             link.href === "/healer"
-              ? pathname === "/healer"
-              : pathname.startsWith(link.href);
+              ? pathname === "/healer" || pathname.match(/^\/[a-z]{2}\/healer$/)
+              : pathname.includes(link.href);
           return (
             <Link
               key={link.href}
-              href={link.href}
+              href={link.href as any}
               onClick={() => setIsMobileOpen(false)}
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                 transition-all duration-200
-                ${
-                  isActive
-                    ? "bg-white/15 text-white shadow-sm"
-                    : "text-gray-300 hover:bg-white/8 hover:text-white"
-                }
+                ${isActive ? "bg-white/15 text-white shadow-sm" : "text-gray-300 hover:bg-white/8 hover:text-white"}
               `}
             >
-              <span className="flex-shrink-0">{iconMap[link.icon]}</span>
+              <span className="flex-shrink-0">{link.icon}</span>
               <span>{link.label}</span>
             </Link>
           );
@@ -80,14 +78,14 @@ export default function HealerSidebar() {
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-white/8 hover:text-white transition-all"
         >
           <ChevronLeft size={20} />
-          <span>عرض الموقع</span>
+          <span>{t("viewSite")}</span>
         </Link>
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-red-500/20 hover:text-red-300 transition-all"
         >
           <LogOut size={20} />
-          <span>تسجيل الخروج</span>
+          <span>{t("logout")}</span>
         </button>
       </div>
     </div>
@@ -99,7 +97,7 @@ export default function HealerSidebar() {
       <button
         onClick={() => setIsMobileOpen(true)}
         className="fixed top-4 right-4 z-40 lg:hidden p-2.5 rounded-lg bg-primary-dark text-white shadow-lg"
-        aria-label="فتح القائمة"
+        aria-label={t("openMenu")}
       >
         <Menu size={22} />
       </button>
@@ -123,7 +121,7 @@ export default function HealerSidebar() {
         <button
           onClick={() => setIsMobileOpen(false)}
           className="absolute top-4 left-4 p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
-          aria-label="إغلاق القائمة"
+          aria-label={t("closeMenu")}
         >
           <X size={20} />
         </button>
