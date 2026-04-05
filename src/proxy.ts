@@ -7,7 +7,7 @@ import { routing } from "./i18n/routing";
 const intlMiddleware = createIntlMiddleware(routing);
 
 // Paths that should skip next-intl completely (even after auth)
-const NON_INTL_PATHS = ["/admin", "/api"];
+const NON_INTL_PATHS = ["/api"];
 
 function isNonIntlPath(pathname: string): boolean {
   return NON_INTL_PATHS.some((p) => pathname.startsWith(p));
