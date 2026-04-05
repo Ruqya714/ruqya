@@ -64,11 +64,11 @@ export default function AdminArticlesPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-gray-50/50">
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">العنوان</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">التصنيف</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">التاريخ</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">إجراءات</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">العنوان</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">التصنيف</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">التاريخ</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">إجراءات</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

@@ -86,10 +86,10 @@ export default function HealerDashboard() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-gray-50/50">
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">{t("patient")}</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">{t("service")}</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">{t("status")}</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">{t("date")}</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">{t("patient")}</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">{t("service")}</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">{t("status")}</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">{t("date")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

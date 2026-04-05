@@ -108,10 +108,10 @@ export default async function ArticlePage({
               [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-primary
               [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-8 [&_h3]:mb-3
               [&_p]:mb-4 [&_p]:leading-loose
-              [&_ul]:pr-6 [&_ul]:space-y-2 [&_ul]:mb-6
-              [&_ol]:pr-6 [&_ol]:space-y-2 [&_ol]:mb-6
+              [&_ul]:ps-6 [&_ul]:space-y-2 [&_ul]:mb-6
+              [&_ol]:ps-6 [&_ol]:space-y-2 [&_ol]:mb-6
               [&_li]:text-text-secondary
-              [&_blockquote]:border-r-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-l-lg [&_blockquote]:italic [&_blockquote]:text-text-secondary [&_blockquote]:my-8
+              [&_blockquote]:border-s-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-e-lg [&_blockquote]:italic [&_blockquote]:text-text-secondary [&_blockquote]:my-8
               [&_a]:text-primary [&_a]:underline
               [&_img]:rounded-xl [&_img]:shadow-md [&_img]:mx-auto [&_img]:my-8 [&_img]:border [&_img]:border-border
             "

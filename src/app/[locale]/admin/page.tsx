@@ -81,10 +81,10 @@ export default async function AdminDashboard() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-gray-50/50">
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">المريض</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">الخدمة</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">التاريخ</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">المريض</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">الخدمة</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
+                <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">التاريخ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

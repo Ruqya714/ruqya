@@ -96,7 +96,7 @@ export default function HealerSidebar() {
       {/* Mobile toggle */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="fixed top-4 right-4 z-40 lg:hidden p-2.5 rounded-lg bg-primary-dark text-white shadow-lg"
+        className="fixed top-4 start-4 z-40 lg:hidden p-2.5 rounded-lg bg-primary-dark text-white shadow-lg"
         aria-label={t("openMenu")}
       >
         <Menu size={22} />
@@ -113,14 +113,14 @@ export default function HealerSidebar() {
       {/* Mobile sidebar */}
       <aside
         className={`
-          fixed top-0 right-0 z-50 h-full w-64 bg-primary-dark
+          fixed top-0 start-0 z-50 h-full w-64 bg-primary-dark
           transform transition-transform duration-300 lg:hidden
-          ${isMobileOpen ? "translate-x-0" : "translate-x-full"}
+          ${isMobileOpen ? "translate-x-0" : "rtl:translate-x-full ltr:-translate-x-full"}
         `}
       >
         <button
           onClick={() => setIsMobileOpen(false)}
-          className="absolute top-4 left-4 p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+          className="absolute top-4 end-4 p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
           aria-label={t("closeMenu")}
         >
           <X size={20} />
@@ -129,7 +129,7 @@ export default function HealerSidebar() {
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed top-0 right-0 h-full w-64 bg-primary-dark z-30">
+      <aside className="hidden lg:block fixed top-0 start-0 h-full w-64 bg-primary-dark z-30">
         {renderSidebarContent()}
       </aside>
     </>

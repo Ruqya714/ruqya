@@ -34,14 +34,14 @@ export default function PrivacyPolicyPage() {
                   في {SITE_NAME || "مركز الرقية الشرعية والاستشارات"}، نضع خصوصية المرضى والمستفيدين في أعلى درجات الأهمية. نحن ندرك تماماً حساسية المعلومات التي يتم مشاركتها معنا، ونلتزم التزاماً كاملاً بحمايتها وفقاً لأعلى معايير السرية والأمان.
                 </p>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">1. سرية المعلومات والبيانات</h2>
-                <ul className="list-disc pr-6 space-y-2 text-text-secondary">
+                <ul className="list-disc ps-6 space-y-2 text-text-secondary">
                   <li>جميع المعلومات الشخصية والتفاصيل الخاصة بالحالات والأعراض التي يتم تقديمها عبر الموقع أو أثناء الجلسات (سواء الحضورية أو عن بُعد) تُعتبر سرية للغاية.</li>
                   <li>لا يتم مشاركة، أو بيع، أو تأجير أي بيانات شخصية (مثل الاسم، رقم الهاتف، البريد الإلكتروني، أو تفاصيل الحالة) لأي طرف ثالث تحت أي ظرف من الظروف.</li>
                   <li>الوصول إلى سجلات المستفيدين مقتصر فقط على الرقاة والمعالجين المختصين والمصرح لهم بمتابعة الحالة.</li>
                 </ul>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">2. جمع واستخدام البيانات</h2>
                 <p className="text-text-secondary leading-relaxed mb-4">نحن نجمع البيانات الضرورية فقط التي تمكننا من تقديم خدماتنا بأفضل شكل ممكن، وتشمل:</p>
-                <ul className="list-disc pr-6 space-y-2 text-text-secondary">
+                <ul className="list-disc ps-6 space-y-2 text-text-secondary">
                   <li>البيانات الأساسية للتواصل وتأكيد الحجوزات.</li>
                   <li>المعلومات المطلوبة للتشخيص المبدئي لتحديد نوع الاستشارة أو الجلسة المناسبة للحالة.</li>
                   <li>التاريخ المرضي والأعراض السابقة لضمان جودة وتكامل الخطة العلاجية.</li>
@@ -61,14 +61,14 @@ export default function PrivacyPolicyPage() {
                   {SITE_NAME || "Şer'i Rukye ve Danışmanlık Merkezi"} olarak hastaların ve faydalananların gizliliğini en yüksek öncelikle ele alıyoruz. Bizimle paylaşılan bilgilerin hassasiyetinin tamamen farkındayız ve en yüksek gizlilik ve güvenlik standartlarına uygun şekilde korumayı taahhüt ediyoruz.
                 </p>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">1. Bilgi ve Veri Gizliliği</h2>
-                <ul className="list-disc pl-6 space-y-2 text-text-secondary">
+                <ul className="list-disc pe-6 space-y-2 text-text-secondary">
                   <li>Web sitesi üzerinden veya seanslar sırasında (yüz yüze veya uzaktan) sağlanan tüm kişisel bilgiler, vaka detayları ve belirtiler son derece gizli kabul edilir.</li>
                   <li>Hiçbir kişisel veri (ad, telefon numarası, e-posta veya vaka detayları) hiçbir koşulda üçüncü taraflarla paylaşılmaz, satılmaz veya kiralanmaz.</li>
                   <li>Faydalanan kayıtlarına erişim yalnızca vakayı takip etmeye yetkili uzman rukye terapistleri ve tedavcilerle sınırlıdır.</li>
                 </ul>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">2. Veri Toplama ve Kullanımı</h2>
                 <p className="text-text-secondary leading-relaxed mb-4">Hizmetlerimizi en iyi şekilde sunmamızı sağlayan yalnızca gerekli verileri topluyoruz:</p>
-                <ul className="list-disc pl-6 space-y-2 text-text-secondary">
+                <ul className="list-disc pe-6 space-y-2 text-text-secondary">
                   <li>İletişim ve randevu onayı için temel veriler.</li>
                   <li>Uygun danışmanlık veya seans türünü belirlemek için ön teşhis bilgileri.</li>
                   <li>Tedavi planının kalitesini ve bütünlüğünü sağlamak için tıbbi geçmiş ve önceki belirtiler.</li>

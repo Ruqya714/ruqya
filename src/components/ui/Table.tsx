@@ -41,7 +41,7 @@ export default function Table<T>({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`px-4 py-3 text-right font-semibold text-text-secondary text-xs uppercase tracking-wider ${col.className || ""}`}
+                  className={`px-4 py-3 text-start font-semibold text-text-secondary text-xs uppercase tracking-wider ${col.className || ""}`}
                 >
                   {col.header}
                 </th>

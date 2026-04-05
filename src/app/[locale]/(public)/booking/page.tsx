@@ -407,7 +407,7 @@ export default function BookingPage() {
       {/* Hero */}
       <section className="gradient-hero text-white py-12 lg:py-16 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 right-20 w-72 h-72 rounded-full bg-accent blur-3xl" />
+          <div className="absolute top-10 start-20 w-72 h-72 rounded-full bg-accent blur-3xl" />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl lg:text-4xl font-bold mb-4">{t("title")}</h1>
@@ -616,7 +616,7 @@ export default function BookingPage() {
                         type="tel"
                         value={form.patient_phone_number}
                         onChange={(e) => setForm({ ...form, patient_phone_number: e.target.value })}
-                        className="flex-1 min-w-0 w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary rtl:text-right text-left"
+                        className="flex-1 min-w-0 w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary rtl:text-start text-end"
                       />
                     </div>
                   </div>
@@ -728,7 +728,7 @@ export default function BookingPage() {
                   {needLabel && (
                     <div className="flex justify-between py-2 border-b border-border">
                       <span className="text-sm text-text-secondary">{t("confirmStep.details.needDesc")}</span>
-                      <span className="text-sm font-medium text-text-primary text-left max-w-[200px]">{needLabel}</span>
+                      <span className="text-sm font-medium text-text-primary text-end max-w-[200px]">{needLabel}</span>
                     </div>
                   )}
                   {form.patient_previous_ruqya && (

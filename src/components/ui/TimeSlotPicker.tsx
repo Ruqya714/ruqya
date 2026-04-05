@@ -88,7 +88,7 @@ export default function TimeSlotPicker({
                 </div>
               )}
               {isSelected && (
-                <div className="absolute top-1 left-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                <div className="absolute top-1 end-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
                   <svg
                     width="10"
                     height="10"

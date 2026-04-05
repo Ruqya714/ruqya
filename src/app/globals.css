@@ -117,13 +117,7 @@
   }
 }
 
-/* =============================================
-   Base Styles
-   ============================================= */
 
-html {
-  direction: rtl;
-}
 
 body {
   background-color: var(--color-bg);
@@ -203,8 +197,8 @@ body {
 .tiptap-editor .ProseMirror {
   min-height: 300px;
   outline: none;
-  direction: rtl;
-  text-align: right;
+  direction: inherit;
+  text-align: start;
 }
 
 .tiptap-editor .ProseMirror p {
@@ -231,13 +225,13 @@ body {
 
 .tiptap-editor .ProseMirror ul,
 .tiptap-editor .ProseMirror ol {
-  padding-right: 1.5em;
+  padding-inline-start: 1.5em; /* Logical instead of padding-right */
   margin: 0.5em 0;
 }
 
 .tiptap-editor .ProseMirror blockquote {
-  border-right: 3px solid var(--color-primary);
-  padding-right: 1em;
+  border-inline-start: 3px solid var(--color-primary);
+  padding-inline-start: 1em;
   margin: 1em 0;
   color: var(--color-text-secondary);
 }

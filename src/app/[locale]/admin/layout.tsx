@@ -12,7 +12,7 @@ export default function AdminLayout({
     <ToastProvider>
       <div className="min-h-screen bg-bg">
         <AdminSidebar />
-        <main className="lg:mr-64 min-h-screen">
+        <main className="lg:ms-64 min-h-screen">
           <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">{children}</div>
         </main>
       </div>

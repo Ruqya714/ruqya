@@ -462,7 +462,7 @@ export default function AdminSlotsPage() {
                             <p className="text-lg font-bold text-green-600">{group.availableSlots}</p>
                             <p className="text-[10px] text-text-muted">متاح</p>
                           </div>
-                          <div className="text-center px-3 border-r border-border">
+                          <div className="text-center px-3 border-s border-border">
                             <p className="text-lg font-bold text-amber-600">{group.bookedSlots}</p>
                             <p className="text-[10px] text-text-muted">محجوز</p>
                           </div>
@@ -580,7 +580,7 @@ export default function AdminSlotsPage() {
                       <span className="text-sm text-text-secondary font-medium">
                         {formatDate(group.date)}
                       </span>
-                      <span className="text-xs text-text-muted mr-2">({group.dayName})</span>
+                      <span className="text-xs text-text-muted ms-2">({group.dayName})</span>
                     </div>
                     <span className="text-xs text-text-muted flex-shrink-0">
                       {group.totalSlots} استشارة • {group.totalBookings} حجز

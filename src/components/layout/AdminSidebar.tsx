@@ -118,7 +118,7 @@ export default function AdminSidebar() {
       {/* Mobile toggle */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="fixed top-4 right-4 z-40 lg:hidden p-2.5 rounded-lg bg-primary-dark text-white shadow-lg"
+        className="fixed top-4 start-4 z-40 lg:hidden p-2.5 rounded-lg bg-primary-dark text-white shadow-lg"
         aria-label="فتح القائمة"
       >
         <Menu size={22} />
@@ -135,14 +135,14 @@ export default function AdminSidebar() {
       {/* Mobile sidebar */}
       <aside
         className={`
-          fixed top-0 right-0 z-50 h-full w-64 bg-primary-dark
+          fixed top-0 start-0 z-50 h-full w-64 bg-primary-dark
           transform transition-transform duration-300 lg:hidden
-          ${isMobileOpen ? "translate-x-0" : "translate-x-full"}
+          ${isMobileOpen ? "translate-x-0" : "rtl:translate-x-full ltr:-translate-x-full"}
         `}
       >
         <button
           onClick={() => setIsMobileOpen(false)}
-          className="absolute top-4 left-4 p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+          className="absolute top-4 end-4 p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
           aria-label="إغلاق القائمة"
         >
           <X size={20} />
@@ -153,7 +153,7 @@ export default function AdminSidebar() {
       {/* Desktop sidebar */}
       <aside
         className={`
-          hidden lg:block fixed top-0 right-0 h-full bg-primary-dark z-30
+          hidden lg:block fixed top-0 start-0 h-full bg-primary-dark z-30
           transition-all duration-300
           ${isCollapsed ? "w-[72px]" : "w-64"}
         `}
@@ -161,7 +161,7 @@ export default function AdminSidebar() {
         {renderSidebarContent()}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -left-3 top-20 w-6 h-6 rounded-full bg-primary-dark border-2 border-bg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+          className="absolute -end-3 top-20 w-6 h-6 rounded-full bg-primary-dark border-2 border-bg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
           aria-label={isCollapsed ? "توسيع" : "تصغير"}
         >
           <ChevronLeft

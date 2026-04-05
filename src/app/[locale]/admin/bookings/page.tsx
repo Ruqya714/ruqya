@@ -143,12 +143,12 @@ export default function AdminBookingsPage() {
       {/* Filters */}
       <div className="bg-white rounded-xl border border-border p-4 mb-6 flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <Search size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="بحث بالاسم أو رقم الهاتف..."
-            className="w-full pr-10 pl-4 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full ps-10 pe-4 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -171,13 +171,13 @@ export default function AdminBookingsPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-gray-50/50">
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">المريض</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">الخدمة</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden lg:table-cell">المعالج</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">الدفع</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary hidden lg:table-cell">التاريخ</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold text-text-secondary">إجراءات</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">المريض</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">الخدمة</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden lg:table-cell">المعالج</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">الدفع</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden lg:table-cell">التاريخ</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">إجراءات</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

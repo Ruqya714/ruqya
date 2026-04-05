@@ -75,11 +75,11 @@ export default function Header() {
 
           {/* CTA + Mobile menu */}
           <div className="flex items-center gap-3">
-            {/* Language Switcher (Simple Implementation) */}
-            <div className="flex gap-1 text-xs font-bold items-center border border-border p-1 rounded-lg">
+            {/* Language Switcher (Disabled temporarily for client review) */}
+            {/* <div className="flex gap-1 text-xs font-bold items-center border border-border p-1 rounded-lg">
               <Link href={pathname as any} locale="ar" className={`px-2 py-1 rounded-md text-text-secondary hover:bg-gray-100`}>AR</Link>
               <Link href={pathname as any} locale="tr" className={`px-2 py-1 rounded-md text-text-secondary hover:bg-gray-100`}>TR</Link>
-            </div>
+            </div> */}
 
             <Link
               href="/booking"

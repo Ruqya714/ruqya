@@ -113,7 +113,7 @@ export default function TipTapEditor({ content, onChange }: { content: string; o
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg mx-auto focus:outline-none min-h-[300px] p-4 text-right',
+        class: 'prose prose-sm sm:prose-base lg:prose-lg mx-auto focus:outline-none min-h-[300px] p-4 text-start',
         dir: 'rtl',
       },
     },

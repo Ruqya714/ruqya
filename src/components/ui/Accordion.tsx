@@ -28,7 +28,7 @@ export default function Accordion({ items, className = "" }: AccordionProps) {
           >
             <button
               onClick={() => setOpenId(isOpen ? null : item.id)}
-              className="w-full flex items-center justify-between px-6 py-4 text-right"
+              className="w-full flex items-center justify-between px-6 py-4 text-start"
               aria-expanded={isOpen}
             >
               <span className="text-sm font-medium text-text-primary flex-1">
@@ -36,7 +36,7 @@ export default function Accordion({ items, className = "" }: AccordionProps) {
               </span>
               <ChevronDown
                 size={18}
-                className={`text-text-secondary transition-transform duration-300 mr-4 flex-shrink-0 ${
+                className={`text-text-secondary transition-transform duration-300 ms-4 flex-shrink-0 ${
                   isOpen ? "rotate-180" : ""
                 }`}
               />
