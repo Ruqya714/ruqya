@@ -132,6 +132,13 @@ export default function BookingPage() {
 
   const supabase = createClient();
 
+  // Auto-scroll to top smoothly whenever the step or submission state changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentStep, submitted]);
+
   // Load services
   useEffect(() => {
     async function load() {

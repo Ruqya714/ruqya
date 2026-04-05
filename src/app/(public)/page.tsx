@@ -17,9 +17,9 @@ export default function HomePage() {
   return (
     <>
       {/* ========== Hero Section ========== */}
-      <section className="relative gradient-hero text-white overflow-hidden">
+      <section className="relative gradient-hero text-white">
         {/* Decorative elements */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
           <div className="absolute top-20 right-20 w-72 h-72 rounded-full bg-accent blur-3xl" />
           <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-primary-light blur-3xl" />
         </div>
@@ -80,8 +80,8 @@ export default function HomePage() {
         </div>
 
         {/* Wave separator */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div className="absolute -bottom-[2px] left-0 right-0">
+          <svg className="w-full block" viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0 80L48 74.7C96 69 192 59 288 53.3C384 48 480 48 576 53.3C672 59 768 69 864 69.3C960 69 1056 59 1152 53.3C1248 48 1344 48 1392 48L1440 48V80H1392C1344 80 1248 80 1152 80C1056 80 960 80 864 80C768 80 672 80 576 80C480 80 384 80 288 80C192 80 96 80 48 80H0Z"
               fill="var(--color-bg)"
