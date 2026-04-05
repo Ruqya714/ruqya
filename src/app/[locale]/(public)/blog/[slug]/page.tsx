@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Calendar, ArrowRight, User, Tag, Clock, Share2 } from "lucide-react";
-import { getReadingTime, formatDate } from "@/lib/helpers";
+import { Calendar, ArrowRight, Tag, Share2, Link as LinkIcon } from "lucide-react";
+import { formatDate } from "@/lib/helpers";
 
 export async function generateMetadata({
   params,
@@ -53,7 +53,6 @@ export default async function ArticlePage({
 
   const imgMatch = article.content?.match(/<img[^>]+src="([^">]+)"/);
   const coverImage = article.cover_image || (imgMatch ? imgMatch[1] : null);
-  const readingTime = getReadingTime(article.content);
 
   return (
     <article className="py-12 lg:py-20 bg-gray-50/30">
@@ -95,19 +94,9 @@ export default async function ArticlePage({
           )}
 
           <div className="flex flex-wrap items-center gap-4 md:gap-6 mt-8 pt-6 border-t border-border">
-            {article.author?.full_name && (
-              <div className="flex items-center gap-2 text-sm text-text-secondary bg-white px-3 py-1.5 rounded-lg border border-border shadow-sm">
-                <User size={14} className="text-primary" />
-                {article.author.full_name}
-              </div>
-            )}
             <div className="flex items-center gap-2 text-sm text-text-secondary bg-white px-3 py-1.5 rounded-lg border border-border shadow-sm">
               <Calendar size={14} className="text-primary" />
               {formatDate(article.published_at || article.created_at)}
-            </div>
-            <div className="flex items-center gap-2 text-sm text-text-secondary bg-white px-3 py-1.5 rounded-lg border border-border shadow-sm">
-              <Clock size={14} className="text-primary" />
-              {readingTime}
             </div>
           </div>
         </header>
@@ -143,7 +132,7 @@ export default async function ArticlePage({
                 className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-text-secondary hover:text-primary hover:border-primary transition-colors"
                 title="نسخ الرابط"
               >
-                <Share2 size={18} />
+                <LinkIcon size={18} />
               </button>
             </div>
           </div>
