@@ -28,6 +28,7 @@ export default function Modal({
   className = "",
 }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const mouseDownTargetRef = useRef<EventTarget | null>(null);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -51,8 +52,13 @@ export default function Modal({
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onMouseDown={(e) => {
+        mouseDownTargetRef.current = e.target;
+      }}
       onClick={(e) => {
-        if (e.target === overlayRef.current) onClose();
+        if (e.target === overlayRef.current && mouseDownTargetRef.current === overlayRef.current) {
+          onClose();
+        }
       }}
     >
       {/* Backdrop */}

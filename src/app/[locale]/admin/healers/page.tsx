@@ -21,6 +21,7 @@ interface Healer {
 export default function AdminHealersPage() {
   const [healers, setHealers] = useState<Healer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingHealer, setEditingHealer] = useState<Healer | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -113,46 +114,52 @@ export default function AdminHealersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const payload = {
-      display_name: form.display_name,
-      title: form.title,
-      specialization: form.specialization || null,
-      experience_years: form.experience_years ? parseInt(form.experience_years) : null,
-      photo_url: form.photo_url || null,
-    };
+    setIsSubmitting(true);
 
-    if (editingHealer) {
-      await supabase.from("healers").update(payload).eq("id", editingHealer.id);
-      
-      // Update full_name in profile if needed
-      if (editingHealer.profile_id) {
-         await supabase.from("profiles").update({ full_name: form.display_name }).eq("id", editingHealer.profile_id);
-      }
-    } else {
-      // Create user via Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: form.email,
-        password: form.password,
-        options: { data: { full_name: form.display_name } },
-      });
+    try {
+      const payload = {
+        display_name: form.display_name,
+        title: form.title,
+        specialization: form.specialization || null,
+        experience_years: form.experience_years ? parseInt(form.experience_years) : null,
+        photo_url: form.photo_url || null,
+      };
 
-      if (authError || !authData.user) {
-        alert("خطأ في إنشاء الحساب (إذا كنت مسؤولاً، يرجى إنشاء حساب المعالج أولاً أو تغيير إعدادات Auth في Supabase): " + (authError?.message || ""));
-        return;
+      if (editingHealer) {
+        await supabase.from("healers").update(payload).eq("id", editingHealer.id);
+        
+        // Update full_name in profile if needed
+        if (editingHealer.profile_id) {
+           await supabase.from("profiles").update({ full_name: form.display_name }).eq("id", editingHealer.profile_id);
+        }
+      } else {
+        // Create healer via server-side API (uses Admin API - no session switch, no rate limits)
+        const res = await fetch("/api/admin/healers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+            display_name: form.display_name,
+            title: form.title,
+            specialization: form.specialization,
+            experience_years: form.experience_years,
+            photo_url: form.photo_url,
+          }),
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+          alert(result.error || "حدث خطأ أثناء إنشاء المعالج");
+          return;
+        }
       }
-      
-      // Ensure the profile has the healer role
-      await supabase.from("profiles").update({ role: "healer", full_name: form.display_name }).eq("id", authData.user.id);
-      
-      // Create healer record
-      await supabase.from("healers").insert({
-        ...payload,
-        profile_id: authData.user.id,
-      });
+      setShowModal(false);
+      load();
+    } finally {
+      setIsSubmitting(false);
     }
-    setShowModal(false);
-    load();
   };
 
   const toggleVisibility = async (id: string, current: boolean) => {
@@ -317,9 +324,14 @@ export default function AdminHealersPage() {
           </div>
           
           <div className="flex justify-end gap-3 pt-6 border-t border-border mt-6">
-            <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium text-text-secondary hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors">إلغاء</button>
-            <button type="submit" disabled={isUploading} className="px-7 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-light focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all disabled:opacity-50">
-              {editingHealer ? "حفظ التعديلات" : "إضافة وحفظ"}
+            <button type="button" onClick={() => setShowModal(false)} disabled={isSubmitting} className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium text-text-secondary hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors disabled:opacity-50">إلغاء</button>
+            <button type="submit" disabled={isUploading || isSubmitting} className="px-7 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-light focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all disabled:opacity-50">
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  جاري الحفظ...
+                </span>
+              ) : editingHealer ? "حفظ التعديلات" : "إضافة وحفظ"}
             </button>
           </div>
         </form>
