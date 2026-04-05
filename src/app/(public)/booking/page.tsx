@@ -356,11 +356,11 @@ export default function BookingPage() {
             <div className="bg-primary/5 rounded-xl p-6 mb-8 max-w-sm mx-auto text-sm border border-primary/10">
               <p className="font-semibold text-primary mb-3 text-base">تفاصيل الموعد</p>
               <div className="flex flex-col gap-2 items-center text-text-secondary">
-                <p>📅 {formatDate(selectedSlotData.date)}</p>
-                <p>🕐 {formatTime(selectedSlotData.start_time)} إلى {formatTime(selectedSlotData.end_time)}</p>
+                <p>{formatDate(selectedSlotData.date)}</p>
+                <p>{formatTime(selectedSlotData.start_time)} إلى {formatTime(selectedSlotData.end_time)}</p>
                 {selectedSlotData.healer_name && (
                   <p className="mt-1 font-medium text-text-primary">
-                    👤 {selectedSlotData.healer_name}
+                    {selectedSlotData.healer_name}
                   </p>
                 )}
               </div>
