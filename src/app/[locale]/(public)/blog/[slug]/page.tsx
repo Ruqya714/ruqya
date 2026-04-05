@@ -10,11 +10,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   const supabase = createAdminClient();
   const { data: article } = await supabase
     .from("articles")
     .select("title, excerpt")
-    .eq("slug", slug)
+    .eq("slug", decodedSlug)
     .eq("is_published", true)
     .single();
 
@@ -32,12 +33,13 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   const supabase = createAdminClient();
 
   const { data: article } = await supabase
     .from("articles")
     .select("*, author:profiles(full_name)")
-    .eq("slug", slug)
+    .eq("slug", decodedSlug)
     .eq("is_published", true)
     .single();
 
