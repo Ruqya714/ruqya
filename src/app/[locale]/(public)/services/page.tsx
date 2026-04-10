@@ -1,11 +1,25 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/routing";
-import { Phone, BookOpen, Heart, Star, Clock, ArrowLeft, CheckCircle, ShieldAlert, Sparkles, UserCheck, Activity, ShieldCheck } from "lucide-react";
+import { Phone, BookOpen, Heart, Star, Clock, ArrowLeft, CheckCircle, ShieldAlert, Sparkles, UserCheck, Activity, ShieldCheck, Image as ImageIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function ServicesPage() {
   const t = useTranslations("Services");
+  const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadSettings() {
+      const supabase = createClient();
+      const { data } = await supabase.from("site_settings").select("value").eq("key", "infographic_image_url").single();
+      if (data && data.value) {
+        setInfographicUrl(data.value);
+      }
+    }
+    loadSettings();
+  }, []);
 
   const whyItems = t.raw("whyItems") as string[];
 
@@ -170,6 +184,29 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      {/* Program Infographic (Changeable via Admin Dashboard) */}
+      {infographicUrl && (
+        <section className="py-16 lg:py-24 bg-white border-y border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 text-accent mb-4">
+                <ImageIcon className="w-8 h-8" />
+              </div>
+              <h2 className="text-2xl lg:text-4xl font-bold text-text-primary mb-4">البرنامج العلاجي الشامل</h2>
+              <p className="text-text-secondary text-lg">نظرة شاملة على التسلسل العلاجي المتبع في المركز</p>
+            </div>
+            <div className="flex justify-center bg-gray-50 p-2 sm:p-4 lg:p-8 rounded-3xl border border-gray-100 shadow-inner">
+              <img 
+                src={infographicUrl} 
+                alt="البرنامج العلاجي" 
+                className="max-w-full rounded-2xl shadow-md w-full max-w-[1000px] object-contain"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Final CTA */}
       <section className="py-16 lg:py-24 bg-white relative overflow-hidden">

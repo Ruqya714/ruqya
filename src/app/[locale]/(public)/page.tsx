@@ -1,5 +1,3 @@
-"use client";
-
 import { Link } from "@/i18n/routing";
 import {
   Phone,
@@ -14,10 +12,20 @@ import {
   Clock,
   Globe,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export default function HomePage() {
-  const t = useTranslations("Home");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Home" });
+  return {
+    title: t("heroTitle1") + " " + t("heroTitle2"),
+    description: t("heroDesc"),
+  };
+}
+
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Home" });
 
   const aboutFeatures = [
     { icon: <Shield size={24} />, titleKey: "feature1Title" as const, descKey: "feature1Desc" as const },
@@ -91,13 +99,13 @@ export default function HomePage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 mt-16 max-w-lg mx-auto animate-[fade-in_0.6s_ease-out_0.5s_both]">
+            <div className="grid grid-cols-3 gap-3 md:gap-6 mt-16 max-w-lg mx-auto animate-[fade-in_0.6s_ease-out_0.5s_both]">
               <div className="text-center">
                 <p className="text-2xl lg:text-3xl font-bold text-accent">+1000</p>
                 <p className="text-xs text-gray-300 mt-1">{t("statCases")}</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl lg:text-3xl font-bold text-accent">+7</p>
+                <p className="text-2xl lg:text-3xl font-bold text-accent">+25</p>
                 <p className="text-xs text-gray-300 mt-1">{t("statYears")}</p>
               </div>
               <div className="text-center">

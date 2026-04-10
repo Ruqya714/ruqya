@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -37,8 +37,41 @@ const iconMap: Record<string, React.ReactNode> = {
 export default function AdminSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const fetchUnreadCount = async () => {
+      const { count } = await supabase
+        .from("contact_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("is_read", false);
+      setUnreadCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    const channel = supabase
+      .channel("messages_changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "contact_messages" }, () => {
+        fetchUnreadCount();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Clear unread count instantly (Optimistic UI Update) when opening the inbox
+  useEffect(() => {
+    if (pathname === "/admin/inbox") {
+      setUnreadCount(0);
+    }
+  }, [pathname]);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -86,8 +119,18 @@ export default function AdminSidebar() {
                 }
               `}
             >
-              <span className="flex-shrink-0">{iconMap[link.icon]}</span>
+              <div className="relative flex-shrink-0">
+                {iconMap[link.icon]}
+                {isCollapsed && link.href === "/admin/inbox" && unreadCount > 0 && (
+                  <span className="absolute -top-1 -end-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-primary-dark"></span>
+                )}
+              </div>
               {!isCollapsed && <span>{link.label}</span>}
+              {!isCollapsed && link.href === "/admin/inbox" && unreadCount > 0 && (
+                <span className="ms-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -7,6 +7,7 @@ import { Modal, Badge, EmptyState } from "@/components/ui";
 import { formatDate } from "@/lib/helpers";
 import { BOOKING_STATUSES, PAYMENT_STATUSES } from "@/lib/constants";
 import { Search, Filter, Eye, Trash2, Check, UserPlus } from "lucide-react";
+import { notifyHealerAssignedAndPatientConfirmed } from "@/app/actions/adminEmails";
 
 const MARITAL_LABELS: Record<string, string> = {
   single: "أعزب/عزباء",
@@ -84,6 +85,9 @@ export default function AdminBookingsPage() {
 
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("bookings").update({ status }).eq("id", id);
+    if (status === "confirmed") {
+        notifyHealerAssignedAndPatientConfirmed(id).catch(console.error);
+    }
     loadBookings();
     if (selectedBooking?.id === id) setSelectedBooking({ ...selectedBooking, status });
   };
@@ -96,6 +100,11 @@ export default function AdminBookingsPage() {
 
   const assignHealer = async (bookingId: string, healerId: string) => {
     await supabase.from("bookings").update({ healer_id: healerId || null }).eq("id", bookingId);
+    
+    if (healerId) {
+      notifyHealerAssignedAndPatientConfirmed(bookingId).catch(console.error);
+    }
+    
     loadBookings();
     const healer = healers.find((h) => h.id === healerId);
     if (selectedBooking?.id === bookingId) {

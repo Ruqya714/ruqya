@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, usePathname } from "@/i18n/routing";
 import Image from "next/image";
 import { Menu, X, Phone } from "lucide-react";
@@ -9,6 +9,21 @@ import { useTranslations } from "next-intl";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
   const pathname = usePathname();
   const t = useTranslations("Navigation");
 
@@ -18,6 +33,7 @@ export default function Header() {
       case "/": return "home";
       case "/about": return "about";
       case "/services": return "services";
+      case "/courses": return "courses";
       case "/treatment-journey": return "journey";
       case "/blog": return "blog";
       case "/faq": return "faq";
@@ -27,7 +43,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border">
+    <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -44,7 +60,7 @@ export default function Header() {
               <h1 className="text-sm lg:text-base font-bold text-primary-dark leading-tight">
                 مركز الرقية بكلام الرحمن
               </h1>
-              <p className="text-[10px] lg:text-xs text-text-secondary">
+              <p className="text-xs text-text-secondary">
                 لرد كيد الشيطان
               </p>
             </div>

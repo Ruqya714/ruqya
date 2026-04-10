@@ -1,61 +1,52 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-"use client";
-
-import { useState, useEffect, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui";
 import { formatDate } from "@/lib/helpers";
 import { BOOKING_STATUSES } from "@/lib/constants";
 import { CalendarCheck, Clock, TrendingUp } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
-interface Booking {
-  id: string;
-  patient_name: string;
-  patient_phone: string;
-  status: string;
-  notes: string;
-  created_at: string;
-  services: { name: string } | null;
-}
+export default async function HealerDashboard({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Healer" });
+  const supabase = await createClient();
 
-export default function HealerDashboard() {
-  const t = useTranslations("Healer");
-  const [stats, setStats] = useState({ today: 0, upcoming: 0, total: 0 });
-  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    redirect(`/${locale}/login`);
+  }
 
-  const load = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+  const { data: healer } = await supabase.from("healers").select("id").eq("profile_id", user.id).single();
+  
+  // Provide defensive return if accessing without a proper healer record
+  if (!healer) {
+    return (
+      <div className="py-12 text-center text-text-secondary">
+        {t("noAccess") || "ليس لديك صلاحية الدخول كمعالج في النظام."}
+      </div>
+    );
+  }
 
-    const { data: healer } = await supabase.from("healers").select("id").eq("profile_id", user.id).single();
-    if (!healer) { setIsLoading(false); return; }
+  const today = new Date().toISOString().split("T")[0];
 
-    const today = new Date().toISOString().split("T")[0];
+  const [todayRes, upcomingRes, totalRes, recentRes] = await Promise.all([
+    supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id).gte("created_at", today + "T00:00:00"),
+    supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id).in("status", ["pending", "confirmed"]),
+    supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id),
+    supabase.from("bookings").select("id, patient_name, patient_phone, status, notes, created_at, services(name)").eq("healer_id", healer.id).order("created_at", { ascending: false }).limit(10),
+  ]);
 
-    const [todayRes, upcomingRes, totalRes, recentRes] = await Promise.all([
-      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id).gte("created_at", today + "T00:00:00"),
-      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id).in("status", ["pending", "confirmed"]),
-      supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id),
-      supabase.from("bookings").select("*, services(name)").eq("healer_id", healer.id).order("created_at", { ascending: false }).limit(10),
-    ]);
-
-    setStats({ today: todayRes.count || 0, upcoming: upcomingRes.count || 0, total: totalRes.count || 0 });
-    setRecentBookings((recentRes.data as unknown as Booking[]) || []);
-    setIsLoading(false);
-  }, [supabase]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  const stats = { 
+    today: todayRes.count || 0, 
+    upcoming: upcomingRes.count || 0, 
+    total: totalRes.count || 0 
+  };
+  
+  const recentBookings = recentRes.data || [];
 
   const statusBadge: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
     pending: "warning", confirmed: "info", completed: "success", cancelled: "error", no_show: "error",
   };
-
-  if (isLoading) return <div className="py-12 text-center"><div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" /></div>;
 
   return (
     <div>
@@ -68,7 +59,7 @@ export default function HealerDashboard() {
           { label: t("upcomingBookings"), value: stats.upcoming, icon: <Clock size={22} />, color: "bg-amber-50 text-amber-600" },
           { label: t("totalBookings"), value: stats.total, icon: <TrendingUp size={22} />, color: "bg-accent/10 text-accent-dark" },
         ].map((stat, i) => (
-          <div key={i} className="bg-white rounded-xl border border-border p-5">
+          <div key={i} className="bg-white rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm text-text-secondary">{stat.label}</p>
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>{stat.icon}</div>
@@ -96,11 +87,18 @@ export default function HealerDashboard() {
               {recentBookings.length === 0 ? (
                 <tr><td colSpan={4} className="py-8 text-center text-text-secondary">{t("noBookings")}</td></tr>
               ) : (
-                recentBookings.map((b) => (
+                recentBookings.map((b: any) => (
                   <tr key={b.id} className="hover:bg-gray-50/50">
-                    <td className="px-4 py-3"><p className="font-medium">{b.patient_name}</p><p className="text-xs text-text-muted" dir="ltr">{b.patient_phone}</p></td>
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-text-primary">{b.patient_name}</p>
+                      <p className="text-xs text-text-muted" dir="ltr">{b.patient_phone}</p>
+                    </td>
                     <td className="px-4 py-3 text-text-secondary hidden sm:table-cell">{b.services?.name || "—"}</td>
-                    <td className="px-4 py-3"><Badge variant={statusBadge[b.status] || "default"}>{BOOKING_STATUSES[b.status as keyof typeof BOOKING_STATUSES]?.label || b.status}</Badge></td>
+                    <td className="px-4 py-3">
+                      <Badge variant={statusBadge[b.status] || "default"}>
+                        {BOOKING_STATUSES[b.status as keyof typeof BOOKING_STATUSES]?.label || b.status}
+                      </Badge>
+                    </td>
                     <td className="px-4 py-3 text-xs text-text-muted hidden md:table-cell">{formatDate(b.created_at)}</td>
                   </tr>
                 ))

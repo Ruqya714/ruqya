@@ -61,6 +61,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -71,6 +72,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -82,6 +84,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -93,6 +96,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -100,9 +104,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -112,6 +119,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -171,12 +179,10 @@ body {
 }
 
 .gradient-hero {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-dark) 0%,
-    var(--color-primary) 40%,
-    var(--color-teal-dark) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--color-primary-dark) 0%,
+      var(--color-primary) 40%,
+      var(--color-teal-dark) 100%);
 }
 
 .glass {
@@ -225,7 +231,8 @@ body {
 
 .tiptap-editor .ProseMirror ul,
 .tiptap-editor .ProseMirror ol {
-  padding-inline-start: 1.5em; /* Logical instead of padding-right */
+  padding-inline-start: 1.5em;
+  /* Logical instead of padding-right */
   margin: 0.5em 0;
 }
 
@@ -240,6 +247,7 @@ body {
    iOS Auto-Zoom Fix
    ============================================= */
 @media screen and (max-width: 768px) {
+
   input,
   select,
   textarea {

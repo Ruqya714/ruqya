@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Shield,
   Award,
@@ -11,10 +9,20 @@ import {
   Target,
   Eye,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export default function AboutPage() {
-  const t = useTranslations("About");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "About" });
+  return {
+    title: t("heroTitle"),
+    description: t("heroDesc"),
+  };
+}
+
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "About" });
 
   const features = [
     { icon: <Shield size={24} />, titleKey: "feat1Title" as const, descKey: "feat1Desc" as const },
@@ -26,10 +34,12 @@ export default function AboutPage() {
   ];
 
   const teamMembers = [
+    { nameKey: "member0Name" as const, roleKey: "member0Role" as const },
     { nameKey: "member1Name" as const, roleKey: "member1Role" as const },
     { nameKey: "member2Name" as const, roleKey: "member2Role" as const },
     { nameKey: "member3Name" as const, roleKey: "member3Role" as const },
     { nameKey: "member4Name" as const, roleKey: "member4Role" as const },
+    { nameKey: "member5Name" as const, roleKey: "member5Role" as const },
   ];
 
   const values = t.raw("values") as string[];
@@ -66,7 +76,7 @@ export default function AboutPage() {
                   { value: "2017", labelKey: "statFounded" as const },
                   { value: "+1000", labelKey: "statCases" as const },
                   { value: "+20", labelKey: "statCountries" as const },
-                  { value: "+7", labelKey: "statYears" as const },
+                  { value: "+25", labelKey: "statYears" as const },
                 ].map((stat, i) => (
                   <div key={i} className="text-center">
                     <p className="text-3xl font-bold text-primary">{stat.value}</p>
@@ -129,7 +139,7 @@ export default function AboutPage() {
           <div className="text-center mb-12">
             <h2 className="text-2xl lg:text-3xl font-bold text-text-primary mb-4">{t("teamTitle")}</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {teamMembers.map((member, i) => (
               <div key={i} className="bg-white p-6 rounded-xl border border-border text-center hover:shadow-lg transition-all">
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">

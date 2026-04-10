@@ -52,10 +52,11 @@ export default function TermsOfServicePage() {
                   <li>لا يتم استرجاع المبالغ بعد إتمام الاستشارة أو الجلسة.</li>
                 </ul>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">4. ضوابط الجلسات (للأخوات)</h2>
+                <p className="text-sm font-medium text-red-600 mb-2 bg-red-50 p-3 rounded border border-red-100">تنبيه هام ومكرر: بدون وجود مَحرم لا يمكن للنساء التواصل معنا أو حجز استشارة أو جلسة (سواء حضورية أو عن بعد).</p>
                 <ul className="list-disc ps-6 space-y-2 text-text-secondary">
-                  <li>في الجلسات الحضورية، يُشترط وجود <strong>مَحرَم</strong> لمرافقة الأخت المريضة.</li>
-                  <li>في الجلسات عن بُعد، يُفضل وجود أحد أفراد الأسرة بالقرب من المريضة.</li>
-                  <li>يُشترط الالتزام التام باللباس الشرعي المحتشم أثناء الجلسات.</li>
+                  <li>في الجلسات الحضورية، يُشترط حضور <strong>مَحرَم</strong> لمرافقة الأخت المريضة طوال فترة الجلسة.</li>
+                  <li>في الجلسات عن بُعد، يُشترط أيضاً حضور مَحرم (أو أحد أفراد الأسرة) بالقرب من المريضة.</li>
+                  <li>يُشترط الالتزام التام باللباس الشرعي المحتشم أثناء جميع الجلسات بدون استثناء.</li>
                 </ul>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">5. السلوك والآداب</h2>
                 <p className="text-text-secondary leading-relaxed">
@@ -89,10 +90,11 @@ export default function TermsOfServicePage() {
                   <li>Danışmanlık veya seans tamamlandıktan sonra iade yapılmaz.</li>
                 </ul>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">4. Seans Kuralları (Hanımlar İçin)</h2>
+                <p className="text-sm font-medium text-red-600 mb-2 bg-red-50 p-3 rounded border border-red-100">Önemli Uyarı: Mahrem bulunmadan hanımların bizimle iletişime geçmesi veya randevu alması (yüz yüze veya uzaktan) mümkün değildir.</p>
                 <ul className="list-disc pe-6 space-y-2 text-text-secondary">
-                  <li>Yüz yüze seanslarda hasta hanıma <strong>mahrem</strong> eşlik etmesi zorunludur.</li>
-                  <li>Uzaktan seanslarda, bir aile bireyinin hastanın yakınında bulunması tercih edilir.</li>
-                  <li>Seanslar sırasında şer&apos;i tesettüre tam uyum zorunludur.</li>
+                  <li>Yüz yüze seanslarda hasta hanıma tüm seans süresince <strong>mahrem</strong> eşlik etmesi zorunludur (şarttır).</li>
+                  <li>Uzaktan seanslarda da, bir aile bireyinin (mahremin) hastanın yakınında bulunması zorunludur (şarttır).</li>
+                  <li>Tüm seanslar sırasında şer&apos;i tesettüre tam uyum kesinlikle zorunludur.</li>
                 </ul>
                 <h2 className="text-xl font-bold text-primary mt-8 mb-4">5. Davranış ve Adab</h2>
                 <p className="text-text-secondary leading-relaxed">

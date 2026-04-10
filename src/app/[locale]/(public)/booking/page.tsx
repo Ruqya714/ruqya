@@ -8,6 +8,7 @@ import type { TimeSlot } from "@/components/ui/TimeSlotPicker";
 import { formatDate, formatTime } from "@/lib/helpers";
 import { CheckCircle, Phone, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { sendBookingEmailAction } from "@/app/actions/bookingEmail";
 
 // Country codes for WhatsApp
 const COUNTRY_CODES = [
@@ -172,15 +173,18 @@ export default function BookingPage() {
     
     if (isConsultation && form.consultation_type) {
       if (form.consultation_type === 'urgent') {
-        // Urgent: within 48 hours
+        // Urgent: within 24 hours
         minDate = new Date();
         
         maxDate = new Date();
-        maxDate.setDate(maxDate.getDate() + 2);
+        maxDate.setDate(maxDate.getDate() + 1);
       } else if (form.consultation_type === 'normal') {
-        // Normal: after 10 days
+        // Normal: from 3 to 7 days
         minDate = new Date();
-        minDate.setDate(minDate.getDate() + 10);
+        minDate.setDate(minDate.getDate() + 3);
+        
+        maxDate = new Date();
+        maxDate.setDate(maxDate.getDate() + 7);
       }
     }
 
@@ -301,7 +305,7 @@ export default function BookingPage() {
         patient_can_travel: form.patient_can_travel === "yes" ? true : form.patient_can_travel === "no" ? false : null,
         patient_need_type: form.patient_need_type || null,
         patient_notes: selectedService?.name.includes('الاستشارة') && form.consultation_type 
-          ? `نوع الاستشارة: ${form.consultation_type === 'urgent' ? 'مستعجلة (خلال 48 ساعة)' : 'عادية (بعد 10 أيام)'}\n\n${form.patient_previous_ruqya || ''}`
+          ? `نوع الاستشارة: ${form.consultation_type === 'urgent' ? 'مستعجلة (خلال 24 ساعة)' : 'عادية (من 3 الى 7 ايام)'}\n\n${form.patient_previous_ruqya || ''}`
           : form.patient_previous_ruqya || null,
         status: "pending",
         payment_status: "pending",
@@ -322,6 +326,19 @@ export default function BookingPage() {
           is_booked: newCount >= slotData.max_capacity,
         })
         .eq("id", selectedSlotId);
+
+      // Send Email Notification to Admin silently
+      if (selectedSlotData) {
+        await sendBookingEmailAction({
+          patient_name: form.patient_name,
+          patient_email: form.patient_email || null,
+          patient_phone: fullPhone,
+          service_name: selectedService?.name || "خدمة عامة",
+          date: formatDate(selectedSlotData.date),
+          time: `${formatTime(selectedSlotData.start_time)} - ${formatTime(selectedSlotData.end_time)}`,
+          healer_name: selectedSlotData.healer_name,
+        }).catch(err => console.error("Email error:", err));
+      }
 
       setSubmitted(true);
     } finally {

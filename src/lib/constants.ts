@@ -38,6 +38,7 @@ export const PUBLIC_NAV_LINKS = [
   { href: "/", label: "الرئيسية" },
   { href: "/about", label: "من نحن" },
   { href: "/services", label: "خدماتنا" },
+  { href: "/courses", label: "الكورسات والدورات" },
   { href: "/treatment-journey", label: "الرحلة العلاجية" },
   { href: "/blog", label: "المقالات" },
   { href: "/faq", label: "الأسئلة الشائعة" },
@@ -47,6 +48,7 @@ export const PUBLIC_NAV_LINKS = [
 // Admin navigation
 export const ADMIN_NAV_LINKS = [
   { href: "/admin", label: "الرئيسية", icon: "LayoutDashboard" },
+  { href: "/admin/inbox", label: "البريد الوارد", icon: "MessageSquare" },
   { href: "/admin/bookings", label: "الحجوزات", icon: "CalendarCheck" },
   { href: "/admin/slots", label: "المواعيد", icon: "Clock" },
   { href: "/admin/healers", label: "المعالجون", icon: "Users" },
