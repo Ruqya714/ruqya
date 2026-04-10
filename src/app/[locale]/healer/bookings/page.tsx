@@ -46,10 +46,14 @@ export default function HealerBookingsPage() {
   const t = useTranslations("Healer");
   const tInfo = useTranslations("Booking.infoStep");
   const tConfirm = useTranslations("Booking.confirmStep.details");
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [allBookings, setAllBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<Booking | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredBookings = statusFilter === "all" 
+    ? allBookings 
+    : allBookings.filter(b => b.status === statusFilter);
   const supabase = createClient();
 
   const load = useCallback(async () => {
@@ -60,13 +64,15 @@ export default function HealerBookingsPage() {
     const { data: healer } = await supabase.from("healers").select("id").eq("profile_id", user.id).single();
     if (!healer) { setIsLoading(false); return; }
 
-    let query = supabase.from("bookings").select("*, services(name)").eq("healer_id", healer.id).order("created_at", { ascending: false });
-    if (statusFilter !== "all") query = query.eq("status", statusFilter);
+    const { data } = await supabase
+      .from("bookings")
+      .select("*, services(name)")
+      .eq("healer_id", healer.id)
+      .order("created_at", { ascending: false });
 
-    const { data } = await query;
-    setBookings((data as unknown as Booking[]) || []);
+    setAllBookings((data as unknown as Booking[]) || []);
     setIsLoading(false);
-  }, [supabase, statusFilter]);
+  }, [supabase]);
 
   useEffect(() => {
     load();
@@ -74,7 +80,7 @@ export default function HealerBookingsPage() {
 
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("bookings").update({ status }).eq("id", id);
-    load();
+    setAllBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
     if (selected?.id === id) setSelected({ ...selected, status });
   };
 
@@ -109,10 +115,10 @@ export default function HealerBookingsPage() {
           <tbody className="divide-y divide-border">
             {isLoading ? (
               <tr><td colSpan={5} className="py-12 text-center"><div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" /></td></tr>
-            ) : bookings.length === 0 ? (
+            ) : filteredBookings.length === 0 ? (
               <tr><td colSpan={5}><EmptyState icon={<CalendarCheck size={28} className="text-text-secondary" />} title={t("noBookings")} /></td></tr>
             ) : (
-              bookings.map((b) => (
+              filteredBookings.map((b) => (
                 <tr key={b.id} className="hover:bg-gray-50/50">
                   <td className="px-4 py-3"><p className="font-medium">{b.patient_name}</p><p className="text-xs text-text-muted" dir="ltr">{b.patient_phone}</p></td>
                   <td className="px-4 py-3 text-text-secondary hidden sm:table-cell">{b.services?.name || "—"}</td>

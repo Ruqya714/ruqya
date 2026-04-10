@@ -38,14 +38,14 @@ function LoginForm() {
 
     try {
       const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
       if (authError) {
         setError(t("invalidCredentials"));
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = authData?.user;
 
       if (user) {
         const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();

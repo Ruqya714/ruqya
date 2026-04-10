@@ -6,8 +6,6 @@ import {getMessages} from 'next-intl/server';
 import {routing} from '@/i18n/routing';
 import {notFound} from 'next/navigation';
 
-export const dynamic = "force-dynamic";
-
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["arabic", "latin"],

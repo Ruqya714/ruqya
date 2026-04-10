@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -61,7 +62,7 @@ export default async function ArticlePage({
       {coverImage && (
         <div className="w-full h-[40vh] md:h-[50vh] lg:h-[60vh] relative mb-12 bg-gray-900">
           <div className="absolute inset-0 bg-black/40 z-10" />
-          <img src={coverImage} alt={article.title} className="w-full h-full object-cover" />
+          <Image src={coverImage} alt={article.title} fill sizes="100vw" priority className="object-cover" />
         </div>
       )}
 

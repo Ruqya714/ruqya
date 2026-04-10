@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Link } from "@/i18n/routing";
 import { Phone, BookOpen, Heart, Star, Clock, ArrowLeft, CheckCircle, ShieldAlert, Sparkles, UserCheck, Activity, ShieldCheck, Image as ImageIcon } from "lucide-react";
@@ -197,11 +198,12 @@ export default function ServicesPage() {
               <p className="text-text-secondary text-lg">نظرة شاملة على التسلسل العلاجي المتبع في المركز</p>
             </div>
             <div className="flex justify-center bg-gray-50 p-2 sm:p-4 lg:p-8 rounded-3xl border border-gray-100 shadow-inner">
-              <img 
+              <Image 
                 src={infographicUrl} 
                 alt="البرنامج العلاجي" 
+                width={1000}
+                height={2000}
                 className="max-w-full rounded-2xl shadow-md w-full max-w-[1000px] object-contain"
-                loading="lazy"
               />
             </div>
           </div>
