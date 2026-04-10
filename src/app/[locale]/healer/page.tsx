@@ -33,7 +33,7 @@ export default async function HealerDashboard({ params }: { params: Promise<{ lo
     supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id).gte("created_at", today + "T00:00:00"),
     supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id).in("status", ["pending", "confirmed"]),
     supabase.from("bookings").select("id", { count: "exact", head: true }).eq("healer_id", healer.id),
-    supabase.from("bookings").select("id, patient_name, patient_phone, status, notes, created_at, services(name)").eq("healer_id", healer.id).order("created_at", { ascending: false }).limit(10),
+    supabase.from("bookings").select("id, patient_name, patient_phone, status, patient_notes, created_at, services(name)").eq("healer_id", healer.id).order("created_at", { ascending: false }).limit(10),
   ]);
 
   const stats = { 
