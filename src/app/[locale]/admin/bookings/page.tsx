@@ -30,7 +30,7 @@ interface Booking {
   patient_age: number;
   patient_gender: string;
   patient_nationality: string;
-  patient_residence: string;
+  patient_country: string;
   patient_marital_status: string;
   patient_previous_ruqya: string;
   patient_can_travel: boolean;
@@ -263,7 +263,7 @@ export default function AdminBookingsPage() {
                 <div><p className="text-xs text-text-muted mb-0.5">العمر</p><p className="text-sm font-medium">{selectedBooking.patient_age || "—"}</p></div>
                 <div><p className="text-xs text-text-muted mb-0.5">الجنس</p><p className="text-sm font-medium">{selectedBooking.patient_gender === "male" ? "ذكر" : selectedBooking.patient_gender === "female" ? "أنثى" : "—"}</p></div>
                 <div><p className="text-xs text-text-muted mb-0.5">الجنسية</p><p className="text-sm font-medium">{selectedBooking.patient_nationality || "—"}</p></div>
-                <div><p className="text-xs text-text-muted mb-0.5">الإقامة الحالية</p><p className="text-sm font-medium">{selectedBooking.patient_residence || "—"}</p></div>
+                <div><p className="text-xs text-text-muted mb-0.5">الإقامة الحالية</p><p className="text-sm font-medium">{selectedBooking.patient_country || "—"}</p></div>
                 <div><p className="text-xs text-text-muted mb-0.5">الحالة الاجتماعية</p><p className="text-sm font-medium">{MARITAL_LABELS[selectedBooking.patient_marital_status] || "—"}</p></div>
                 <div><p className="text-xs text-text-muted mb-0.5">إمكانية السفر</p><p className="text-sm font-medium">{selectedBooking.patient_can_travel === true ? "نعم" : selectedBooking.patient_can_travel === false ? "لا" : "—"}</p></div>
                 <div><p className="text-xs text-text-muted mb-0.5">وصف الحاجة</p><p className="text-sm font-medium">{NEED_LABELS[selectedBooking.patient_need_type] || "—"}</p></div>
@@ -271,10 +271,17 @@ export default function AdminBookingsPage() {
             </div>
 
             {/* Notes & Previous Ruqya */}
-            {selectedBooking.patient_notes && (
+            {selectedBooking.patient_notes && selectedBooking.patient_notes.replace(selectedBooking.patient_previous_ruqya || "", "").trim() && (
               <div className="bg-bg rounded-lg p-4">
-                <p className="text-xs text-text-muted mb-1">ملاحظات والتجربة السابقة</p>
-                <p className="text-sm whitespace-pre-wrap">{selectedBooking.patient_notes}</p>
+                <p className="text-xs text-text-muted mb-1">تفاصيل الاستشارة / ملاحظات</p>
+                <p className="text-sm whitespace-pre-wrap">{selectedBooking.patient_notes.replace(selectedBooking.patient_previous_ruqya || "", "").trim()}</p>
+              </div>
+            )}
+
+            {selectedBooking.patient_previous_ruqya && (
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                <p className="text-xs text-blue-800 font-semibold mb-2">إجابة سؤال: هل ذهبت من قبل إلى رقاة؟ وما هي المشاكل التي تعاني منها؟</p>
+                <p className="text-sm text-text-primary whitespace-pre-wrap">{selectedBooking.patient_previous_ruqya}</p>
               </div>
             )}
 

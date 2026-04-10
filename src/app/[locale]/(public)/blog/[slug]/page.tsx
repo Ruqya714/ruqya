@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { Calendar, ArrowRight, Tag, Share2, Link as LinkIcon } from "lucide-react";
+import { Calendar, ArrowRight, Tag } from "lucide-react";
+import ShareArticleButtons from "./ShareArticleButtons";
 import { formatDate } from "@/lib/helpers";
 
 export async function generateMetadata({
@@ -123,18 +124,7 @@ export default async function ArticlePage({
         <div className="mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-border">
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-text-primary">مشاركة المقال:</span>
-            <div className="flex items-center gap-2">
-              <a href={`https://twitter.com/intent/tweet?url=https://ruqyah-center.vercel.app/blog/${slug}&text=${article.title}`} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-text-secondary hover:text-primary hover:border-primary transition-colors">
-                <Share2 size={18} />
-              </a>
-              <button 
-                onClick={null as any} 
-                className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-text-secondary hover:text-primary hover:border-primary transition-colors"
-                title="نسخ الرابط"
-              >
-                <LinkIcon size={18} />
-              </button>
-            </div>
+            <ShareArticleButtons title={article.title} />
           </div>
           
           <Link

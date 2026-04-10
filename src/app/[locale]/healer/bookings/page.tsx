@@ -17,7 +17,7 @@ interface Booking {
   patient_age: number;
   patient_gender: string;
   patient_nationality: string;
-  patient_residence: string;
+  patient_country: string;
   patient_marital_status: string;
   patient_previous_ruqya: string;
   patient_can_travel: boolean;
@@ -136,12 +136,23 @@ export default function HealerBookingsPage() {
               <div><p className="text-xs text-text-muted mb-1">{t("age")}</p><p className="font-medium">{selected.patient_age || "—"}</p></div>
               <div><p className="text-xs text-text-muted mb-1">{t("gender")}</p><p className="font-medium">{selected.patient_gender === "male" ? t("male") : selected.patient_gender === "female" ? t("female") : "—"}</p></div>
               <div><p className="text-xs text-text-muted mb-1">{tConfirm("nationality")}</p><p className="font-medium">{selected.patient_nationality || "—"}</p></div>
-              <div><p className="text-xs text-text-muted mb-1">{tConfirm("residence")}</p><p className="font-medium">{selected.patient_residence || "—"}</p></div>
+              <div><p className="text-xs text-text-muted mb-1">{tConfirm("residence")}</p><p className="font-medium">{selected.patient_country || "—"}</p></div>
               <div><p className="text-xs text-text-muted mb-1">{tConfirm("marital")}</p><p className="font-medium">{MARITAL_LABELS[selected.patient_marital_status] || "—"}</p></div>
               <div><p className="text-xs text-text-muted mb-1">{tConfirm("canTravel")}</p><p className="font-medium">{selected.patient_can_travel === true ? tInfo("yes") : selected.patient_can_travel === false ? tInfo("no") : "—"}</p></div>
               <div><p className="text-xs text-text-muted mb-1">{tConfirm("needDesc")}</p><p className="font-medium">{NEED_LABELS[selected.patient_need_type] || "—"}</p></div>
             </div>
-            {selected.patient_notes && <div className="bg-bg rounded-lg p-4"><p className="text-xs text-text-muted mb-1">{t("previousNotes")}</p><p className="text-sm whitespace-pre-wrap">{selected.patient_notes}</p></div>}
+            {selected.patient_notes && selected.patient_notes.replace(selected.patient_previous_ruqya || "", "").trim() && (
+              <div className="bg-bg rounded-lg p-4">
+                <p className="text-xs text-text-muted mb-1">{t("previousNotes")}</p>
+                <p className="text-sm whitespace-pre-wrap">{selected.patient_notes.replace(selected.patient_previous_ruqya || "", "").trim()}</p>
+              </div>
+            )}
+            {selected.patient_previous_ruqya && (
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                <p className="text-xs text-blue-800 font-semibold mb-2">إجابة سؤال: هل ذهبت من قبل إلى رقاة؟ وما هي المشاكل التي تعاني منها؟</p>
+                <p className="text-sm text-text-primary whitespace-pre-wrap">{selected.patient_previous_ruqya}</p>
+              </div>
+            )}
             <div>
               <label className="text-xs text-text-muted mb-1.5 block">{t("updateStatus")}</label>
               <select value={selected.status} onChange={(e) => updateStatus(selected.id, e.target.value)} className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">

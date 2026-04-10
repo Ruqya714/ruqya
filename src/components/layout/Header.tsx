@@ -45,15 +45,15 @@ export default function Header() {
   return (
     <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0">
             <Image
               src="/logo.png"
               alt="مركز الرقية بكلام الرحمن"
-              width={64}
-              height={64}
-              className="w-14 h-14 lg:w-16 lg:h-16 rounded-full shadow-md"
+              width={84}
+              height={84}
+              className="w-[72px] h-[72px] md:w-[84px] md:h-[84px] rounded-full shadow-md"
               priority
             />
             <div className="hidden sm:block">
