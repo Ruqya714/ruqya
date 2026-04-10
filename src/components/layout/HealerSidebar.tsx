@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -20,14 +20,62 @@ import { useTranslations } from "next-intl";
 export default function HealerSidebar() {
   const t = useTranslations("HealerSidebar");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [pendingBookings, setPendingBookings] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
 
   const navLinks = [
-    { href: "/healer", label: t("home"), icon: <LayoutDashboard size={20} /> },
-    { href: "/healer/bookings", label: t("myBookings"), icon: <CalendarCheck size={20} /> },
-    { href: "/healer/profile", label: t("myProfile"), icon: <User size={20} /> },
+    { href: "/healer", label: t("home"), icon: <LayoutDashboard size={20} />, badge: null },
+    { href: "/healer/bookings", label: t("myBookings"), icon: <CalendarCheck size={20} />, badge: "bookings" },
+    { href: "/healer/profile", label: t("myProfile"), icon: <User size={20} />, badge: null },
   ];
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const fetchPendingBookings = async () => {
+      // Get the current healer's user ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      // Get healer record
+      const { data: healer } = await supabase
+        .from("healers")
+        .select("id")
+        .eq("profile_id", user.id)
+        .single();
+      
+      if (!healer) return;
+
+      const { count } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true })
+        .eq("healer_id", healer.id)
+        .in("status", ["pending", "confirmed"]);
+      
+      setPendingBookings(count || 0);
+    };
+
+    fetchPendingBookings();
+
+    const channel = supabase
+      .channel("healer_bookings_changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => {
+        fetchPendingBookings();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Clear badge when viewing bookings
+  useEffect(() => {
+    if (pathname.includes("/healer/bookings")) {
+      setPendingBookings(0);
+    }
+  }, [pathname]);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -53,6 +101,7 @@ export default function HealerSidebar() {
             link.href === "/healer"
               ? pathname === "/healer" || pathname.match(/^\/[a-z]{2}\/healer$/)
               : pathname.includes(link.href);
+          const badgeCount = link.badge === "bookings" ? pendingBookings : 0;
           return (
             <Link
               key={link.href}
@@ -64,8 +113,18 @@ export default function HealerSidebar() {
                 ${isActive ? "bg-white/15 text-white shadow-sm" : "text-gray-300 hover:bg-white/8 hover:text-white"}
               `}
             >
-              <span className="flex-shrink-0">{link.icon}</span>
+              <div className="relative flex-shrink-0">
+                {link.icon}
+                {badgeCount > 0 && (
+                  <span className="absolute -top-1 -end-1 w-2.5 h-2.5 bg-amber-500 rounded-full border border-primary-dark"></span>
+                )}
+              </div>
               <span>{link.label}</span>
+              {badgeCount > 0 && (
+                <span className="ms-auto bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {badgeCount}
+                </span>
+              )}
             </Link>
           );
         })}

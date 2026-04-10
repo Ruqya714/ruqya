@@ -38,6 +38,7 @@ export default function AdminSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [pendingBookings, setPendingBookings] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -52,24 +53,44 @@ export default function AdminSidebar() {
       setUnreadCount(count || 0);
     };
 
-    fetchUnreadCount();
+    const fetchPendingBookings = async () => {
+      const { count } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      setPendingBookings(count || 0);
+    };
 
-    const channel = supabase
+    fetchUnreadCount();
+    fetchPendingBookings();
+
+    const msgChannel = supabase
       .channel("messages_changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "contact_messages" }, () => {
         fetchUnreadCount();
       })
       .subscribe();
 
+    const bookingChannel = supabase
+      .channel("bookings_changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => {
+        fetchPendingBookings();
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(msgChannel);
+      supabase.removeChannel(bookingChannel);
     };
   }, []);
 
-  // Clear unread count instantly (Optimistic UI Update) when opening the inbox
+  // Clear counts instantly (Optimistic UI Update) when opening pages
   useEffect(() => {
-    if (pathname === "/admin/inbox") {
+    if (pathname.includes("/admin/inbox")) {
       setUnreadCount(0);
+    }
+    if (pathname.includes("/admin/bookings")) {
+      setPendingBookings(0);
     }
   }, [pathname]);
 
@@ -124,11 +145,19 @@ export default function AdminSidebar() {
                 {isCollapsed && link.href === "/admin/inbox" && unreadCount > 0 && (
                   <span className="absolute -top-1 -end-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-primary-dark"></span>
                 )}
+                {isCollapsed && link.href === "/admin/bookings" && pendingBookings > 0 && (
+                  <span className="absolute -top-1 -end-1 w-2.5 h-2.5 bg-amber-500 rounded-full border border-primary-dark"></span>
+                )}
               </div>
               {!isCollapsed && <span>{link.label}</span>}
               {!isCollapsed && link.href === "/admin/inbox" && unreadCount > 0 && (
                 <span className="ms-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                   {unreadCount}
+                </span>
+              )}
+              {!isCollapsed && link.href === "/admin/bookings" && pendingBookings > 0 && (
+                <span className="ms-auto bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {pendingBookings}
                 </span>
               )}
             </Link>
