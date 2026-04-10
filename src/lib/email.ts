@@ -21,7 +21,7 @@ export const sendEmail = async ({
 
   try {
     const data = await resend.emails.send({
-      from: "Ruqya Center <onboarding@resend.dev>", 
+      from: "مركز الرقية بكلام الرحمن <noreply@ruqyacenter.com>", 
       to: [to],
       subject: subject,
       html: html,
