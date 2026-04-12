@@ -2,19 +2,30 @@
 
 import { Share2, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useState } from "react";
 
 export default function ShareArticleButtons({ title }: { title: string }) {
   const { toast } = useToast();
 
+  const [isSharing, setIsSharing] = useState(false);
+
   const handleShare = async () => {
+    if (isSharing) return;
+    
     if (navigator.share) {
       try {
+        setIsSharing(true);
         await navigator.share({
           title: title,
           url: window.location.href,
         });
-      } catch (err) {
-        console.error("Error sharing:", err);
+      } catch (err: any) {
+        // Ignore AbortError which happens when user closes the share dialog
+        if (err.name !== 'AbortError') {
+          console.error("Error sharing:", err);
+        }
+      } finally {
+        setIsSharing(false);
       }
     } else {
       // Fallback: Copy link
