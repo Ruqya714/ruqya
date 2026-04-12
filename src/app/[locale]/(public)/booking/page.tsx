@@ -173,11 +173,9 @@ export default function BookingPage() {
     
     if (isConsultation && form.consultation_type) {
       if (form.consultation_type === 'urgent') {
-        // Urgent: within 24 hours
+        // Urgent: starting from today/now (no max date limit)
         minDate = new Date();
-        
-        maxDate = new Date();
-        maxDate.setDate(maxDate.getDate() + 1);
+        maxDate = null;
       } else if (form.consultation_type === 'normal') {
         // Normal: from 3 to 7 days
         minDate = new Date();

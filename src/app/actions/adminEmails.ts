@@ -22,11 +22,11 @@ export async function notifyHealerAssignedAndPatientConfirmed(bookingId: string)
 
     const serviceName = booking.services?.name || "غير محدد";
     const slotDate = booking.available_slots?.slot_date ? formatDate(booking.available_slots.slot_date) : "غير محدد";
-    const slotTime = booking.available_slots?.start_time 
-      ? `${booking.available_slots.start_time.slice(0,5)} - ${booking.available_slots.end_time?.slice(0,5) || ""}` 
+    const slotTime = booking.available_slots?.start_time
+      ? `${booking.available_slots.start_time.slice(0, 5)} - ${booking.available_slots.end_time?.slice(0, 5) || ""}`
       : "";
     const healerName = booking.healers?.display_name || "غير محدد";
-    
+
     // Get healer email from profiles table (linked via profile_id)
     let healerEmail: string | null = null;
     if (booking.healers?.profile_id) {
@@ -35,7 +35,7 @@ export async function notifyHealerAssignedAndPatientConfirmed(bookingId: string)
         .select("id")
         .eq("id", booking.healers.profile_id)
         .single();
-      
+
       if (profile) {
         // Get the actual email from auth.users via admin API
         const { createAdminClient } = await import("@/lib/supabase/admin");
@@ -124,7 +124,7 @@ export async function notifyHealerAssignedAndPatientConfirmed(bookingId: string)
             <li><strong>المعالج المسؤول:</strong> ${healerName}</li>
           </ul>
           <div style="margin-top: 20px; padding: 15px; border-radius: 8px; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 14px;">
-            نسأل الله لك وتماً العافية والشفاء. يرجى التواجد/الاستعداد قبل موعد الجلسة بـ 10 دقائق.
+            نسأل الله لك العافية والشفاء. يرجى التواجد/الاستعداد قبل موعد الجلسة بـ 10 دقائق.
           </div>
         </div>
       `;

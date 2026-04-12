@@ -336,7 +336,8 @@
     "healer": "Terapist",
     "notSpecified": "Belirtilmemiş",
     "savedSuccess": "Profil başarıyla kaydedildi",
-    "savedError": "Kaydetme sırasında bir hata oluştu"
+    "savedError": "Kaydetme sırasında bir hata oluştu",
+    "noAccess": "Sisteme terapist olarak giriş yetkiniz yok"
   },
   "HealerSidebar": {
     "panelTitle": "Terapist Paneli",

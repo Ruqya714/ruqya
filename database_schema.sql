@@ -1,144 +1,179 @@
--- إعداد قاعدة بيانات مركز الرقية بكلام الرحمن لرد كيد الشيطان
-
 -- ==========================================
--- 1. profiles
+-- 1. Profiles
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  full_name TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('admin', 'healer')) DEFAULT 'healer',
-  phone TEXT,
-  bio TEXT,
-  avatar_url TEXT,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL,
+  full_name text NOT NULL,
+  role text NOT NULL DEFAULT 'healer'::text CHECK (role = ANY (ARRAY['admin'::text, 'healer'::text])),
+  phone text,
+  bio text,
+  avatar_url text,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- 2. healers
+-- 2. Healers
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.healers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
-  display_name TEXT NOT NULL,
-  title TEXT NOT NULL, -- مثل: مستشار ومعالج والمدير التنفيذي
-  photo_url TEXT,
-  specialization TEXT,
-  experience_years INTEGER,
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true, -- يظهر على الموقع العام
-  created_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  profile_id uuid,
+  display_name text NOT NULL,
+  title text NOT NULL,
+  photo_url text,
+  specialization text,
+  experience_years integer,
+  display_order integer DEFAULT 0,
+  is_visible boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  is_available boolean DEFAULT true,
+  CONSTRAINT healers_pkey PRIMARY KEY (id),
+  CONSTRAINT healers_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(id) ON DELETE CASCADE
 );
 
 -- ==========================================
--- 3. services
+-- 3. Services
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.services (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  description TEXT,
-  icon TEXT, -- اسم أيقونة Lucide
-  duration_minutes INTEGER DEFAULT 30,
-  price DECIMAL(10,2), -- nullable حتى تُضاف بوابة الدفع
-  is_active BOOLEAN DEFAULT true,
-  display_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  description text,
+  icon text,
+  duration_minutes integer DEFAULT 30,
+  price numeric,
+  is_active boolean DEFAULT true,
+  display_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT services_pkey PRIMARY KEY (id)
 );
 
 -- ==========================================
--- 4. available_slots
+-- 4. Available Slots
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.available_slots (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  healer_id UUID REFERENCES public.healers(id) ON DELETE CASCADE,
-  service_id UUID REFERENCES public.services(id) ON DELETE SET NULL,
-  slot_date DATE NOT NULL,
-  start_time TIME NOT NULL,
-  end_time TIME NOT NULL,
-  is_booked BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT now(),
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  healer_id uuid,
+  service_id uuid,
+  slot_date date NOT NULL,
+  start_time time without time zone NOT NULL,
+  end_time time without time zone NOT NULL,
+  is_booked boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  max_capacity integer NOT NULL DEFAULT 1,
+  current_bookings integer NOT NULL DEFAULT 0,
+  CONSTRAINT available_slots_pkey PRIMARY KEY (id),
+  CONSTRAINT available_slots_healer_id_fkey FOREIGN KEY (healer_id) REFERENCES public.healers(id) ON DELETE CASCADE,
+  CONSTRAINT available_slots_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id) ON DELETE SET NULL,
   UNIQUE(healer_id, slot_date, start_time)
 );
 
 -- ==========================================
--- 5. bookings
+-- 5. Bookings
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.bookings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  slot_id UUID REFERENCES public.available_slots(id) ON DELETE SET NULL,
-  healer_id UUID REFERENCES public.healers(id) ON DELETE SET NULL,
-  service_id UUID REFERENCES public.services(id) ON DELETE SET NULL,
-  -- بيانات الزائر (بدون تسجيل)
-  patient_name TEXT NOT NULL,
-  patient_phone TEXT NOT NULL,
-  patient_email TEXT,
-  patient_country TEXT,
-  patient_age INTEGER,
-  patient_gender TEXT CHECK (patient_gender IN ('male', 'female')),
-  patient_notes TEXT, -- وصف مختصر للحالة
-  -- حالة الحجز
-  status TEXT NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled', 'no_show')) DEFAULT 'pending',
-  -- الدفع (placeholder)
-  payment_status TEXT CHECK (payment_status IN ('pending', 'paid', 'refunded')) DEFAULT 'pending',
-  payment_amount DECIMAL(10,2),
-  -- تعيين المعالج
-  assigned_by UUID REFERENCES public.profiles(id),
-  admin_notes TEXT, -- ملاحظات داخلية
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  slot_id uuid,
+  healer_id uuid,
+  service_id uuid,
+  patient_name text NOT NULL,
+  patient_phone text NOT NULL,
+  patient_email text,
+  patient_country text,
+  patient_age integer,
+  patient_gender text CHECK (patient_gender = ANY (ARRAY['male'::text, 'female'::text])),
+  patient_notes text,
+  status text NOT NULL DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'confirmed'::text, 'completed'::text, 'cancelled'::text, 'no_show'::text])),
+  payment_status text DEFAULT 'pending'::text CHECK (payment_status = ANY (ARRAY['pending'::text, 'paid'::text, 'refunded'::text])),
+  payment_amount numeric,
+  assigned_by uuid,
+  admin_notes text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  patient_nationality text,
+  patient_residence text,
+  patient_marital_status text CHECK (patient_marital_status = ANY (ARRAY['married'::text, 'single'::text, 'divorced'::text, 'widowed'::text])),
+  patient_previous_ruqya text,
+  patient_can_travel boolean,
+  patient_need_type text CHECK (patient_need_type = ANY (ARRAY['initial_assessment'::text, 'special_followup'::text, 'need_specialist_opinion'::text])),
+  CONSTRAINT bookings_pkey PRIMARY KEY (id),
+  CONSTRAINT bookings_slot_id_fkey FOREIGN KEY (slot_id) REFERENCES public.available_slots(id) ON DELETE SET NULL,
+  CONSTRAINT bookings_healer_id_fkey FOREIGN KEY (healer_id) REFERENCES public.healers(id) ON DELETE SET NULL,
+  CONSTRAINT bookings_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.services(id) ON DELETE SET NULL,
+  CONSTRAINT bookings_assigned_by_fkey FOREIGN KEY (assigned_by) REFERENCES public.profiles(id)
 );
 
 -- ==========================================
--- 6. articles
+-- 6. Articles
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.articles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  slug TEXT NOT NULL UNIQUE,
-  excerpt TEXT, -- مقتطف قصير
-  content TEXT NOT NULL, -- HTML from TipTap
-  cover_image_url TEXT,
-  category TEXT CHECK (category IN ('article', 'healing_story', 'announcement')) DEFAULT 'article',
-  author_id UUID REFERENCES public.profiles(id),
-  is_published BOOLEAN DEFAULT false,
-  published_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  slug text NOT NULL UNIQUE,
+  excerpt text,
+  content text NOT NULL,
+  cover_image text,
+  category text DEFAULT 'article'::text CHECK (category = ANY (ARRAY['article'::text, 'healing_story'::text, 'announcement'::text])),
+  author_id uuid,
+  is_published boolean DEFAULT false,
+  published_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT articles_pkey PRIMARY KEY (id),
+  CONSTRAINT articles_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.profiles(id) ON DELETE SET NULL
 );
 
 -- ==========================================
--- 7. testimonials
+-- 7. Testimonials
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.testimonials (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  patient_name TEXT NOT NULL,
-  content TEXT NOT NULL,
-  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
-  is_visible BOOLEAN DEFAULT true,
-  display_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  patient_name text NOT NULL,
+  content text NOT NULL,
+  rating integer CHECK (rating >= 1 AND rating <= 5),
+  is_visible boolean DEFAULT true,
+  display_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT testimonials_pkey PRIMARY KEY (id)
 );
 
 -- ==========================================
--- 8. site_settings
+-- 8. Site Settings
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.site_settings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  key TEXT NOT NULL UNIQUE,
-  value TEXT,
-  updated_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  key text NOT NULL UNIQUE,
+  value text,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT site_settings_pkey PRIMARY KEY (id)
 );
 
 -- ==========================================
--- 9. faqs
+-- 9. FAQs
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.faqs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  question TEXT NOT NULL,
-  answer TEXT NOT NULL,
-  display_order INTEGER DEFAULT 0,
-  is_visible BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT now()
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  question text NOT NULL,
+  answer text NOT NULL,
+  display_order integer DEFAULT 0,
+  is_visible boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT faqs_pkey PRIMARY KEY (id)
+);
+
+-- ==========================================
+-- 10. Contact Messages
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  email text NOT NULL,
+  phone text,
+  message text NOT NULL,
+  is_read boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT contact_messages_pkey PRIMARY KEY (id)
 );
 
 -- ==========================================
@@ -219,6 +254,7 @@ ALTER TABLE public.articles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
 
 -- 2. Helper function to check if the user is an admin
 CREATE OR REPLACE FUNCTION public.is_admin()
@@ -275,19 +311,6 @@ CREATE POLICY "Anyone can view site settings" ON public.site_settings FOR SELECT
 CREATE POLICY "Admins can do everything on faqs" ON public.faqs FOR ALL USING (is_admin());
 CREATE POLICY "Anyone can view visible faqs" ON public.faqs FOR SELECT USING (is_visible = true);
 
--- ==========================================
--- 12. Seed Initial Content (FAQs and Articles)
--- ==========================================
-INSERT INTO public.faqs (question, answer, display_order)
-VALUES 
-('كيف يمكنني البدء بالعلاج بإشراف خاص؟', 'قم بتسجيل حالتك وسيتواصل معك موظف الاستقبال لتقييم حالتك ثم تقوم بالتواصل مع الراقي المشرف عبر مكالمة استشارية للتعرف على حالتك بشكل مفصل ومن هناك ستكون تفاصيل الرحلة واضحة بإذن الله.', 1),
-('هل يتم علاج الحالة بشكل كامل عن بعد؟', 'نحن نركز على المريض الذي لديه إمكانية السفر لمكان إقامة الراقي (إسطنبول) وذلك لضمان تقديم الخدمة على أكمل وجه كما أننا وفرنا كورساً علاجياً عن بعد للحالات التي لا يمكنها السفر ولكن بدعم وإرشاد محدود.', 2),
-('هل يمكن زيارة المركز مباشر للتشخيص والعلاج بدون استشارة أولية؟', 'لا نستقبل المرضى للتشخيص بشكل مباشر قبل حجز موعد استشارة صوتية، وذلك لعدة أسباب: 1- للتأكد من جدية المريض والتزامه، 2- لفهم سبب اتصالهم بنا، 3- ليعرف المريض الإمكانية المادية، 4- لتوضيح الشروط، 5- لتحديد إذا كان المريض مؤهلاً للعلاج عن بعد أم يحتاج لحضور مباشر.', 3),
-('كم تكاليف العلاج؟', 'بسبب اختلاف تكلفة العلاج من مريض لآخر لا يمكن عرض سعر ثابت أو تقريبي للخدمة دون معرفة تفاصيل عن حالة المريض لأن التكلفة تعتمد على نوع الخدمة العلاجية والزمن اللازم وعدد الأفراد المصابين. لهذا نطلب حجز موعد لمكالمة استشارية قبل البدء لفهم المشكلة.', 4)
-ON CONFLICT DO NOTHING;
-
-INSERT INTO public.articles (title, slug, excerpt, content, category, is_published, published_at)
-VALUES 
-('قصة شفاء مريض يروي معاناته مع الشيطان الأزرق يعقوب (المس العاشق)', 'healing-story-blue-demon', 'معكم قصة مثيرة لشاب من سوريا مقيم في تركيا، الذي تم شفائه من المس العاشق الشيطاني الأزرق في مركز الرقية بكلام الرحمن.', '<p>قصة مثيرة لشاب من سوريا مقيم في تركيا تم شفائه من المس العاشق الشيطاني الأزرق، الذي تلقى علاجه في مركز الرقية بكلام الرحمن لرد كيد الشيطان للرقية الشرعية في تركيا اسطنبول.</p><p>كان هذا الشاب يعاني من أعراض قوية جداً، تدمرت حياته الزوجية والمهنية...</p><h3>مراحل التنقل بين المشعوذين وأشباه الرقاة</h3><p>رحلتي مع الشيوخ كانت رحلة فيها الغريب العجيب، قابلت كل أصناف الشيوخ ولم أستفيد بل زاد الأذى.</p><p>أخيراً تجربتي في العلاج بمركز الرقية بكلام الرحمن مع المعالج سيف الله ابو عامر وكيف تم شفائي بشكل تام بفضل الله تعالى.</p>', 'healing_story', true, now()),
-('حقيقة التشخيص بالرقية الشرعية', 'truth-about-ruqya-diagnosis', 'نطرح لكم في هذا المقال، أهم المعلومات التي يحتاجها الراقي والمسترقي في مسألة التشخيص للأمراض الروحية.', '<p>أهم المعلومات التي يحتاجها الراقي والمسترقي في مسألة التشخيص للأمراض الروحية...</p><h3>حقيقة التشخيص بالرقية الشرعية</h3><p>الهدف من التشخيص هو معرفة أن هذا المريض سبب أعراضه هو مرض روحي وليس نفسي أو عضوي، بمجرد تأثره بالقراءة.</p><h3>أقسام التشخيص بالرقية الشرعية</h3><p>ينقسم التشخيص إلى قسم قطعي وقسم ظني، ولا يمكن الجزم المطلق والقطعي بنوع الإصابة لأنها أمور غيبية خفية.</p><h3>مفاسد الخوض في معرفة نوع الجن وديانته</h3><p>الجن عندهم حيل يستدرجون ويهمون الراقي أنهم مسلمين أو كفار لإخراجه عن مسيرة العلاج، لذا لا يفضل الخوض بذلك بل التركيز على العلاج بالقرآن والدعاء وإخراجهم.</p>', 'article', true, now())
-ON CONFLICT (slug) DO NOTHING;
+-- 12. Policies for contact_messages
+CREATE POLICY "Admins can do everything on contact messages" ON public.contact_messages FOR ALL USING (is_admin());
+CREATE POLICY "Anyone can insert a contact message" ON public.contact_messages FOR INSERT WITH CHECK (true);

@@ -340,7 +340,8 @@
     "healer": "المعالج",
     "notSpecified": "غير محدد",
     "savedSuccess": "تم حفظ الملف الشخصي بنجاح",
-    "savedError": "حدث خطأ أثناء الحفظ"
+    "savedError": "حدث خطأ أثناء الحفظ",
+    "noAccess": "ليس لديك صلاحية الدخول كمعالج في النظام"
   },
   "HealerSidebar": {
     "panelTitle": "لوحة المعالج",
