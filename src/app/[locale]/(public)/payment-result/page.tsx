@@ -1,11 +1,14 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { CheckCircle, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export default function PaymentResultPage() {
+function PaymentResultContent() {
   const searchParams = useSearchParams();
   const t = useTranslations("Booking");
   const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref");
@@ -71,5 +74,17 @@ export default function PaymentResultPage() {
         <p className="text-xs text-text-muted mt-6">{t("success.prayer")}</p>
       </div>
     </div>
+  );
+}
+
+export default function PaymentResultPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
+      </div>
+    }>
+      <PaymentResultContent />
+    </Suspense>
   );
 }

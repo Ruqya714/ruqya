@@ -1,6 +1,8 @@
 import Link from "next/link";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export default function NotFound() {
   return (
     <html lang="ar" dir="rtl">
