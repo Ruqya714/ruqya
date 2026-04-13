@@ -13,6 +13,7 @@ interface Service {
   icon: string;
   duration_minutes: number;
   display_order: number;
+  price: number | null;
 }
 
 export default function AdminServicesPage() {
@@ -20,7 +21,8 @@ export default function AdminServicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Service | null>(null);
-  const [form, setForm] = useState({ name: "", description: "", icon: "Phone", duration_minutes: "30", display_order: "1" });
+  const [globalUrgentPrice, setGlobalUrgentPrice] = useState("");
+  const [form, setForm] = useState({ name: "", description: "", icon: "Phone", duration_minutes: "30", display_order: "1", price: "", urgent_price: "" });
 
   const supabase = createClient();
 
@@ -28,6 +30,11 @@ export default function AdminServicesPage() {
     setIsLoading(true);
     const { data } = await supabase.from("services").select("*").order("display_order");
     setServices(data || []);
+    
+    const { data: settings } = await supabase.from("site_settings").select("*").eq('key', 'urgent_consultation_price');
+    const uPrice = settings?.[0]?.value || "";
+    setGlobalUrgentPrice(uPrice);
+    
     setIsLoading(false);
   }, [supabase]);
 
@@ -35,24 +42,33 @@ export default function AdminServicesPage() {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ name: "", description: "", icon: "Phone", duration_minutes: "30", display_order: String(services.length + 1) });
+    setForm({ name: "", description: "", icon: "Phone", duration_minutes: "30", display_order: String(services.length + 1), price: "", urgent_price: globalUrgentPrice });
     setShowModal(true);
   };
 
   const openEdit = (s: Service) => {
     setEditing(s);
-    setForm({ name: s.name, description: s.description || "", icon: s.icon || "Phone", duration_minutes: String(s.duration_minutes), display_order: String(s.display_order) });
+    setForm({ name: s.name, description: s.description || "", icon: s.icon || "Phone", duration_minutes: String(s.duration_minutes), display_order: String(s.display_order), price: s.price ? String(s.price) : "", urgent_price: globalUrgentPrice });
     setShowModal(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = { name: form.name, description: form.description, icon: form.icon, duration_minutes: parseInt(form.duration_minutes), display_order: parseInt(form.display_order) };
+    const data = { name: form.name, description: form.description, icon: form.icon, duration_minutes: parseInt(form.duration_minutes), display_order: parseInt(form.display_order), price: form.price ? parseFloat(form.price) : null };
     if (editing) {
       await supabase.from("services").update(data).eq("id", editing.id);
     } else {
       await supabase.from("services").insert(data);
     }
+    
+    // Save urgent price
+    const { data: currentSettings } = await supabase.from('site_settings').select('id').eq('key', 'urgent_consultation_price');
+    if (currentSettings && currentSettings.length > 0) {
+      await supabase.from('site_settings').update({ value: form.urgent_price }).eq('id', currentSettings[0].id);
+    } else {
+      await supabase.from('site_settings').insert({ key: 'urgent_consultation_price', value: form.urgent_price });
+    }
+    
     setShowModal(false);
     load();
   };
@@ -89,7 +105,7 @@ export default function AdminServicesPage() {
                   <p className="font-medium text-text-primary">{s.name}</p>
                   <p className="text-sm text-text-secondary truncate">{s.description}</p>
                 </div>
-                <span className="text-xs text-text-muted hidden sm:block">{s.duration_minutes} دقيقة</span>
+                <span className="text-xs text-text-muted hidden sm:block" dir="ltr">{s.duration_minutes} min | ${s.price || "0"}</span>
                 <div className="flex items-center gap-1">
                   <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg hover:bg-gray-100 text-text-secondary transition-colors"><Pencil size={14} /></button>
                   <button onClick={() => deleteService(s.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-text-secondary hover:text-red-600 transition-colors"><Trash2 size={14} /></button>
@@ -109,6 +125,16 @@ export default function AdminServicesPage() {
           <div>
             <label className="block text-sm font-medium mb-1.5">الوصف</label>
             <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">السعر (عادي) USD *</label>
+              <input required type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">السعر (مستعجل) USD *</label>
+              <input required type="number" step="0.01" value={form.urgent_price} onChange={(e) => setForm({ ...form, urgent_price: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

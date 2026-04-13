@@ -7,7 +7,7 @@ import { Stepper, MiniCalendar, TimeSlotPicker, Modal } from "@/components/ui";
 import type { TimeSlot } from "@/components/ui/TimeSlotPicker";
 import { formatDate, formatTime } from "@/lib/helpers";
 import { CheckCircle, Phone, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { sendBookingEmailAction } from "@/app/actions/bookingEmail";
 
 // Country codes for WhatsApp
@@ -48,6 +48,7 @@ interface Service {
   name: string;
   description: string;
   duration_minutes: number;
+  price: number;
 }
 
 interface SlotRow {
@@ -63,6 +64,7 @@ interface SlotRow {
 
 export default function BookingPage() {
   const t = useTranslations("Booking");
+  const locale = useLocale();
   
   const MARITAL_OPTIONS = [
     { value: "single", label: t("infoStep.single") },
@@ -143,6 +145,8 @@ export default function BookingPage() {
     }
   }, [currentStep, submitted]);
 
+  const [urgentPrice, setUrgentPrice] = useState<number | null>(null);
+
   // Load services
   useEffect(() => {
     async function load() {
@@ -152,10 +156,16 @@ export default function BookingPage() {
         .eq("is_active", true)
         .order("display_order");
       setServices(data || []);
+      
       const consultationService = data?.find((s: Service) => s.name.includes("الاستشارة"));
       if (consultationService) {
         setForm(prev => ({ ...prev, service_id: consultationService.id }));
       }
+      
+      const { data: settings } = await supabase.from("site_settings").select("*");
+      const uPrice = settings?.find(s => s.key === "urgent_consultation_price")?.value;
+      if (uPrice) setUrgentPrice(parseFloat(uPrice));
+      
       setIsLoading(false);
     }
     load();
@@ -165,7 +175,6 @@ export default function BookingPage() {
   const loadAvailableDates = useCallback(async () => {
     if (!form.service_id) return;
     
-    // Check if the selected service is the "Consultation" service
     const isConsultation = services.find((s: Service) => s.id === form.service_id)?.name.includes('الاستشارة');
     
     let minDate = new Date();
@@ -287,7 +296,7 @@ export default function BookingPage() {
         return;
       }
 
-      const { error: bookingError } = await supabase.from("bookings").insert({
+      const { data: booking, error: bookingError } = await supabase.from("bookings").insert({
         slot_id: selectedSlotId,
         service_id: form.service_id,
         healer_id: slotData.healer_id || null,
@@ -307,9 +316,9 @@ export default function BookingPage() {
           : form.patient_previous_ruqya || null,
         status: "pending",
         payment_status: "pending",
-      });
+      }).select("id").single();
 
-      if (bookingError) {
+      if (bookingError || !booking) {
         console.error(bookingError);
         alert(t("errors.errorSubmitting"));
         return;
@@ -325,20 +334,28 @@ export default function BookingPage() {
         })
         .eq("id", selectedSlotId);
 
-      // Send Email Notification to Admin silently
-      if (selectedSlotData) {
-        await sendBookingEmailAction({
-          patient_name: form.patient_name,
-          patient_email: form.patient_email || null,
-          patient_phone: fullPhone,
-          service_name: selectedService?.name || "خدمة عامة",
-          date: formatDate(selectedSlotData.date),
-          time: `${formatTime(selectedSlotData.start_time)} - ${formatTime(selectedSlotData.end_time)}`,
-          healer_name: selectedSlotData.healer_name,
-        }).catch(err => console.error("Email error:", err));
-      }
+      // Call payment gateway
+      const paymentRes = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          booking_id: booking.id,
+          amount: (selectedService?.name.includes('الاستشارة') && form.consultation_type === 'urgent' && urgentPrice) ? urgentPrice : (selectedService?.price || 0),
+          description: selectedService?.name,
+          user_name: form.patient_name,
+          user_email: form.patient_email,
+          user_phone: fullPhone,
+          locale: locale
+        })
+      });
 
-      setSubmitted(true);
+      const paymentData = await paymentRes.json();
+      if (paymentRes.ok && paymentData.redirect_url) {
+        window.location.href = paymentData.redirect_url;
+      } else {
+        alert(paymentData.error || "فشل في إنشاء رابط الدفع - تأكد من إعدادات البوابة");
+        setIsSubmitting(false);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -464,9 +481,14 @@ export default function BookingPage() {
                         onChange={(e) => setForm({ ...form, consultation_type: "urgent" })} 
                         className="mt-1 accent-primary" 
                       />
-                      <div>
-                        <p className="font-semibold text-text-primary">{t("serviceStep.urgent")}</p>
-                        <p className="text-sm text-text-secondary mt-1">{t("serviceStep.urgentDesc")}</p>
+                      <div className="flex-1 w-full flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-text-primary">{t("serviceStep.urgent")}</p>
+                          <p className="text-sm text-text-secondary mt-1">{t("serviceStep.urgentDesc")}</p>
+                        </div>
+                        {urgentPrice !== null && (
+                          <p className="font-bold text-primary" dir="ltr">${urgentPrice}</p>
+                        )}
                       </div>
                     </label>
                     
@@ -481,9 +503,14 @@ export default function BookingPage() {
                         onChange={(e) => setForm({ ...form, consultation_type: "normal" })} 
                         className="mt-1 accent-primary" 
                       />
-                      <div>
-                        <p className="font-semibold text-text-primary">{t("serviceStep.normal")}</p>
-                        <p className="text-sm text-text-secondary mt-1">{t("serviceStep.normalDesc")}</p>
+                      <div className="flex-1 w-full flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-text-primary">{t("serviceStep.normal")}</p>
+                          <p className="text-sm text-text-secondary mt-1">{t("serviceStep.normalDesc")}</p>
+                        </div>
+                        {selectedService && (
+                          <p className="font-bold text-primary" dir="ltr">${selectedService.price || 0}</p>
+                        )}
                       </div>
                     </label>
                   </div>
@@ -754,11 +781,6 @@ export default function BookingPage() {
                   )}
                 </div>
 
-                <div className="mt-4 p-4 rounded-lg bg-amber-50 border border-amber-200">
-                  <p className="text-xs text-amber-700">
-                    {t("confirmStep.paymentNotice")}
-                  </p>
-                </div>
 
                 <div className="mt-6 p-4 rounded-xl border border-border bg-gray-50/50">
                   <label className="flex items-start gap-3 cursor-pointer select-none">
