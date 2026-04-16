@@ -4,13 +4,17 @@ import { getReadingTime } from "@/lib/helpers";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const locale = searchParams.get('locale') || 'ar';
     const supabase = createAdminClient();
+    
     const { data, error } = await supabase
       .from("articles")
-      .select("id, title, slug, excerpt, content, cover_image, category, published_at, created_at")
+      .select("id, title, slug, excerpt, content, cover_image, category, published_at, created_at, locale")
       .eq("is_published", true)
+      .eq("locale", locale)
       .order("published_at", { ascending: false });
 
     if (error) {
@@ -32,7 +36,7 @@ export async function GET() {
         published_at: article.published_at,
         created_at: article.created_at,
         cover_image,
-        reading_time: getReadingTime(article.content)
+        reading_time: getReadingTime(article.content, locale)
       };
     });
 

@@ -34,7 +34,7 @@ export default function TreatmentJourneyPage() {
       <section className="py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative">
-            <div className="absolute start-6 lg:right-1/2 top-0 bottom-0 w-0.5 bg-border lg:translate-x-1/2" />
+            <div className="absolute start-6 lg:start-1/2 top-0 bottom-0 w-0.5 bg-border lg:-ms-[1px] lg:translate-x-0" />
             <div className="space-y-12">
               {stages.map((stage, i) => (
                 <div key={i} className={`relative flex items-start gap-6 lg:gap-12 ${i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"}`}>
@@ -49,7 +49,7 @@ export default function TreatmentJourneyPage() {
                       <p className="text-sm text-text-secondary leading-relaxed">{t(stage.descKey)}</p>
                     </div>
                   </div>
-                  <div className="absolute start-0 lg:right-1/2 lg:translate-x-1/2 flex-shrink-0">
+                  <div className="absolute start-0 lg:start-1/2 lg:-ms-6 lg:translate-x-0 flex-shrink-0">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ${stage.color === "primary" ? "bg-primary" : "bg-accent"}`}>
                       {stage.step}
                     </div>

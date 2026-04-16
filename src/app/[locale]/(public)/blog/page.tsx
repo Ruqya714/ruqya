@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { Calendar, ArrowLeft, BookOpen, Clock } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { formatDate, truncateText } from "@/lib/helpers";
@@ -22,13 +22,14 @@ interface Article {
 
 export default function BlogPage() {
   const t = useTranslations("Blog");
+  const locale = useLocale();
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const response = await fetch('/api/articles');
+        const response = await fetch(`/api/articles?locale=${locale}`);
         const { articles, error } = await response.json();
         
         if (error) throw new Error(error);
@@ -105,20 +106,20 @@ export default function BlogPage() {
                     {article.excerpt && (
                       <p className="text-sm text-text-secondary line-clamp-2 mb-4 flex-1">{truncateText(article.excerpt, 120)}</p>
                     )}
-                    <div className="flex items-center justify-between pt-4 mt-auto border-t border-border">
-                      <div className="flex items-center gap-3 text-xs text-text-muted">
-                        <div className="flex items-center gap-1.5">
+                    <div className="flex flex-col gap-3 pt-4 mt-auto border-t border-border">
+                      <div className="flex items-center justify-between text-xs text-text-muted">
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
                           <Calendar size={12} />
-                          {formatDate(article.published_at || article.created_at)}
+                          {formatDate(article.published_at || article.created_at, locale)}
                         </div>
                         {article.reading_time && (
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 whitespace-nowrap">
                             <Clock size={12} />
                             {article.reading_time}
                           </div>
                         )}
                       </div>
-                      <span className="text-xs text-primary font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                      <span className="text-xs text-primary font-medium flex items-center justify-end gap-1 group-hover:gap-2 transition-all">
                         {t("readMore")}
                         <ArrowLeft size={12} className="rtl:rotate-0 ltr:rotate-180" />
                       </span>

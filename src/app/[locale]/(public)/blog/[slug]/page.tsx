@@ -5,13 +5,15 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import ShareArticleButtons from "./ShareArticleButtons";
 import { formatDate } from "@/lib/helpers";
+import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string, slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
   const decodedSlug = decodeURIComponent(slug);
   const supabase = createAdminClient();
   const { data: article } = await supabase
@@ -32,9 +34,10 @@ export async function generateMetadata({
 export default async function ArticlePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string, slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
   const decodedSlug = decodeURIComponent(slug);
   const supabase = createAdminClient();
 
@@ -48,9 +51,9 @@ export default async function ArticlePage({
   if (!article) notFound();
 
   const categoryLabels: Record<string, string> = {
-    article: "مقال",
-    healing_story: "قصة شفاء",
-    announcement: "إعلان",
+    article: t("article"),
+    healing_story: t("healingStory"),
+    announcement: t("announcement"),
   };
 
   const imgMatch = article.content?.match(/<img[^>]+src="([^">]+)"/);
@@ -73,7 +76,7 @@ export default async function ArticlePage({
           className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-primary transition-colors mb-8 bg-white px-4 py-2 rounded-full shadow-sm hover:shadow-md border border-border"
         >
           <ArrowRight size={16} />
-          العودة للمقالات
+          {t("backToArticles") || "العودة للمقالات"}
         </Link>
 
         {/* Header */}
@@ -98,7 +101,7 @@ export default async function ArticlePage({
           <div className="flex flex-wrap items-center gap-4 md:gap-6 mt-8 pt-6 border-t border-border">
             <div className="flex items-center gap-2 text-sm text-text-secondary bg-white px-3 py-1.5 rounded-lg border border-border shadow-sm">
               <Calendar size={14} className="text-primary" />
-              {formatDate(article.published_at || article.created_at)}
+              {formatDate(article.published_at || article.created_at, locale)}
             </div>
           </div>
         </header>
@@ -124,7 +127,7 @@ export default async function ArticlePage({
         {/* Share / Related */}
         <div className="mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-border">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-text-primary">مشاركة المقال:</span>
+            <span className="text-sm font-semibold text-text-primary">{t("shareArticle") || "مشاركة المقال:"}</span>
             <ShareArticleButtons title={article.title} />
           </div>
           
@@ -133,7 +136,7 @@ export default async function ArticlePage({
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-light transition-all shadow-md hover:shadow-lg"
           >
             <ArrowRight size={16} />
-            تصفح المزيد من المقالات
+            {t("browseMore") || "تصفح المزيد من المقالات"}
           </Link>
         </div>
       </div>

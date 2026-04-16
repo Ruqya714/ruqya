@@ -43,13 +43,29 @@
     "treatTitle": "Neler Tedavi Edilebilir?",
     "treatDesc": "Allah'ın izniyle çeşitli ruhani, psikolojik ve fiziksel rahatsızlıkları tedavi ediyoruz",
     "treat1Title": "Ruhani Hastalıklar",
-    "treat1Items": ["Nazar ve Haset", "Her Türlü Büyü", "Cin Çarpması ve Musallat"],
+    "treat1Items": [
+      "Nazar ve Haset",
+      "Her Türlü Büyü",
+      "Cin Çarpması ve Musallat"
+    ],
     "treat2Title": "Psikolojik Sorunlar",
-    "treat2Items": ["Kaygı ve Depresyon", "Takıntılı Düşünceler (OKB)", "Kronik Uykusuzluk"],
+    "treat2Items": [
+      "Kaygı ve Depresyon",
+      "Takıntılı Düşünceler (OKB)",
+      "Kronik Uykusuzluk"
+    ],
     "treat3Title": "Zorlu Vakalar",
-    "treat3Items": ["Kanser ve Otizm", "Epilepsi ve Hepatit", "Tekrarlayan Düşükler ve Kısırlık"],
+    "treat3Items": [
+      "Kanser ve Otizm",
+      "Epilepsi ve Hepatit",
+      "Tekrarlayan Düşükler ve Kısırlık"
+    ],
     "treat4Title": "Koruma ve Korunma",
-    "treat4Items": ["Günlük Korunma Duaları", "Ev Koruması", "Çocuk Koruması"],
+    "treat4Items": [
+      "Günlük Korunma Duaları",
+      "Ev Koruması",
+      "Çocuk Koruması"
+    ],
     "faqTitle": "Sıkça Sorulan Sorular",
     "faqDesc": "Hizmetlerimizle ilgili en çok sorulan sorulara cevaplar",
     "faq1Q": "Özel gözetimli tedaviye nasıl başlarım?",
@@ -111,7 +127,11 @@
       "Sürekli gelişim ve modern teknolojilerden yararlanma",
       "Hizmet sunumunda profesyonellik ve uzmanlık",
       "Tam gizlilik ve hasta mahremiyetinin korunması"
-    ]
+    ],
+    "member0Name": "Yönetim",
+    "member0Role": "Merkez işlerinin yönetimi ve tam takibi",
+    "member5Name": "Tıbbi Kadro",
+    "member5Role": "Tıbbi ve sağlık danışmanlığı sağlamak"
   },
   "Services": {
     "heroTag": "Tedavi yolculuğunuz burada başlıyor",
@@ -147,17 +167,38 @@
     "afterConsultDesc": "Danışma seansındaki detaylı değerlendirmeye göre, tedavi planınızın bir parçası olarak aşağıdaki hizmetlerden birine yönlendirileceksiniz",
     "svc1Title": "Rukye ile Teşhis",
     "svc1Desc": "Hastalık türünü yüksek doğrulukla belirlemek için belirtilerin gözlemlenmesi ve rukye okunmasını içeren uzman seans (ruhani, psikolojik, fiziksel).",
-    "svc1Features": ["Durumunuza özel uzman rukye okuması", "Hastalık türünün doğru tespiti", "Uygun tedavinin başlatılması"],
+    "svc1Features": [
+      "Durumunuza özel uzman rukye okuması",
+      "Hastalık türünün doğru tespiti",
+      "Uygun tedavinin başlatılması"
+    ],
     "svc2Title": "Özel Gözetimli Tedavi",
     "svc2Desc": "Zorlu vakalar için düğüm çözme ve doğrudan rukye seansları ile sürekli desteği içeren kişiye özel tedavi programı.",
-    "svc2Features": ["7/24 doğrudan iletişim", "Sınırsız ilaç ve tedavi temini", "Sınırsız tedavi ve rukye seansları", "Günlük takip ve periyodik değerlendirme", "Tedavi planının sürekli güncellenmesi", "Tam iyileşmeye kadar terapistin devamlılığının garantisi", "Sınırsız psikolojik ve manevi destek", "Tedavi için şer'i ve tıbbi danışmanlık entegrasyonu", "İyileşme sonrası 2 ay takip (koruma amaçlı)", "Öncesinde kesin teşhis yapılmadan başlanmaz"],
+    "svc2Features": [
+      "7/24 doğrudan iletişim",
+      "Sınırsız ilaç ve tedavi temini",
+      "Sınırsız tedavi ve rukye seansları",
+      "Günlük takip ve periyodik değerlendirme",
+      "Tedavi planının sürekli güncellenmesi",
+      "Tam iyileşmeye kadar terapistin devamlılığının garantisi",
+      "Sınırsız psikolojik ve manevi destek",
+      "Tedavi için şer'i ve tıbbi danışmanlık entegrasyonu",
+      "İyileşme sonrası 2 ay takip (koruma amaçlı)",
+      "Öncesinde kesin teşhis yapılmadan başlanmaz"
+    ],
     "svc3Title": "Uzaktan Tedavi Kursu",
     "svc3Desc": "Seyahat edemeyen hastalar için açık adımlar ve bilimsel yöntemlerle bireysel destek, rehberlik ve yönlendirme içeren sistematik tedavi kursu.",
-    "svc3Features": ["Evde sistematik bireysel tedavi", "Periyodik takip ve rehberlik", "Aile için koruma ve güvenlik programları"],
+    "svc3Features": [
+      "Evde sistematik bireysel tedavi",
+      "Periyodik takip ve rehberlik",
+      "Aile için koruma ve güvenlik programları"
+    ],
     "serviceFeatures": "Hizmet Özellikleri:",
     "ctaTitle": "Tereddüt Etmeyin, Şifa Bir Adımla Başlar",
     "ctaDesc": "Sesli danışmanlık, durumunuzu doğru anlamanın ve Allah'ın izniyle size özel şifa yolculuğuna başlamanın anahtarıdır — rastgele harcamalar olmadan.",
-    "ctaButton": "Başvurunuzu Yapın"
+    "ctaButton": "Başvurunuzu Yapın",
+    "infographicTitle": "Kapsamlı Tedavi Programı",
+    "infographicDesc": "Merkezin uyguladığı tedavi sürecine kapsamlı bir bakış"
   },
   "Journey": {
     "heroTitle": "Tedavi Süreci",
@@ -189,7 +230,7 @@
     "whatsapp": "WhatsApp",
     "email": "E-posta",
     "address": "Adres",
-    "addressValue": "İstanbul, Türkiye",
+    "addressValue": "İstanbul / Türkiye",
     "workHours": "Çalışma Saatleri",
     "workHoursValue": "Cumartesi - Perşembe: 10:00 - 22:00",
     "formTitle": "Bize Mesaj Gönderin",
@@ -213,7 +254,17 @@
     "ctaTitle": "Sorunuzun cevabını bulamadınız mı?",
     "ctaDesc": "Doğrudan bizimle iletişime geçin, tüm sorularınızı memnuniyetle cevaplayacağız.",
     "ctaContact": "İletişim",
-    "ctaBook": "Başvuru Yap"
+    "ctaBook": "Başvuru Yap",
+    "items": {
+      "q1": "Özel gözetim altında tedaviye nasıl başlayabilirim?",
+      "a1": "Durumunuzu kaydedin, resepsiyon görevlisi durumunuzu değerlendirmek için sizinle iletişime geçecek, ardından durumunuzu ayrıntılı olarak anlamak için danışman hoca ile bir görüşme yapacaksınız ve o andan itibaren inşallah tedavi yolculuğunuzun ayrıntıları netleşecektir.",
+      "q2": "Hastanın tedavisi tamamen uzaktan yapılıyor mu?",
+      "a2": "Hizmeti mükemmel bir şekilde sunabilmek için hocanın bulunduğu yere seyahat etme imkanı olan hastalara odaklanıyoruz. Bununla birlikte, seyahat edemeyen durumlar için sınırlı destek ve rehberlik içeren uzaktan bir tedavi kursu da sağladık.",
+      "q3": "Ön danışmanlık olmadan tanı ve tedavi için merkezi doğrudan ziyaret edebilir miyim?",
+      "a3": "Randevu alıp sesli danışmanlık yapmadan hastaları doğrudan teşhis için kabul etmememizin birkaç nedeni var:\n1. Hastanın ciddiyetini ve kararlılığını teyit etmek için.\n2. Bizimle iletişime geçme nedenlerini anlamak ve sağlık durumlarını bilme gerekliliği.\n3. Hastanın tedavi masraflarını karşılama mali gücünü bilmesi için.\n4. Her duruma uygun olmayabileceği için merkezdeki tedavi şartlarını netleştirmek için.\n5. Hastanın uzaktan tedavi için uygun olup olmadığını veya tedavinin başından sonuna kadar şahsen gelmesinin gerekip gerekmediğini belirlemek için.",
+      "q4": "Tedavi masrafları ne kadar?",
+      "a4": "Tedavi maliyeti her hastaya göre değiştiğinden, hastanın durumu hakkında detayları bilmeden hizmet için sabit veya yaklaşık bir fiyat sunmak mümkün değildir; çünkü maliyet, yaşadığınız soruna uygun tedavi hizmetinin türüne bağlıdır. Size özel ve durumunuza uygun bir hizmet sunmak, tedavide kalite ve etkinliği garanti etmek istiyoruz. Bu nedenle, tedaviye başlamadan önce bir danışma görüşmesi için randevu almanızı istiyoruz. Bu görüşmede durumunuzu dinleyecek ve sorunu daha iyi anlamak için size bazı sorular soracağız. Ardından durumunuz için uygun maliyeti belirleyip size bildireceğiz. Eğer maliyeti kabul ederseniz, teşhis ve tedaviye başlamak için size bir ziyaret randevusu ayarlayacağız. Tedavi maliyeti için sabit veya yaklaşık bir fiyat belirleyememizin nedenini anladığınızı umuyoruz; çünkü hastanın durumu, çözülmesini istediğiniz sorunun türüne, tedavi hedeflerinize ulaşmak için gereken süreye, tedavi malzemelerinin miktarına ve tedaviye ihtiyaç duyan bireylerin sayısına göre değişiklik gösterir."
+    }
   },
   "Blog": {
     "heroTitle": "Makaleler ve Şifa Hikayeleri",
@@ -223,39 +274,47 @@
     "readMore": "Devamını Oku",
     "article": "Makale",
     "healingStory": "Şifa Hikayesi",
-    "announcement": "Duyuru"
+    "announcement": "Duyuru",
+    "backToArticles": "Makalelere Dön",
+    "shareArticle": "Makaleyi Paylaş:",
+    "browseMore": "Daha Fazla Makale İncele",
+    "missingArticle": "Makale Bulunamadı",
+    "copySuccess": "Makale bağlantısı başarıyla kopyalandı",
+    "copyError": "Bağlantı kopyalanamadı",
+    "shareShort": "Makaleyi Paylaş",
+    "copyShort": "Bağlantıyı Kopyala"
   },
   "Courses": {
-    "heroTitle": "تدريب وتأهيل الرقاة والمعالجين",
-    "heroDesc": "برنامج متخصص ومكثف يهدف إلى إعداد وتأهيل معالجين متمكنين وفق الكتاب والسنة، مع تدريب عملي دقيق.",
-    "aboutProgram": "عن البرنامج التدريبي",
-    "programDesc": "برنامج شامل يتضمن تدريباً عملياً على إعداد البرامج العلاجية باستخدام الزيوت العشبية لاستخراج العقد والأسحار وطرد الشيطان من الجسد لجميع الإصابات الروحية، والتعامل مع مختلف الحالات العويصة، ضمن ضوابط شرعية وأخلاقية دقيقة.",
-    "featuresTitle": "مميزات البرنامج الشامل",
-    "feat1Title": "تأهيل متكامل",
-    "feat1Desc": "تأهيل علمي وعملي متكامل وفق منهجية صحيحة.",
-    "feat2Title": "البرامج العلاجية",
-    "feat2Desc": "تعليم فنيات إعداد البرامج العلاجية والمنظومة العشبية.",
-    "feat3Title": "ضوابط شرعية",
-    "feat3Desc": "دراسة دقيقة لضوابط الرقية الشرعية وأخلاقيات المعالج.",
-    "feat4Title": "الحالات المعقدة",
-    "feat4Desc": "التركيز والتدريب على كيفية التعامل مع الحالات الصعبة والمستعصية.",
-    "feat5Title": "إجازة معتمدة",
-    "feat5Desc": "منح إجازة رسمية معتمدة من المركز وإشراف مباشر من الشيخ سيف الله أبو عامر.",
-    "goldenFeatureBadge": "الميزة الذهبية والحصرية",
-    "goldenTitle": "متابعة مستمرة بعد الإجازة 🎓",
-    "goldenDesc": "حرصًا منا على اكتمال التأهيل وضمان الجاهزية الميدانية، لا يُترك الراقي دون توجيه بعد حصوله على الإجازة الشرعية، بل يستمر الإشراف المباشر لمدة ثلاثة أشهر كاملة.",
+    "heroTitle": "Rukye ve Şifacıların Eğitimi ve Niteliklendirilmesi",
+    "heroDesc": "Kapsamlı ve uzmanlaşmış bir program; Kur'an ve Sünnet'e uygun, pratik eğitimle donatılmış uzman şifacılar yetiştirmeyi amaçlar.",
+    "aboutProgram": "Eğitim Programı Hakkında",
+    "programDesc": "Tüm ruhsal hastalıklarda (büyü, musallat vb.) bitkisel yağlar kullanarak düğümleri çözme ve bedenden cinleri çıkarma, zor durumlarla başa çıkma pratiği içeren ve tamamen şer'i ve ahlaki sınırları gözeten kapsamlı bir program.",
+    "featuresTitle": "Kapsamlı Programın Özellikleri",
+    "feat1Title": "Kapsamlı Niteliklendirme",
+    "feat1Desc": "Doğru metodolojiye göre bütünleşik bilimsel ve pratik yetkinlik kazanma.",
+    "feat2Title": "Tedavi Programları",
+    "feat2Desc": "Terapötik programları ve bitkisel sistemleri hazırlama tekniklerinin öğretimi.",
+    "feat3Title": "Şer'i Sınırlar",
+    "feat3Desc": "Şer'i rukye kurallarının ve terapist ahlakının dikkatlice incelenmesi.",
+    "feat4Title": "Karmaşık Vakalar",
+    "feat4Desc": "Zor ve karmaşık vakalarla nasıl başa çıkılacağına odaklanma ve pratik staj.",
+    "feat5Title": "Onaylı İcazet",
+    "feat5Desc": "Şeyh Seyfullah Ebu Amir'in gözetiminde, merkezden resmi ve onaylı icazet verilmesi.",
+    "goldenFeatureBadge": "Altın ve Özel Avantaj",
+    "goldenTitle": "İcazet Sonrası Sürekli Danışmanlık 🎓",
+    "goldenDesc": "Eğitimin eksiksiz olmasını ve sahada tam hazır bulunuşluğu sağlamaya verdiğimiz önemden dolayı, rukye alan öğrenci icazetini aldıktan sonra yalnız bırakılmaz. Bizzat doğrudan rehberlik ve gözetim tam üç ay boyunca devam eder.",
     "goldenItems": [
-      "متابعة الحالات التي يعالجها الراقي في الميدان",
-      "تقديم التوجيه العلمي والعملي المستمر والدائم",
-      "تصحيح الأخطاء الميدانية وتعزيز التمكن",
-      "الإجابة المباشرة عن كافة الاستفسارات الصعبة"
+      "Öğrencinin sahada tedavi ettiği vakaların takibi",
+      "Sürekli bilimsel ve pratik rehberlik sağlanması",
+      "Saha hatalarının düzeltilmesi ve ustalaşmanın geliştirilmesi",
+      "Gerekli tüm zor soruların doğrudan cevaplanması"
     ],
-    "notesTitle": "تنويه شرعي وطبي مهم",
-    "notesDesc": "نؤكد بشكل قاطع أن الرقية الشرعية هي (سببٌ من الأسباب) والله هو الشافي وحده، وهي لا تُغني أبداً عن الأخذ بالأسباب الطبية والتوجه للمختصين عند الحاجة.",
-    "ctaTitle": "هل تود معرفة المزيد والتسجيل؟",
-    "ctaDesc": "استفسر الآن عن مواعيد الدورة القادمة، شروط الالتحاق، وآلية التسجيل المعتمدة عبر قنواتنا الرسمية.",
-    "ctaContact": "تواصل معنا للاستفسار",
-    "doa": "نسأل الله القبول والتوفيق والسداد للجميع 🌿"
+    "notesTitle": "Önemli Şer'i ve Tıbbi Uyarı",
+    "notesDesc": "Şunu kesin olarak vurguluyoruz ki, Şer'i Rukye sadece (sebeplerden bir sebeptir) ve Şifa veren yalnızca Allah'tır. Rukye, tıbbi sebeplere başvurmanın ve gerektiğinde uzman hekimlere yönelmenin asla yerini tutamaz.",
+    "ctaTitle": "Daha Fazla Bilgi Edinmek ve Kayıt Olmak İster misiniz?",
+    "ctaDesc": "Gelecek kurs tarihleri, kayıt koşulları ve onaylı kayıt yöntemleri hakkında resmi iletişim kanallarımızdan hemen bilgi alın.",
+    "ctaContact": "Bilgi Almak İçin İletişime Geçin",
+    "doa": "Allah'tan herkes için kabul, başarı ve doğruluk dileriz 🌿"
   },
   "Footer": {
     "aboutDesc": "Kur'an-ı Kerim ile şer'i rukye ve tedavi alanında uzmanlaşmış bir merkez. Allah'ın izniyle hastaların Kur'an ve Sünnet ile şifa bulmalarına yardımcı olmayı hedefliyoruz.",
@@ -266,7 +325,7 @@
     "svcSupervised": "Özel Gözetimli Tedavi",
     "svcCourses": "Kurslar ve Eğitimler",
     "contactUs": "Bize Ulaşın",
-    "location": "İstanbul, Türkiye",
+    "location": "İstanbul / Türkiye",
     "basmala": "Bismillahirrahmanirrahim",
     "privacyPolicy": "Gizlilik Politikası",
     "termsOfService": "Hizmet Şartları",
@@ -448,5 +507,36 @@
       "unavailable": "Üzgünüz, bu randevu artık mevcut değil. Lütfen başka bir randevu seçin.",
       "errorSubmitting": "Randevu oluşturulurken bir hata oluştu. Lütfen tekrar deneyin."
     }
+  },
+  "countries": {
+    "c_90": "Türkiye",
+    "c_966": "Suudi Arabistan",
+    "c_971": "Birleşik Arap Emirlikleri",
+    "c_965": "Kuveyt",
+    "c_974": "Katar",
+    "c_973": "Bahreyn",
+    "c_968": "Umman",
+    "c_962": "Ürdün",
+    "c_970": "Filistin",
+    "c_961": "Lübnan",
+    "c_964": "Irak",
+    "c_20": "Mısır",
+    "c_212": "Fas",
+    "c_213": "Cezayir",
+    "c_216": "Tunus",
+    "c_218": "Libya",
+    "c_249": "Sudan",
+    "c_967": "Yemen",
+    "c_963": "Suriye",
+    "c_1": "ABD/Kanada",
+    "c_44": "İngiltere",
+    "c_49": "Almanya",
+    "c_33": "Fransa",
+    "c_31": "Hollanda",
+    "c_46": "İsveç",
+    "c_60": "Malezya",
+    "c_62": "Endonezya",
+    "c_92": "Pakistan",
+    "c_91": "Hindistan"
   }
 }

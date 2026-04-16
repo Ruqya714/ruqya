@@ -1,8 +1,9 @@
 /**
  * Format a date to Arabic locale string
  */
-export function formatDate(date: string | Date): string {
-  return new Date(date).toLocaleDateString("ar-EG", {
+export function formatDate(date: string | Date, locale: string = "ar"): string {
+  const loc = locale === "tr" ? "tr-TR" : "ar-EG";
+  return new Date(date).toLocaleDateString(loc, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -86,8 +87,8 @@ export function getRelativeTime(date: string | Date): string {
 /**
  * Calculate estimated reading time for HTML content
  */
-export function getReadingTime(html: string | null | undefined): string {
-  if (!html) return "1 دقيقة قراءة";
+export function getReadingTime(html: string | null | undefined, locale: string = "ar"): string {
+  if (!html) return locale === "tr" ? "1 dakika okuma" : "1 دقيقة قراءة";
   
   // Strip HTML tags
   const text = html.replace(/<[^>]*>?/gm, '');
@@ -96,6 +97,10 @@ export function getReadingTime(html: string | null | undefined): string {
   const wpm = 225;
   const words = text.trim().split(/\s+/).length;
   const minutes = Math.ceil(words / wpm);
+  
+  if (locale === "tr") {
+    return `${minutes} dakika okuma`;
+  }
   
   // Arabic formatting
   if (minutes === 1) return "1 دقيقة قراءة";

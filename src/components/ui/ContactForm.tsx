@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { Send } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { submitContactMessage } from "@/app/actions/contact";
 
 export default function ContactForm() {
   const t = useTranslations("Contact");
+  const locale = useLocale();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -87,9 +88,9 @@ export default function ContactForm() {
             <input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-4 focus:ring-primary/30 focus:border-primary shadow-sm hover:border-primary/50 focus:shadow-md transition-all"
+              className="w-full px-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-4 focus:ring-primary/30 focus:border-primary shadow-sm hover:border-primary/50 focus:shadow-md transition-all text-start"
               placeholder={t("phonePlaceholder")}
-              dir="rtl"
+              dir={locale === "tr" ? "ltr" : "rtl"}
             />
           </div>
 

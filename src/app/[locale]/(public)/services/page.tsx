@@ -194,8 +194,8 @@ export default function ServicesPage() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 text-accent mb-4">
                 <ImageIcon className="w-8 h-8" />
               </div>
-              <h2 className="text-2xl lg:text-4xl font-bold text-text-primary mb-4">البرنامج العلاجي الشامل</h2>
-              <p className="text-text-secondary text-lg">نظرة شاملة على التسلسل العلاجي المتبع في المركز</p>
+              <h2 className="text-2xl lg:text-4xl font-bold text-text-primary mb-4">{t("infographicTitle")}</h2>
+              <p className="text-text-secondary text-lg">{t("infographicDesc")}</p>
             </div>
             <div className="flex justify-center bg-gray-50 p-2 sm:p-4 lg:p-8 rounded-3xl border border-gray-100 shadow-inner">
               <Image 

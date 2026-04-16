@@ -24,6 +24,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
     cover_image: "",
     category: "article",
     is_published: false,
+    locale: "ar",
   });
 
   const loadArticle = useCallback(async () => {
@@ -38,6 +39,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
         cover_image: data.cover_image || "",
         category: data.category || "article",
         is_published: data.is_published || false,
+        locale: data.locale || "ar",
       });
     }
     setIsLoading(false);
@@ -63,6 +65,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
         is_published: publish ? true : form.is_published,
         published_at: publish ? new Date().toISOString() : undefined,
         author_id: user?.id,
+        locale: form.locale,
       };
 
       if (isNew) {
@@ -212,6 +215,18 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
                   <option value="article">مقال</option>
                   <option value="healing_story">قصة شفاء</option>
                   <option value="announcement">إعلان</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1.5">لغة المقال</label>
+                <select
+                  value={(form as any).locale || 'ar'}
+                  onChange={(e) => setForm({ ...form, locale: e.target.value } as any)}
+                  className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="ar">العربية (Arabic)</option>
+                  <option value="tr">التركية (Turkish)</option>
                 </select>
               </div>
 

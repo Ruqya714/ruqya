@@ -6,10 +6,11 @@ import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { SITE_NAME_SHORT } from "@/lib/constants";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function Footer() {
   const t = useTranslations("Footer");
+  const locale = useLocale();
   const nav = useTranslations("Navigation");
   const [settings, setSettings] = useState<Record<string, string>>({});
 
@@ -97,7 +98,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="text-accent flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-gray-300">{settings.address || t("location")}</span>
+                <span className="text-sm text-gray-300">{locale === 'tr' ? t("location") : (settings.address || t("location"))}</span>
               </li>
             </ul>
 

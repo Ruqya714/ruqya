@@ -3,9 +3,11 @@
 import { Share2, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function ShareArticleButtons({ title }: { title: string }) {
   const { toast } = useToast();
+  const t = useTranslations("Blog");
 
   const [isSharing, setIsSharing] = useState(false);
 
@@ -36,9 +38,9 @@ export default function ShareArticleButtons({ title }: { title: string }) {
   const handleCopy = () => {
     try {
       navigator.clipboard.writeText(window.location.href);
-      toast("تم نسخ رابط المقال بنجاح", "success");
+      toast(t("copySuccess"), "success");
     } catch (err) {
-      toast("تعذر نسخ الرابط", "error");
+      toast(t("copyError"), "error");
     }
   };
 
@@ -47,8 +49,8 @@ export default function ShareArticleButtons({ title }: { title: string }) {
       <button
         onClick={handleShare}
         className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-text-secondary hover:text-primary hover:border-primary transition-colors"
-        title="مشاركة المقال"
-        aria-label="مشاركة المقال"
+        title={t("shareShort")}
+        aria-label={t("shareShort")}
         type="button"
       >
         <Share2 size={18} />
@@ -56,8 +58,8 @@ export default function ShareArticleButtons({ title }: { title: string }) {
       <button
         onClick={handleCopy}
         className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center text-text-secondary hover:text-primary hover:border-primary transition-colors"
-        title="نسخ الرابط"
-        aria-label="نسخ الرابط"
+        title={t("copyShort")}
+        aria-label={t("copyShort")}
         type="button"
       >
         <LinkIcon size={18} />

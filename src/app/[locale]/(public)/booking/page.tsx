@@ -12,35 +12,35 @@ import { sendBookingEmailAction } from "@/app/actions/bookingEmail";
 
 // Country codes for WhatsApp
 const COUNTRY_CODES = [
-  { code: "+90", country: "تركيا 🇹🇷" },
-  { code: "+966", country: "السعودية 🇸🇦" },
-  { code: "+971", country: "الإمارات 🇦🇪" },
-  { code: "+965", country: "الكويت 🇰🇼" },
-  { code: "+974", country: "قطر 🇶🇦" },
-  { code: "+973", country: "البحرين 🇧🇭" },
-  { code: "+968", country: "عمان 🇴🇲" },
-  { code: "+962", country: "الأردن 🇯🇴" },
-  { code: "+970", country: "فلسطين 🇵🇸" },
-  { code: "+961", country: "لبنان 🇱🇧" },
-  { code: "+964", country: "العراق 🇮🇶" },
-  { code: "+20", country: "مصر 🇪🇬" },
-  { code: "+212", country: "المغرب 🇲🇦" },
-  { code: "+213", country: "الجزائر 🇩🇿" },
-  { code: "+216", country: "تونس 🇹🇳" },
-  { code: "+218", country: "ليبيا 🇱🇾" },
-  { code: "+249", country: "السودان 🇸🇩" },
-  { code: "+967", country: "اليمن 🇾🇪" },
-  { code: "+963", country: "سوريا 🇸🇾" },
-  { code: "+1", country: "أمريكا/كندا 🇺🇸" },
-  { code: "+44", country: "بريطانيا 🇬🇧" },
-  { code: "+49", country: "ألمانيا 🇩🇪" },
-  { code: "+33", country: "فرنسا 🇫🇷" },
-  { code: "+31", country: "هولندا 🇳🇱" },
-  { code: "+46", country: "السويد 🇸🇪" },
-  { code: "+60", country: "ماليزيا 🇲🇾" },
-  { code: "+62", country: "إندونيسيا 🇮🇩" },
-  { code: "+92", country: "باكستان 🇵🇰" },
-  { code: "+91", country: "الهند 🇮🇳" },
+  { code: "+90", flag: "🇹🇷" },
+  { code: "+966", flag: "🇸🇦" },
+  { code: "+971", flag: "🇦🇪" },
+  { code: "+965", flag: "🇰🇼" },
+  { code: "+974", flag: "🇶🇦" },
+  { code: "+973", flag: "🇧🇭" },
+  { code: "+968", flag: "🇴🇲" },
+  { code: "+962", flag: "🇯🇴" },
+  { code: "+970", flag: "🇵🇸" },
+  { code: "+961", flag: "🇱🇧" },
+  { code: "+964", flag: "🇮🇶" },
+  { code: "+20", flag: "🇪🇬" },
+  { code: "+212", flag: "🇲🇦" },
+  { code: "+213", flag: "🇩🇿" },
+  { code: "+216", flag: "🇹🇳" },
+  { code: "+218", flag: "🇱🇾" },
+  { code: "+249", flag: "🇸🇩" },
+  { code: "+967", flag: "🇾🇪" },
+  { code: "+963", flag: "🇸🇾" },
+  { code: "+1", flag: "🇺🇸" },
+  { code: "+44", flag: "🇬🇧" },
+  { code: "+49", flag: "🇩🇪" },
+  { code: "+33", flag: "🇫🇷" },
+  { code: "+31", flag: "🇳🇱" },
+  { code: "+46", flag: "🇸🇪" },
+  { code: "+60", flag: "🇲🇾" },
+  { code: "+62", flag: "🇮🇩" },
+  { code: "+92", flag: "🇵🇰" },
+  { code: "+91", flag: "🇮🇳" },
 ];
 
 interface Service {
@@ -64,6 +64,7 @@ interface SlotRow {
 
 export default function BookingPage() {
   const t = useTranslations("Booking");
+  const tCountries = useTranslations("countries");
   const locale = useLocale();
   
   const MARITAL_OPTIONS = [
@@ -649,7 +650,7 @@ export default function BookingPage() {
                       >
                         {COUNTRY_CODES.map((cc) => (
                           <option key={cc.code} value={cc.code}>
-                            {cc.code} {cc.country}
+                            {cc.code} {tCountries(`c_${cc.code.replace('+', '')}` as any)} {cc.flag}
                           </option>
                         ))}
                       </select>

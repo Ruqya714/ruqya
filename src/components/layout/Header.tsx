@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import Image from "next/image";
 import { Menu, X, Phone } from "lucide-react";
 import { PUBLIC_NAV_LINKS } from "@/lib/constants";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,6 +26,7 @@ export default function Header() {
   }, [isMenuOpen]);
   const pathname = usePathname();
   const t = useTranslations("Navigation");
+  const locale = useLocale();
 
   // Map href to translation keys
   const getNavKey = (href: string) => {
@@ -44,7 +45,7 @@ export default function Header() {
 
   return (
     <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0">
@@ -67,7 +68,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1 xl:gap-2">
             {PUBLIC_NAV_LINKS.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(`/tr${link.href !== '/' ? link.href : 'never'}`);
               return (
@@ -75,7 +76,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href as any}
                   className={`
-                    px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                    whitespace-nowrap px-3 xl:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                     ${
                       isActive
                         ? "text-primary bg-primary/5"
@@ -91,11 +92,10 @@ export default function Header() {
 
           {/* CTA + Mobile menu */}
           <div className="flex items-center gap-3">
-            {/* Language Switcher (Disabled temporarily for client review) */}
-            {/* <div className="flex gap-1 text-xs font-bold items-center border border-border p-1 rounded-lg">
-              <Link href={pathname as any} locale="ar" className={`px-2 py-1 rounded-md text-text-secondary hover:bg-gray-100`}>AR</Link>
-              <Link href={pathname as any} locale="tr" className={`px-2 py-1 rounded-md text-text-secondary hover:bg-gray-100`}>TR</Link>
-            </div> */}
+            <div className="flex gap-1 text-xs font-bold items-center border border-border p-1 rounded-lg bg-gray-50/50">
+              <Link href={pathname as any} locale="ar" className={`px-2 py-1.5 rounded-md transition-colors ${locale === 'ar' ? 'bg-white text-primary shadow-sm border border-border/50' : 'text-text-secondary hover:bg-gray-100'}`}>AR</Link>
+              <Link href={pathname as any} locale="tr" className={`px-2 py-1.5 rounded-md transition-colors ${locale === 'tr' ? 'bg-white text-primary shadow-sm border border-border/50' : 'text-text-secondary hover:bg-gray-100'}`}>TR</Link>
+            </div>
 
             <Link
               href="/booking"
@@ -108,7 +108,7 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-text-secondary hover:bg-gray-100 transition-colors"
+              className="xl:hidden p-2 rounded-lg text-text-secondary hover:bg-gray-100 transition-colors"
               aria-label="القائمة"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -119,7 +119,7 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       <div
-        className={`lg:hidden border-t border-border bg-white transition-all duration-300 overflow-hidden ${
+        className={`xl:hidden border-t border-border bg-white transition-all duration-300 overflow-hidden ${
           isMenuOpen ? "max-h-[600px] opacity-100 shadow-xl" : "max-h-0 opacity-0"
         }`}
       >

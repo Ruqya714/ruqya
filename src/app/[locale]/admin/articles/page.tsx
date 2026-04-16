@@ -16,6 +16,7 @@ interface Article {
   is_published: boolean;
   published_at: string;
   created_at: string;
+  locale?: string;
 }
 
 export default function AdminArticlesPage() {
@@ -66,6 +67,7 @@ export default function AdminArticlesPage() {
             <tr className="border-b border-border bg-gray-50/50">
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">العنوان</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">التصنيف</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">اللغة</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">التاريخ</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">إجراءات</th>
@@ -81,6 +83,7 @@ export default function AdminArticlesPage() {
                 <tr key={a.id} className="hover:bg-gray-50/50">
                   <td className="px-4 py-3 font-medium text-text-primary max-w-xs truncate">{a.title}</td>
                   <td className="px-4 py-3 hidden sm:table-cell"><Badge variant={catVariant[a.category] || "default"}>{catLabel[a.category] || a.category}</Badge></td>
+                  <td className="px-4 py-3"><Badge variant="default">{a.locale === 'tr' ? 'تركي' : 'عربي'}</Badge></td>
                   <td className="px-4 py-3"><Badge variant={a.is_published ? "success" : "default"}>{a.is_published ? "منشور" : "مسودة"}</Badge></td>
                   <td className="px-4 py-3 text-xs text-text-muted hidden md:table-cell">{formatDate(a.published_at || a.created_at)}</td>
                   <td className="px-4 py-3">
