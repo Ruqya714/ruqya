@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import crypto from "crypto";
 
 // Using a service role specifically if we need to verify booking without row level security
 // Or use standard route handlers client
@@ -30,7 +29,7 @@ export async function POST(req: Request) {
     const lastName = nameParts.slice(1).join(" ") || "N/A";
 
     // Generate accurate 16-char hex timestamp
-    const timestamp = crypto.randomBytes(8).toString("hex");
+    const timestamp = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 
     const payload = {
       order_id: booking_id,
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
       city: "N/A",
       billing_address: "N/A",
       postcode: 0,
-      hookUrl: `${baseUrl}/api/payment/mtjree-webhook`,
+      hookUrl: `${shopUrl}/api/payment/mtjree-webhook`,
       customer_id: booking_id,
       timestamp: timestamp,
       phone: user_phone || "0000000000",
