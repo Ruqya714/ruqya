@@ -1,11 +1,57 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Using a service role specifically if we need to verify booking without row level security
-// Or use standard route handlers client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Map phone country codes to country info (2-letter code, city, postcode)
+const PHONE_TO_COUNTRY: Record<string, { code: string; city: string; postcode: number }> = {
+  "+90":  { code: "TR", city: "Istanbul",   postcode: 34000 },
+  "+966": { code: "SA", city: "Riyadh",     postcode: 11564 },
+  "+971": { code: "AE", city: "Dubai",      postcode: 0 },
+  "+965": { code: "KW", city: "Kuwait City",postcode: 13001 },
+  "+974": { code: "QA", city: "Doha",       postcode: 0 },
+  "+973": { code: "BH", city: "Manama",     postcode: 0 },
+  "+968": { code: "OM", city: "Muscat",     postcode: 100 },
+  "+962": { code: "JO", city: "Amman",      postcode: 11110 },
+  "+970": { code: "PS", city: "Gaza",       postcode: 0 },
+  "+961": { code: "LB", city: "Beirut",     postcode: 1100 },
+  "+964": { code: "IQ", city: "Baghdad",    postcode: 10001 },
+  "+20":  { code: "EG", city: "Cairo",      postcode: 11511 },
+  "+212": { code: "MA", city: "Casablanca", postcode: 20000 },
+  "+213": { code: "DZ", city: "Algiers",    postcode: 16000 },
+  "+216": { code: "TN", city: "Tunis",      postcode: 1000 },
+  "+218": { code: "LY", city: "Tripoli",    postcode: 0 },
+  "+249": { code: "SD", city: "Khartoum",   postcode: 11111 },
+  "+967": { code: "YE", city: "Sanaa",      postcode: 0 },
+  "+963": { code: "SY", city: "Damascus",   postcode: 0 },
+  "+1":   { code: "US", city: "New York",   postcode: 10001 },
+  "+44":  { code: "GB", city: "London",     postcode: 10000 },
+  "+49":  { code: "DE", city: "Berlin",     postcode: 10115 },
+  "+33":  { code: "FR", city: "Paris",      postcode: 75001 },
+  "+31":  { code: "NL", city: "Amsterdam",  postcode: 1011 },
+  "+46":  { code: "SE", city: "Stockholm",  postcode: 11120 },
+  "+60":  { code: "MY", city: "Kuala Lumpur",postcode: 50000 },
+  "+62":  { code: "ID", city: "Jakarta",    postcode: 10110 },
+  "+92":  { code: "PK", city: "Islamabad",  postcode: 44000 },
+  "+91":  { code: "IN", city: "New Delhi",  postcode: 110001 },
+};
+
+// Extract country code from full phone string like "+90 5551234567"
+function extractPhoneCode(phone: string): string {
+  if (!phone) return "+90";
+  const trimmed = phone.trim();
+  // Try matching longest codes first (4 digits, then 3, then 2, then 1)
+  for (const len of [4, 3, 2]) {
+    for (const code of Object.keys(PHONE_TO_COUNTRY)) {
+      if (code.length === len + 1 && trimmed.startsWith(code)) {
+        return code;
+      }
+    }
+  }
+  return "+90"; // default fallback
+}
 
 export async function POST(req: Request) {
   try {
@@ -24,34 +70,41 @@ export async function POST(req: Request) {
     const isTestMode = process.env.MTJREE_TEST_MODE === "true";
 
     // Split name to first and last
-    const nameParts = user_name?.split(" ") || ["User", ""];
-    const firstName = nameParts[0] || "N/A";
-    const lastName = nameParts.slice(1).join(" ") || "N/A";
+    const nameParts = user_name?.split(" ") || ["Customer", ""];
+    const firstName = nameParts[0] || "Customer";
+    const lastName = nameParts.slice(1).join(" ") || firstName;
+
+    // Derive country, city, postcode from phone code
+    const phoneCode = extractPhoneCode(user_phone || "");
+    const countryInfo = PHONE_TO_COUNTRY[phoneCode] || { code: "TR", city: "Istanbul", postcode: 34000 };
+
+    // Clean phone number (digits only, no spaces)
+    const cleanPhone = (user_phone || "").replace(/\s+/g, "").replace(/^\+/, "");
 
     // Generate accurate 16-char hex timestamp
     const timestamp = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 
     const payload = {
       order_id: booking_id,
-      email: user_email || "no-reply@ruqyasystem.com",
+      email: user_email || "customer@ruqyacenter.com",
       shop_type: "react",
       shop_url: shopUrl,
       currency: "USD",
       total: Number(amount),
       first_name: firstName,
       last_name: lastName,
-      country: "N/A",
-      city: "N/A",
-      billing_address: "N/A",
-      postcode: 0,
+      country: countryInfo.code,
+      city: countryInfo.city,
+      billing_address: `${countryInfo.city}, ${countryInfo.code}`,
+      postcode: countryInfo.postcode,
       hookUrl: `${shopUrl}/api/payment/mtjree-webhook`,
       customer_id: booking_id,
       timestamp: timestamp,
-      phone: user_phone || "0000000000",
-      fail_url: `${baseUrl}/${locale}/payment-result?status=failed`,
+      phone: cleanPhone,
+      fail_url: `${shopUrl}/${locale || "ar"}/payment-result?status=failed`,
       meta_data: JSON.stringify({ description, source: "ruqya_system" }),
-      logo_url: process.env.MTJREE_LOGO_URL || `${baseUrl}/logo.png`,
-      vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya System",
+      logo_url: process.env.MTJREE_LOGO_URL || `${shopUrl}/logo.png`,
+      vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center",
       test_mode: isTestMode
     };
 
