@@ -335,8 +335,8 @@ export default function BookingPage() {
         })
         .eq("id", selectedSlotId);
 
-      // Call payment gateway
-      const paymentRes = await fetch('/api/payment/create', {
+      // Call Mtjree payment gateway
+      const paymentRes = await fetch('/api/payment/mtjree-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
