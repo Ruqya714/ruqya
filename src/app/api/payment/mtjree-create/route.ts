@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       test_mode: isTestMode
     };
 
-    console.log("🔔 Creating Mtjree Payment:", payload);
+    console.log("🔔 Creating Mtjree Payment:", JSON.stringify(payload));
 
     const gatewayRes = await fetch(MTJREE_PROXY_URL, {
       method: "POST",
@@ -66,19 +66,31 @@ export async function POST(req: Request) {
       body: JSON.stringify(payload)
     });
 
-    const gatewayData = await gatewayRes.json();
-    console.log("🔔 Mtjree Response:", gatewayData);
+    // Read as text first to avoid crashing if the response is HTML
+    const responseText = await gatewayRes.text();
+    console.log("🔔 Mtjree Raw Response:", responseText);
 
-    // Assuming the response contains a checkout URL. 
-    // Need to handle if they return checkoutUrl or redirectUrl depending on their implementation.
-    const redirectUrl = gatewayData?.checkoutUrl || gatewayData?.redirect_url || gatewayData?.url;
+    let gatewayData: any;
+    try {
+      gatewayData = JSON.parse(responseText);
+    } catch {
+      console.error("Mtjree returned non-JSON response:", responseText.substring(0, 500));
+      return NextResponse.json({ 
+        error: "Payment gateway returned an invalid response. Please try again later.",
+      }, { status: 502 });
+    }
+
+    console.log("🔔 Mtjree Parsed Response:", gatewayData);
+
+    // Check all possible redirect URL field names from the gateway
+    const redirectUrl = gatewayData?.checkoutUrl || gatewayData?.redirect_url || gatewayData?.url || gatewayData?.payment_url || gatewayData?.data?.url || gatewayData?.data?.redirect_url;
 
     if (gatewayRes.ok && redirectUrl) {
       return NextResponse.json({ redirect_url: redirectUrl });
     } else {
       console.error("Mtjree Gateway Error:", gatewayData);
       return NextResponse.json({ 
-        error: gatewayData.message || "Failed to create payment session from gateway",
+        error: gatewayData?.message || gatewayData?.error || "Failed to create payment session from gateway",
         details: gatewayData
       }, { status: 400 });
     }
