@@ -9,6 +9,7 @@ import {
   Target,
   Eye,
 } from "lucide-react";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -34,12 +35,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   ];
 
   const teamMembers = [
-    { nameKey: "member0Name" as const, roleKey: "member0Role" as const },
-    { nameKey: "member1Name" as const, roleKey: "member1Role" as const },
-    { nameKey: "member2Name" as const, roleKey: "member2Role" as const },
-    { nameKey: "member3Name" as const, roleKey: "member3Role" as const },
-    { nameKey: "member4Name" as const, roleKey: "member4Role" as const },
-    { nameKey: "member5Name" as const, roleKey: "member5Role" as const },
+    { nameKey: "member0Name" as const, roleKey: "member0Role" as const, image: "/الإدارة2.jpeg", zoomClasses: "scale-100" },
+    { nameKey: "member1Name" as const, roleKey: "member1Role" as const, image: "/الراقي سيف الله أبو عامر.png", zoomClasses: "scale-[1.7] origin-top" },
+    { nameKey: "member2Name" as const, roleKey: "member2Role" as const, image: "/الراقي ابو إبراهيم.jpeg", zoomClasses: "scale-150 origin-top" },
+    { nameKey: "member3Name" as const, roleKey: "member3Role" as const, image: "/الراقي ابو إلياس.jpeg", zoomClasses: "scale-125 origin-top" },
+    { nameKey: "member4Name" as const, roleKey: "member4Role" as const, image: "/الراقي ياووز سليم.jpeg", zoomClasses: "scale-[1.6] origin-top" },
+    { nameKey: "member5Name" as const, roleKey: "member5Role" as const, image: "/الكادر الطبي.jpeg", zoomClasses: "scale-100" },
   ];
 
   const values = t.raw("values") as string[];
@@ -142,9 +143,15 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {teamMembers.map((member, i) => (
               <div key={i} className="bg-white p-6 rounded-xl border border-border text-center hover:shadow-lg transition-all">
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
-                  <Users size={32} />
-                </div>
+                {member.image ? (
+                  <div className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-primary/10 overflow-hidden relative shadow-sm">
+                    <Image src={member.image} alt={t(member.nameKey)} fill className="object-cover" sizes="96px" />
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
+                    <Users size={32} />
+                  </div>
+                )}
                 <h3 className="font-bold text-lg text-text-primary mb-1">{t(member.nameKey)}</h3>
                 <p className="text-sm text-text-secondary">{t(member.roleKey)}</p>
               </div>

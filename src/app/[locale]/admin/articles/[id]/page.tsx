@@ -218,17 +218,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1.5">لغة المقال</label>
-                <select
-                  value={(form as any).locale || 'ar'}
-                  onChange={(e) => setForm({ ...form, locale: e.target.value } as any)}
-                  className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value="ar">العربية (Arabic)</option>
-                  <option value="tr">التركية (Turkish)</option>
-                </select>
-              </div>
+
 
               <div className="flex items-center gap-2 pt-2">
                 <input

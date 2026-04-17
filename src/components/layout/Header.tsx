@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import Image from "next/image";
 import { Menu, X, Phone } from "lucide-react";
 import { PUBLIC_NAV_LINKS } from "@/lib/constants";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,7 +26,6 @@ export default function Header() {
   }, [isMenuOpen]);
   const pathname = usePathname();
   const t = useTranslations("Navigation");
-  const locale = useLocale();
 
   // Map href to translation keys
   const getNavKey = (href: string) => {
@@ -70,7 +69,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center gap-1 xl:gap-2">
             {PUBLIC_NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(`/tr${link.href !== '/' ? link.href : 'never'}`);
+              const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
@@ -92,11 +91,6 @@ export default function Header() {
 
           {/* CTA + Mobile menu */}
           <div className="flex items-center gap-3">
-            <div className="flex gap-1 text-xs font-bold items-center border border-border p-1 rounded-lg bg-gray-50/50">
-              <Link href={pathname as any} locale="ar" className={`px-2 py-1.5 rounded-md transition-colors ${locale === 'ar' ? 'bg-white text-primary shadow-sm border border-border/50' : 'text-text-secondary hover:bg-gray-100'}`}>AR</Link>
-              <Link href={pathname as any} locale="tr" className={`px-2 py-1.5 rounded-md transition-colors ${locale === 'tr' ? 'bg-white text-primary shadow-sm border border-border/50' : 'text-text-secondary hover:bg-gray-100'}`}>TR</Link>
-            </div>
-
             <Link
               href="/booking"
               className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-light transition-all duration-200 shadow-sm"
@@ -125,7 +119,7 @@ export default function Header() {
       >
         <nav className="px-4 py-6 space-y-2 max-h-[80vh] overflow-y-auto">
           {PUBLIC_NAV_LINKS.map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(`/tr${link.href !== '/' ? link.href : 'never'}`);
+            const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}

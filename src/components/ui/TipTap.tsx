@@ -5,11 +5,12 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Image from '@tiptap/extension-image';
+import Youtube from '@tiptap/extension-youtube';
 import { 
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, 
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   List, ListOrdered, Quote,
-  Undo, Redo, ImageIcon
+  Undo, Redo, ImageIcon, Video as YoutubeIcon
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useState } from 'react';
@@ -87,11 +88,26 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={`p-1.5 rounded hover:bg-gray-200 ${editor.isActive('blockquote') ? 'bg-primary/10 text-primary' : ''}`}><Quote size={16} /></button>
       <div className="w-[1px] h-5 bg-border mx-1" />
 
-      {/* Image Upload */}
-      <label className={`p-1.5 rounded hover:bg-gray-200 cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-        {isUploading ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : <ImageIcon size={16} />}
-        <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
-      </label>
+      {/* Image Upload & Youtube */}
+      <div className="flex items-center gap-1">
+        <label className={`p-1.5 rounded hover:bg-gray-200 cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`} title="إضافة صورة">
+          {isUploading ? <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : <ImageIcon size={16} />}
+          <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
+        </label>
+        <button 
+          type="button" 
+          onClick={() => {
+            const url = prompt('أدخل رابط فيديو اليوتيوب:');
+            if (url) {
+              editor.commands.setYoutubeVideo({ src: url });
+            }
+          }} 
+          className="p-1.5 rounded hover:bg-gray-200 text-red-600"
+          title="إضافة فيديو يوتيوب"
+        >
+          <YoutubeIcon size={16} />
+        </button>
+      </div>
     </div>
   );
 };
@@ -108,6 +124,12 @@ export default function TipTapEditor({ content, onChange }: { content: string; o
         inline: true,
         HTMLAttributes: {
           class: 'max-w-full h-auto rounded-lg mx-auto block my-4',
+        },
+      }),
+      Youtube.configure({
+        inline: false,
+        HTMLAttributes: {
+          class: 'w-full aspect-video rounded-lg my-4',
         },
       }),
     ],
