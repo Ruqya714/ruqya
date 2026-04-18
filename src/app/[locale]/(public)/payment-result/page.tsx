@@ -11,8 +11,8 @@ export default function PaymentResultPage() {
   const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref");
   
   // Note: For a robust system, we should verify the `tranRef` with the backend.
-  // ClickPay will also send a webhook to confirm payment definitively.
-  const isSuccess = !!tranRef && searchParams.get("respStatus") !== "E";
+  // Check both ClickPay patterns and Mtjree patterns (status=success)
+  const isSuccess = (!!tranRef && searchParams.get("respStatus") !== "E") || searchParams.get("status") === "success";
 
   if (!isSuccess) {
     return (
