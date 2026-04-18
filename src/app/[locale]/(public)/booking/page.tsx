@@ -9,6 +9,7 @@ import { formatDate, formatTime } from "@/lib/helpers";
 import { CheckCircle, Phone, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { sendBookingEmailAction } from "@/app/actions/bookingEmail";
+import { createBookingAction } from "@/app/actions/createBooking";
 
 // Country codes for WhatsApp
 const COUNTRY_CODES = [
@@ -297,7 +298,7 @@ export default function BookingPage() {
         return;
       }
 
-      const { data: booking, error: bookingError } = await supabase.from("bookings").insert({
+      const res = await createBookingAction({
         slot_id: selectedSlotId,
         service_id: form.service_id,
         healer_id: slotData.healer_id || null,
@@ -317,30 +318,20 @@ export default function BookingPage() {
           : form.patient_previous_ruqya || null,
         status: "pending",
         payment_status: "pending",
-      }).select("id").single();
+      }, slotData, selectedSlotId);
 
-      if (bookingError || !booking) {
-        console.error(bookingError);
+      if (!res.success) {
+        console.error(res.error);
         alert(t("errors.errorSubmitting"));
         return;
       }
-
-      // Increment current_bookings and mark as booked if capacity is full
-      const newCount = slotData.current_bookings + 1;
-      await supabase
-        .from("available_slots")
-        .update({
-          current_bookings: newCount,
-          is_booked: newCount >= slotData.max_capacity,
-        })
-        .eq("id", selectedSlotId);
 
       // Call Mtjree payment gateway
       const paymentRes = await fetch('/api/payment/mtjree-create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          booking_id: booking.id,
+          booking_id: res.bookingId,
           amount: (selectedService?.name.includes('الاستشارة') && form.consultation_type === 'urgent' && urgentPrice) ? urgentPrice : (selectedService?.price || 0),
           description: selectedService?.name,
           user_name: form.patient_name,

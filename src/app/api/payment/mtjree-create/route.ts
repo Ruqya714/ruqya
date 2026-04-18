@@ -104,8 +104,8 @@ export async function POST(req: Request) {
       fail_url: `${shopUrl}/${locale || "ar"}/payment-result?status=failed`,
       meta_data: JSON.stringify({ description, source: "ruqya_system" }),
       logo_url: process.env.MTJREE_LOGO_URL || `${shopUrl}/logo.png`,
-      vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center",
-      test_mode: isTestMode
+      vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"
+      // test_mode: isTestMode // removed because it causes 500 fatal error on mtjree proxy
     };
 
     console.log("🔔 Creating Mtjree Payment:", JSON.stringify(payload));
