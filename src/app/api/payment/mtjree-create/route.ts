@@ -129,7 +129,8 @@ export async function POST(req: Request) {
     } catch {
       console.error("Mtjree returned non-JSON response:", responseText.substring(0, 500));
       return NextResponse.json({ 
-        error: "Payment gateway returned an invalid response. Please try again later.",
+        error: `Unexpected response from Mtjree: ${responseText.substring(0, 200)}... Please try again later.`,
+        raw_response: responseText.substring(0, 500)
       }, { status: 502 });
     }
 
