@@ -107,7 +107,7 @@ export default async function ArticlePage({
         </header>
 
         {/* Content */}
-        <div className="bg-white rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-10 shadow-sm border border-border">
+        <div className="bg-white rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-10 shadow-sm border border-border overflow-hidden">
           <div
             className="prose md:prose-lg max-w-none text-text-primary 
               [&_h2]:text-xl md:[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-8 md:[&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-primary

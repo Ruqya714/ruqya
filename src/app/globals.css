@@ -244,6 +244,31 @@ body {
 }
 
 /* =============================================
+   Article Content — Prevent Horizontal Overflow
+   ============================================= */
+.prose iframe,
+.prose video,
+.prose embed,
+.prose object {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+}
+
+.prose img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.prose * {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* =============================================
    iOS Auto-Zoom Fix
    ============================================= */
 @media screen and (max-width: 768px) {
