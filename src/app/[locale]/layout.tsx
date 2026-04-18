@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import "../globals.css";
 import {NextIntlClientProvider} from 'next-intl';
@@ -33,6 +33,13 @@ export const metadata: Metadata = {
     locale: "ar_SA",
     siteName: "مركز الرقية بكلام الرحمن",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default async function RootLayout({
