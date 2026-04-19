@@ -101,20 +101,56 @@ export async function POST(req: Request) {
 
     console.log("🔔 Updating booking:", finalBookingId, "payment_status:", paymentStatus, "status:", bookingStatus);
 
-    const { error, count } = await supabase
+    const { data: booking, error } = await supabase
       .from("bookings")
       .update({
         payment_status: paymentStatus,
         status: bookingStatus
       })
-      .eq("id", finalBookingId);
+      .eq("id", finalBookingId)
+      .select(`
+        *,
+        available_slots (
+          slot_date,
+          start_time,
+          end_time,
+          healers ( display_name )
+        ),
+        services ( name )
+      `)
+      .single();
 
-    if (error) {
+    if (error || !booking) {
       console.error("Error updating booking:", error);
-      return NextResponse.json({ error: "Database update failed", details: error.message }, { status: 500 });
+      return NextResponse.json({ error: "Database update failed", details: error?.message }, { status: 500 });
     }
 
-    console.log("🔔 Booking updated successfully. Rows affected:", count);
+    console.log("🔔 Booking updated successfully.");
+
+    // Send email if payment is successful
+    if (isSuccess) {
+      try {
+        const { sendBookingEmailAction } = await import("@/app/actions/bookingEmail");
+        const healerName = booking.available_slots?.healers?.display_name || "مُعالج";
+        const slotDate = booking.available_slots?.slot_date || String(new Date().toISOString()).split('T')[0];
+        const startTime = booking.available_slots?.start_time || "00:00";
+        const endTime = booking.available_slots?.end_time || "00:00";
+        const serviceName = booking.services?.name || "خدمة مدفوعة";
+
+        await sendBookingEmailAction({
+          patient_name: booking.patient_name,
+          patient_email: booking.patient_email,
+          patient_phone: booking.patient_phone,
+          service_name: serviceName,
+          date: slotDate,
+          time: `${startTime} - ${endTime}`,
+          healer_name: healerName
+        });
+        console.log("🔔 Booking email sent successfully for:", finalBookingId);
+      } catch (emailError) {
+        console.error("Webhook email error:", emailError);
+      }
+    }
 
     return NextResponse.json({ received: true, status: paymentStatus, booking_id: finalBookingId });
   } catch (error: any) {

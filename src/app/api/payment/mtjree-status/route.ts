@@ -65,18 +65,52 @@ export async function GET(req: Request) {
 
     if (isSuccess && booking.payment_status !== "paid") {
       // Update booking in DB
-      const { error } = await supabase
+      const { data: updatedBooking, error } = await supabase
         .from("bookings")
         .update({
           payment_status: "paid",
           status: "confirmed"
         })
-        .eq("id", booking_id);
+        .eq("id", booking_id)
+        .select(`
+          *,
+          available_slots (
+            slot_date,
+            start_time,
+            end_time,
+            healers ( display_name )
+          ),
+          services ( name )
+        `)
+        .single();
 
-      if (error) {
+      if (error || !updatedBooking) {
         console.error("Error updating booking from status check:", error);
       } else {
         console.log("🔔 Booking updated via Order Status API:", booking_id);
+        
+        // Send email
+        try {
+          const { sendBookingEmailAction } = await import("@/app/actions/bookingEmail");
+          const healerName = updatedBooking.available_slots?.healers?.display_name || "مُعالج";
+          const slotDate = updatedBooking.available_slots?.slot_date || String(new Date().toISOString()).split('T')[0];
+          const startTime = updatedBooking.available_slots?.start_time || "00:00";
+          const endTime = updatedBooking.available_slots?.end_time || "00:00";
+          const serviceName = updatedBooking.services?.name || "خدمة مدفوعة";
+
+          await sendBookingEmailAction({
+            patient_name: updatedBooking.patient_name,
+            patient_email: updatedBooking.patient_email,
+            patient_phone: updatedBooking.patient_phone,
+            service_name: serviceName,
+            date: slotDate,
+            time: `${startTime} - ${endTime}`,
+            healer_name: healerName
+          });
+          console.log("🔔 Booking email sent successfully from status check for:", booking_id);
+        } catch (emailError) {
+          console.error("Status check email error:", emailError);
+        }
       }
 
       return NextResponse.json({ payment_status: "paid", status: "confirmed", source: "mtjree_api" });
