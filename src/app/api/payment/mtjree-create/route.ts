@@ -87,11 +87,16 @@ export async function POST(req: Request) {
     // Generate accurate 16-char hex timestamp
     const timestamp = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 
+    // Mtjree redirects to shop_url after successful payment (per their docs).
+    // There is NO success_url parameter - shop_url IS the success redirect.
+    // hookUrl must be on the same domain as shop_url (domain-level check).
+    const successRedirect = `${baseUrl}/${locale || "ar"}/payment-result?status=success&booking_id=${booking_id}`;
+
     const payload = {
       order_id: booking_id,
       email: user_email || "customer@ruqyacenter.com",
       shop_type: "react",
-      shop_url: shopUrl,
+      shop_url: successRedirect,
       currency: "USD",
       total: Number(amount),
       first_name: firstName,
@@ -100,20 +105,14 @@ export async function POST(req: Request) {
       city: countryInfo.city,
       billing_address: `${countryInfo.city}, ${countryInfo.code}`,
       postcode: countryInfo.postcode,
-      hookUrl: `${shopUrl}/api/payment/mtjree-webhook`,
+      hookUrl: `${baseUrl}/api/payment/mtjree-webhook`,
       customer_id: booking_id,
       timestamp: timestamp,
       phone: cleanPhone,
-      success_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
-      return_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
-      returnUrl: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
-      redirect_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
-      callback_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
-      fail_url: `${shopUrl}/${locale || "ar"}/payment-result?status=failed`,
+      fail_url: `${baseUrl}/${locale || "ar"}/payment-result?status=failed&booking_id=${booking_id}`,
       meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),
-      logo_url: process.env.MTJREE_LOGO_URL || `${shopUrl}/logo.png`,
+      logo_url: process.env.MTJREE_LOGO_URL || `${baseUrl}/logo.png`,
       vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"
-      // test_mode: isTestMode // removed because it causes 500 fatal error on mtjree proxy
     };
 
     console.log("🔔 Creating Mtjree Payment:", JSON.stringify(payload));

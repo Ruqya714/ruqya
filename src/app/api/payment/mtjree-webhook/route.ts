@@ -22,82 +22,101 @@ export async function POST(req: Request) {
         console.error("Failed to parse webhook JSON:", e);
       }
     }
-    console.log("🔔 Mtjree Webhook Parsed:", body);
+    console.log("🔔 Mtjree Webhook Parsed:", JSON.stringify(body));
 
-    // According to standard payment webhooks, we need to extract status and order_id
-    // Mtjree might send data in a wrapper, so we extract from body or body.data
-    const dataObj = body.data || body;
-    
-    // Sometimes order metadata comes as a string in webhook
+    // ── Per Mtjree Postman collection "Update status in hook" ──
+    // The webhook sends:
+    //   { "new_status": true, "user_id": 12345, "order_id": 67890, "meta_data": { ... } }
+    // 
+    // - "new_status" (boolean) = whether payment succeeded
+    // - "order_id" might be Mtjree internal ID or our original order_id
+    // - "meta_data" contains what we sent (includes our booking_id UUID)
+    //
+    // Also handle the raw dashboard format:
+    //   { "main_order_id": "uuid", "status": 1, "event": "operation.success" }
+
+    // Parse meta_data (could be string or object)
     let metaDataObj: any = {};
     try {
-      if (typeof dataObj.meta_data === 'string') {
-        metaDataObj = JSON.parse(dataObj.meta_data);
-      } else if (typeof dataObj.metadata === 'string') {
-        metaDataObj = JSON.parse(dataObj.metadata);
-      } else if (typeof body.meta_data === 'string') {
+      if (typeof body.meta_data === "string") {
         metaDataObj = JSON.parse(body.meta_data);
+      } else if (typeof body.meta_data === "object" && body.meta_data) {
+        metaDataObj = body.meta_data;
       }
-    } catch(e) {}
-
-    const order_id = dataObj.main_order_id || body.main_order_id || 
-                     dataObj.order_id || body.order_id || 
-                     dataObj.booking_id || body.booking_id || 
-                     dataObj.customer_id || body.customer_id ||
-                     dataObj.id || body.id || 
-                     dataObj.orderId || body.orderId ||
-                     metaDataObj.booking_id || 
-                     dataObj.cart_id;
-    
-    const statusValue = String(
-      dataObj.status || 
-      body.status || 
-      dataObj.payment_status || 
-      body.payment_status || 
-      dataObj.response_status || 
-      body.response_status || 
-      dataObj.result ||
-      ""
-    ).toLowerCase();
-    
-    const eventValue = String(dataObj.event || body.event || "").toLowerCase();
-    
-    const isSuccess = dataObj.status === true || 
-                      body.status === true ||
-                      statusValue === "true" || 
-                      statusValue === "1" || // Status 1 is success in Mtjree raw body
-                      statusValue === "completed" || 
-                      statusValue === "success" || 
-                      statusValue === "captured" || 
-                      statusValue === "authorized" ||
-                      statusValue === "approved" ||
-                      eventValue === "operation.success" ||
-                      dataObj.response_code === "000" ||
-                      body.response_code === "000";
-
-    if (!order_id) {
-      console.error("Webhook missing order_id, Payload:", body);
-      return NextResponse.json({ error: "Missing order_id" }, { status: 400 });
+    } catch (e) {
+      console.error("Failed to parse meta_data:", e);
     }
+
+    // Extract our booking UUID - priority order:
+    // 1. meta_data.booking_id (most reliable - we put it there)
+    // 2. main_order_id (dashboard/notification format)
+    // 3. order_id (could be ours if Mtjree passes it through)
+    // 4. customer_id (we set it to booking_id too)
+    const booking_id = metaDataObj.booking_id ||
+                       body.main_order_id ||
+                       body.order_id ||
+                       body.customer_id;
+
+    // Determine success status
+    // Per Postman docs: "new_status": true means success
+    // Per dashboard raw: "status": 1 or "event": "operation.success"
+    const isSuccess = body.new_status === true ||
+                      body.new_status === "true" ||
+                      body.status === true ||
+                      body.status === 1 ||
+                      String(body.status).toLowerCase() === "true" ||
+                      String(body.status).toLowerCase() === "completed" ||
+                      String(body.status).toLowerCase() === "success" ||
+                      String(body.event || "").toLowerCase() === "operation.success";
+
+    console.log("🔔 Webhook extracted - booking_id:", booking_id, "isSuccess:", isSuccess, "new_status:", body.new_status, "meta_data:", metaDataObj);
+
+    if (!booking_id) {
+      console.error("Webhook missing booking_id. Full payload:", JSON.stringify(body));
+      return NextResponse.json({ error: "Missing booking_id" }, { status: 400 });
+    }
+
+    // Validate UUID format (our booking IDs are UUIDs)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isUUID = uuidRegex.test(String(booking_id));
+
+    if (!isUUID) {
+      // If order_id is not a UUID (Mtjree internal ID), try to find it from meta_data
+      console.warn("booking_id is not a UUID:", booking_id, "- checking meta_data");
+      if (metaDataObj.booking_id && uuidRegex.test(metaDataObj.booking_id)) {
+        // Already handled above, but log for debugging
+        console.log("Found UUID in meta_data:", metaDataObj.booking_id);
+      } else {
+        console.error("Cannot find valid booking UUID in webhook payload");
+        return NextResponse.json({ error: "Invalid booking_id format" }, { status: 400 });
+      }
+    }
+
+    // Use the valid UUID
+    const finalBookingId = isUUID ? booking_id : metaDataObj.booking_id;
 
     // Update the booking status in Supabase
     const paymentStatus = isSuccess ? "paid" : "failed";
     const bookingStatus = isSuccess ? "confirmed" : "pending";
 
-    const { error } = await supabase
+    console.log("🔔 Updating booking:", finalBookingId, "payment_status:", paymentStatus, "status:", bookingStatus);
+
+    const { error, count } = await supabase
       .from("bookings")
       .update({
         payment_status: paymentStatus,
         status: bookingStatus
       })
-      .eq("id", order_id);
+      .eq("id", finalBookingId);
 
     if (error) {
       console.error("Error updating booking:", error);
-      return NextResponse.json({ error: "Database update failed" }, { status: 500 });
+      return NextResponse.json({ error: "Database update failed", details: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ received: true, status: paymentStatus });
+    console.log("🔔 Booking updated successfully. Rows affected:", count);
+
+    return NextResponse.json({ received: true, status: paymentStatus, booking_id: finalBookingId });
   } catch (error: any) {
     console.error("Webhook processing error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
