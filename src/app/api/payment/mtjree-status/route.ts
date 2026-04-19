@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     const isSuccess = mtjreeData.status === true || mtjreeData.status === "true";
 
     if (isSuccess && booking.payment_status !== "paid") {
-      // Update booking in DB
+      // Update booking in DB (Race-condition safe)
       const { data: updatedBooking, error } = await supabase
         .from("bookings")
         .update({
@@ -72,6 +72,7 @@ export async function GET(req: Request) {
           status: "confirmed"
         })
         .eq("id", booking_id)
+        .neq("payment_status", "paid")
         .select(`
           *,
           available_slots (
@@ -82,10 +83,12 @@ export async function GET(req: Request) {
           ),
           services ( name )
         `)
-        .single();
+        .maybeSingle();
 
-      if (error || !updatedBooking) {
+      if (error) {
         console.error("Error updating booking from status check:", error);
+      } else if (!updatedBooking) {
+        console.log("🔔 Status API: Booking already paid. Skipping duplicate email.");
       } else {
         console.log("🔔 Booking updated via Order Status API:", booking_id);
         

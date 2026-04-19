@@ -95,19 +95,26 @@ export async function POST(req: Request) {
     // Use the valid UUID
     const finalBookingId = isUUID ? booking_id : metaDataObj.booking_id;
 
-    // Update the booking status in Supabase
+    // Update the booking status in Supabase (Race-condition safe)
     const paymentStatus = isSuccess ? "paid" : "failed";
     const bookingStatus = isSuccess ? "confirmed" : "pending";
 
     console.log("🔔 Updating booking:", finalBookingId, "payment_status:", paymentStatus, "status:", bookingStatus);
 
-    const { data: booking, error } = await supabase
+    let query = supabase
       .from("bookings")
       .update({
         payment_status: paymentStatus,
         status: bookingStatus
       })
-      .eq("id", finalBookingId)
+      .eq("id", finalBookingId);
+      
+    // If it's a success, only update if not already paid
+    if (isSuccess) {
+      query = query.neq("payment_status", "paid");
+    }
+
+    const { data: booking, error } = await query
       .select(`
         *,
         available_slots (
@@ -118,11 +125,17 @@ export async function POST(req: Request) {
         ),
         services ( name )
       `)
-      .single();
+      .maybeSingle();
 
-    if (error || !booking) {
+    if (error) {
       console.error("Error updating booking:", error);
       return NextResponse.json({ error: "Database update failed", details: error?.message }, { status: 500 });
+    }
+
+    if (!booking) {
+      // 0 rows updated because it was already paid (or ID not found)
+      console.log("🔔 Webhook: Booking already paid or not found. Skipping duplicate email.");
+      return NextResponse.json({ received: true, status: "already_paid_or_not_found", booking_id: finalBookingId });
     }
 
     console.log("🔔 Booking updated successfully.");
