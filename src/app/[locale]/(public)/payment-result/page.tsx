@@ -197,9 +197,13 @@ export default function PaymentResultPage() {
         </p>
 
         {(tranRef || activeBookingId) && (
-          <div className="bg-primary/5 rounded-xl p-6 mb-8 max-w-sm mx-auto text-sm border border-primary/10">
-            <p className="text-text-secondary mb-1">رقم المعاملة (المرجع)</p>
-            <p className="font-medium text-text-primary font-mono">{tranRef || activeBookingId}</p>
+          <div className="bg-gray-50 rounded-xl p-5 mb-8 max-w-xs mx-auto border border-gray-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+            <p className="text-text-secondary text-sm mb-2">رقم المعاملة (المرجع)</p>
+            <div className="inline-flex items-center justify-center bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+              <p className="font-bold text-primary tracking-wider font-mono text-lg">
+                #{String(tranRef || activeBookingId).split("-")[0].substring(0, 8).toUpperCase()}
+              </p>
+            </div>
           </div>
         )}
 
