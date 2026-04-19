@@ -106,6 +106,8 @@ export async function POST(req: Request) {
       phone: cleanPhone,
       success_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
       return_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
+      returnUrl: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
+      redirect_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
       callback_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
       fail_url: `${shopUrl}/${locale || "ar"}/payment-result?status=failed`,
       meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),

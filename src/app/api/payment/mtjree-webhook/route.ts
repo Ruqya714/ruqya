@@ -40,7 +40,8 @@ export async function POST(req: Request) {
       }
     } catch(e) {}
 
-    const order_id = dataObj.order_id || body.order_id || 
+    const order_id = dataObj.main_order_id || body.main_order_id || 
+                     dataObj.order_id || body.order_id || 
                      dataObj.booking_id || body.booking_id || 
                      dataObj.customer_id || body.customer_id ||
                      dataObj.id || body.id || 
@@ -59,14 +60,18 @@ export async function POST(req: Request) {
       ""
     ).toLowerCase();
     
+    const eventValue = String(dataObj.event || body.event || "").toLowerCase();
+    
     const isSuccess = dataObj.status === true || 
                       body.status === true ||
                       statusValue === "true" || 
+                      statusValue === "1" || // Status 1 is success in Mtjree raw body
                       statusValue === "completed" || 
                       statusValue === "success" || 
                       statusValue === "captured" || 
                       statusValue === "authorized" ||
                       statusValue === "approved" ||
+                      eventValue === "operation.success" ||
                       dataObj.response_code === "000" ||
                       body.response_code === "000";
 
