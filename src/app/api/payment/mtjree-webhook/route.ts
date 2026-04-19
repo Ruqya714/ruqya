@@ -25,21 +25,53 @@ export async function POST(req: Request) {
     console.log("🔔 Mtjree Webhook Parsed:", body);
 
     // According to standard payment webhooks, we need to extract status and order_id
-    // Mtjree might send `status: true/false` or `status: "completed"`, we'll log it and handle
-    const order_id = body.order_id || body.booking_id || body.id || body.orderId;
+    // Mtjree might send data in a wrapper, so we extract from body or body.data
+    const dataObj = body.data || body;
     
-    const statusValue = String(body.status || body.payment_status || body.response_status || "").toLowerCase();
-    const isSuccess = body.status === true || 
+    // Sometimes order metadata comes as a string in webhook
+    let metaDataObj: any = {};
+    try {
+      if (typeof dataObj.meta_data === 'string') {
+        metaDataObj = JSON.parse(dataObj.meta_data);
+      } else if (typeof dataObj.metadata === 'string') {
+        metaDataObj = JSON.parse(dataObj.metadata);
+      } else if (typeof body.meta_data === 'string') {
+        metaDataObj = JSON.parse(body.meta_data);
+      }
+    } catch(e) {}
+
+    const order_id = dataObj.order_id || body.order_id || 
+                     dataObj.booking_id || body.booking_id || 
+                     dataObj.customer_id || body.customer_id ||
+                     dataObj.id || body.id || 
+                     dataObj.orderId || body.orderId ||
+                     metaDataObj.booking_id || 
+                     dataObj.cart_id;
+    
+    const statusValue = String(
+      dataObj.status || 
+      body.status || 
+      dataObj.payment_status || 
+      body.payment_status || 
+      dataObj.response_status || 
+      body.response_status || 
+      dataObj.result ||
+      ""
+    ).toLowerCase();
+    
+    const isSuccess = dataObj.status === true || 
+                      body.status === true ||
                       statusValue === "true" || 
                       statusValue === "completed" || 
                       statusValue === "success" || 
                       statusValue === "captured" || 
                       statusValue === "authorized" ||
                       statusValue === "approved" ||
+                      dataObj.response_code === "000" ||
                       body.response_code === "000";
 
     if (!order_id) {
-      console.error("Webhook missing order_id");
+      console.error("Webhook missing order_id, Payload:", body);
       return NextResponse.json({ error: "Missing order_id" }, { status: 400 });
     }
 

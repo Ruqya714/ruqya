@@ -104,8 +104,11 @@ export async function POST(req: Request) {
       customer_id: booking_id,
       timestamp: timestamp,
       phone: cleanPhone,
+      success_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
+      return_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
+      callback_url: `${shopUrl}/${locale || "ar"}/payment-result?status=success`,
       fail_url: `${shopUrl}/${locale || "ar"}/payment-result?status=failed`,
-      meta_data: JSON.stringify({ description, source: "ruqya_system" }),
+      meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),
       logo_url: process.env.MTJREE_LOGO_URL || `${shopUrl}/logo.png`,
       vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"
       // test_mode: isTestMode // removed because it causes 500 fatal error on mtjree proxy
