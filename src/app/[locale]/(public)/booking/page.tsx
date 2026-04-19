@@ -343,6 +343,13 @@ export default function BookingPage() {
 
       const paymentData = await paymentRes.json();
       if (paymentRes.ok && paymentData.redirect_url) {
+        // Save booking info to localStorage so we can detect return from payment
+        // Mtjree redirects to shop_url (homepage) after success - we'll catch it there
+        localStorage.setItem("mtjree_pending_booking", JSON.stringify({
+          booking_id: res.bookingId,
+          locale: locale,
+          timestamp: Date.now()
+        }));
         window.location.href = paymentData.redirect_url;
       } else {
         alert(paymentData.error || "فشل في إنشاء رابط الدفع - تأكد من إعدادات البوابة");

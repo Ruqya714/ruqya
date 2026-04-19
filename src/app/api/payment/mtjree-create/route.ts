@@ -87,16 +87,15 @@ export async function POST(req: Request) {
     // Generate accurate 16-char hex timestamp
     const timestamp = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 
-    // Mtjree redirects to shop_url after successful payment (per their docs).
-    // There is NO success_url parameter - shop_url IS the success redirect.
-    // hookUrl must be on the same domain as shop_url (domain-level check).
-    const successRedirect = `${baseUrl}/${locale || "ar"}/payment-result?status=success&booking_id=${booking_id}`;
+    // Mtjree validates shop_url against registered domains - must be exact base domain.
+    // Redirect after success goes to shop_url (homepage). Client-side localStorage
+    // handles detecting return from payment and redirecting to payment-result page.
 
     const payload = {
       order_id: booking_id,
       email: user_email || "customer@ruqyacenter.com",
       shop_type: "react",
-      shop_url: successRedirect,
+      shop_url: baseUrl,
       currency: "USD",
       total: Number(amount),
       first_name: firstName,
@@ -109,7 +108,7 @@ export async function POST(req: Request) {
       customer_id: booking_id,
       timestamp: timestamp,
       phone: cleanPhone,
-      fail_url: `${baseUrl}/${locale || "ar"}/payment-result?status=failed&booking_id=${booking_id}`,
+      fail_url: `${baseUrl}/${locale || "ar"}/payment-result?status=failed`,
       meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),
       logo_url: process.env.MTJREE_LOGO_URL || `${baseUrl}/logo.png`,
       vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"

@@ -13,6 +13,7 @@ import {
   Globe,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import PaymentReturnDetector from "@/components/PaymentReturnDetector";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -56,6 +57,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
+      {/* Detects return from Mtjree payment and redirects to payment-result */}
+      <PaymentReturnDetector />
       {/* ========== Hero Section ========== */}
       <section className="relative gradient-hero text-white">
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">

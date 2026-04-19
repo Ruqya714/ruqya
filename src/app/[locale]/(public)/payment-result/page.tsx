@@ -13,15 +13,18 @@ export default function PaymentResultPage() {
   const statusParam = searchParams.get("status");
   const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref");
   
-  const [verifiedStatus, setVerifiedStatus] = useState<"loading" | "paid" | "failed">("loading");
+  const [verifiedStatus, setVerifiedStatus] = useState<"loading" | "paid" | "failed">(
+    // If status=failed in URL, show failure immediately
+    statusParam === "failed" ? "failed" : "loading"
+  );
 
-  // When user lands here after Mtjree redirect, call our status API
-  // to verify payment and update booking if webhook hasn't fired yet
+  // Verify payment status via our backend API
   useEffect(() => {
+    if (statusParam === "failed") return; // Already set above
+
     async function verifyPayment() {
       if (!bookingId) {
-        // No booking_id means probably old format or direct visit
-        // Fall back to URL status param
+        // No booking_id - use URL params as fallback
         setVerifiedStatus(statusParam === "success" || !!tranRef ? "paid" : "failed");
         return;
       }
@@ -33,14 +36,19 @@ export default function PaymentResultPage() {
 
         if (data.payment_status === "paid") {
           setVerifiedStatus("paid");
+          return;
+        }
+
+        // If not paid yet, wait 3 seconds and retry (webhook may be delayed)
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        const retryRes = await fetch(`/api/payment/mtjree-status?booking_id=${bookingId}`);
+        const retryData = await retryRes.json();
+
+        if (retryData.payment_status === "paid") {
+          setVerifiedStatus("paid");
         } else if (statusParam === "success") {
-          // Mtjree redirected to success URL but status not confirmed yet
-          // This could mean webhook hasn't fired yet - wait and retry
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          const retryRes = await fetch(`/api/payment/mtjree-status?booking_id=${bookingId}`);
-          const retryData = await retryRes.json();
-          setVerifiedStatus(retryData.payment_status === "paid" ? "paid" : "paid");
-          // If Mtjree redirected to success URL, we trust their redirect
+          // Mtjree redirected to success URL, trust their redirect
+          setVerifiedStatus("paid");
         } else {
           setVerifiedStatus("failed");
         }
