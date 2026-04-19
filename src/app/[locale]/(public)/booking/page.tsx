@@ -180,18 +180,15 @@ export default function BookingPage() {
     const isConsultation = services.find((s: Service) => s.id === form.service_id)?.name.includes('الاستشارة');
     
     let minDate = new Date();
-    let maxDate: Date | null = null;
     
     if (isConsultation && form.consultation_type) {
       if (form.consultation_type === 'urgent') {
         // Urgent: starting from today/now (no max date limit)
         minDate = new Date();
-        maxDate = null;
       } else if (form.consultation_type === 'normal') {
         // Normal: from 7 days onwards
         minDate = new Date();
         minDate.setDate(minDate.getDate() + 7);
-        maxDate = null;
       }
     }
 
@@ -203,11 +200,6 @@ export default function BookingPage() {
       .eq("is_booked", false)
       .gte("slot_date", minDateStr);
 
-    if (maxDate) {
-      const maxDateStr = maxDate.toISOString().split("T")[0];
-      query = query.lte("slot_date", maxDateStr);
-    }
-    
     query = query.order("slot_date");
 
     const { data } = await query;
