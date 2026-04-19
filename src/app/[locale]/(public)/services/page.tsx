@@ -195,7 +195,6 @@ export default function ServicesPage() {
                 <ImageIcon className="w-8 h-8" />
               </div>
               <h2 className="text-2xl lg:text-4xl font-bold text-text-primary mb-4">{t("infographicTitle")}</h2>
-              <p className="text-text-secondary text-lg">{t("infographicDesc")}</p>
             </div>
             <div className="flex justify-center bg-gray-50 p-2 sm:p-4 lg:p-8 rounded-3xl border border-gray-100 shadow-inner">
               <Image 

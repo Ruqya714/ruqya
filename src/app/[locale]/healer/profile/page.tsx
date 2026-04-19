@@ -12,6 +12,7 @@ export default function HealerProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [form, setForm] = useState({ full_name: "", specialization: "", bio: "", is_available: true });
   const [healerId, setHealerId] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const supabase = createClient();
@@ -26,6 +27,7 @@ export default function HealerProfilePage() {
 
     if (healer) {
       setHealerId(healer.id);
+      setPhotoUrl(healer.photo_url);
       setForm({
         full_name: profile?.full_name || "",
         specialization: healer.specialization || "",
@@ -68,8 +70,12 @@ export default function HealerProfilePage() {
         <div className="bg-white rounded-xl border border-border p-6 space-y-5">
           {/* Avatar */}
           <div className="flex items-center gap-4 pb-5 border-b border-border">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <User size={28} className="text-primary" />
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden shrink-0 border-2 border-white shadow-sm">
+              {photoUrl ? (
+                <img src={photoUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User size={28} className="text-primary" />
+              )}
             </div>
             <div>
               <p className="font-semibold text-lg text-text-primary">{form.full_name || t("healer")}</p>

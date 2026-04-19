@@ -188,12 +188,10 @@ export default function BookingPage() {
         minDate = new Date();
         maxDate = null;
       } else if (form.consultation_type === 'normal') {
-        // Normal: from 3 to 7 days
+        // Normal: from 7 days onwards
         minDate = new Date();
-        minDate.setDate(minDate.getDate() + 3);
-        
-        maxDate = new Date();
-        maxDate.setDate(maxDate.getDate() + 7);
+        minDate.setDate(minDate.getDate() + 7);
+        maxDate = null;
       }
     }
 
@@ -314,7 +312,7 @@ export default function BookingPage() {
         patient_can_travel: form.patient_can_travel === "yes" ? true : form.patient_can_travel === "no" ? false : null,
         patient_need_type: form.patient_need_type || null,
         patient_notes: selectedService?.name.includes('الاستشارة') && form.consultation_type 
-          ? `نوع الاستشارة: ${form.consultation_type === 'urgent' ? 'مستعجلة (خلال 24 ساعة)' : 'عادية (من 3 الى 7 ايام)'}\n\n${form.patient_previous_ruqya || ''}`
+          ? `نوع الاستشارة: ${form.consultation_type === 'urgent' ? 'مستعجلة (خلال 24 ساعة)' : 'عادية (من 7 أيام وما فوق)'}\n\n${form.patient_previous_ruqya || ''}`
           : form.patient_previous_ruqya || null,
         status: "pending",
         payment_status: "pending",
