@@ -10,26 +10,48 @@ export default function PaymentResultPage() {
   const searchParams = useSearchParams();
   const t = useTranslations("Booking");
   const locale = useLocale();
-  const bookingId = searchParams.get("booking_id");
+  const urlBookingId = searchParams.get("booking_id");
+  const fallbackBookingId = searchParams.get("amp;booking_id") || searchParams.get("amp;%3Bbooking_id"); // in case of MTJREE encoding glitches
   const statusParam = searchParams.get("status");
   const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref");
   
+  const [activeBookingId, setActiveBookingId] = useState<string | null>(urlBookingId || fallbackBookingId);
   const [verifiedStatus, setVerifiedStatus] = useState<"loading" | "paid" | "failed">(
-    statusParam === "failed" ? "failed" : "loading"
+    statusParam?.includes("failed") ? "failed" : "loading"
   );
   const [isRetrying, setIsRetrying] = useState(false);
 
+  // Initialize booking ID from localStorage if URL parameter was corrupted by gateway
   useEffect(() => {
-    if (statusParam === "failed") return;
+    if (!activeBookingId) {
+      try {
+        const pending = localStorage.getItem("mtjree_pending_booking");
+        if (pending) {
+          const data = JSON.parse(pending);
+          if (data.booking_id) {
+            setActiveBookingId(data.booking_id);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse pending booking", e);
+      }
+    }
+  }, [activeBookingId]);
+
+  useEffect(() => {
+    if (statusParam?.includes("failed")) return;
 
     async function verifyPayment() {
-      if (!bookingId) {
-        setVerifiedStatus(statusParam === "success" || !!tranRef ? "paid" : "failed");
+      // Use activeBookingId from state (which might be populated from localStorage)
+      const idToVerify = activeBookingId;
+      
+      if (!idToVerify) {
+        setVerifiedStatus(statusParam?.includes("success") || !!tranRef ? "paid" : "failed");
         return;
       }
 
       try {
-        const res = await fetch(`/api/payment/mtjree-status?booking_id=${bookingId}`);
+        const res = await fetch(`/api/payment/mtjree-status?booking_id=${idToVerify}`);
         const data = await res.json();
 
         if (data.payment_status === "paid") {
@@ -39,34 +61,41 @@ export default function PaymentResultPage() {
 
         // Wait and retry if webhook hasn't fired yet
         await new Promise(resolve => setTimeout(resolve, 3000));
-        const retryRes = await fetch(`/api/payment/mtjree-status?booking_id=${bookingId}`);
+        const retryRes = await fetch(`/api/payment/mtjree-status?booking_id=${idToVerify}`);
         const retryData = await retryRes.json();
 
         if (retryData.payment_status === "paid") {
           setVerifiedStatus("paid");
-        } else if (statusParam === "success") {
+        } else if (statusParam?.includes("success")) {
           setVerifiedStatus("paid");
         } else {
           setVerifiedStatus("failed");
         }
       } catch (error) {
         console.error("Failed to verify payment:", error);
-        setVerifiedStatus(statusParam === "success" ? "paid" : "failed");
+        setVerifiedStatus(statusParam?.includes("success") ? "paid" : "failed");
       }
     }
 
-    verifyPayment();
-  }, [bookingId, statusParam, tranRef]);
+    // Give the localstorage effect above a moment to run
+    if (activeBookingId || urlBookingId) {
+      verifyPayment();
+    } else {
+      // wait a bit for local storage check
+      const timer = setTimeout(verifyPayment, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [activeBookingId, urlBookingId, statusParam, tranRef]);
 
   // Retry payment handler
   const handleRetryPayment = async () => {
-    if (!bookingId || isRetrying) return;
+    if (!activeBookingId || isRetrying) return;
     setIsRetrying(true);
 
     try {
       // Save to localStorage for redirect detection (same as initial payment)
       localStorage.setItem("mtjree_pending_booking", JSON.stringify({
-        booking_id: bookingId,
+        booking_id: activeBookingId,
         locale: locale,
         timestamp: Date.now()
       }));
@@ -74,7 +103,7 @@ export default function PaymentResultPage() {
       const res = await fetch("/api/payment/mtjree-retry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ booking_id: bookingId, locale })
+        body: JSON.stringify({ booking_id: activeBookingId, locale })
       });
 
       const data = await res.json();
@@ -127,7 +156,7 @@ export default function PaymentResultPage() {
             عذراً، لم نتمكن من إتمام عملية الدفع الخاصة بك. يرجى التأكد من بيانات البطاقة أو المحاولة مرة أخرى.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            {bookingId && (
+            {activeBookingId && (
               <button
                 onClick={handleRetryPayment}
                 disabled={isRetrying}
@@ -167,10 +196,10 @@ export default function PaymentResultPage() {
           تمت عملية الدفع وتأكيد الحجز بنجاح. سيصلك إيميل بالتفاصيل المعتمدة.
         </p>
 
-        {(tranRef || bookingId) && (
+        {(tranRef || activeBookingId) && (
           <div className="bg-primary/5 rounded-xl p-6 mb-8 max-w-sm mx-auto text-sm border border-primary/10">
             <p className="text-text-secondary mb-1">رقم المعاملة (المرجع)</p>
-            <p className="font-medium text-text-primary font-mono">{tranRef || bookingId}</p>
+            <p className="font-medium text-text-primary font-mono">{tranRef || activeBookingId}</p>
           </div>
         )}
 
