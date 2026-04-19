@@ -108,7 +108,7 @@ export async function POST(req: Request) {
       customer_id: booking_id,
       timestamp: timestamp,
       phone: cleanPhone,
-      fail_url: `${PRODUCTION_DOMAIN}/${locale || "ar"}/payment-result?status=failed`,
+      fail_url: `${PRODUCTION_DOMAIN}/${locale || "ar"}/payment-result?status=failed&booking_id=${booking_id}`,
       meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),
       logo_url: process.env.MTJREE_LOGO_URL || `${PRODUCTION_DOMAIN}/logo.png`,
       vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"

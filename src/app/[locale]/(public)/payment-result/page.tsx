@@ -2,35 +2,33 @@
 
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { CheckCircle, XCircle, Loader2, RefreshCw } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 
 export default function PaymentResultPage() {
   const searchParams = useSearchParams();
   const t = useTranslations("Booking");
+  const locale = useLocale();
   const bookingId = searchParams.get("booking_id");
   const statusParam = searchParams.get("status");
   const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref");
   
   const [verifiedStatus, setVerifiedStatus] = useState<"loading" | "paid" | "failed">(
-    // If status=failed in URL, show failure immediately
     statusParam === "failed" ? "failed" : "loading"
   );
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  // Verify payment status via our backend API
   useEffect(() => {
-    if (statusParam === "failed") return; // Already set above
+    if (statusParam === "failed") return;
 
     async function verifyPayment() {
       if (!bookingId) {
-        // No booking_id - use URL params as fallback
         setVerifiedStatus(statusParam === "success" || !!tranRef ? "paid" : "failed");
         return;
       }
 
       try {
-        // Call our Order Status API which checks Mtjree + updates DB
         const res = await fetch(`/api/payment/mtjree-status?booking_id=${bookingId}`);
         const data = await res.json();
 
@@ -39,7 +37,7 @@ export default function PaymentResultPage() {
           return;
         }
 
-        // If not paid yet, wait 3 seconds and retry (webhook may be delayed)
+        // Wait and retry if webhook hasn't fired yet
         await new Promise(resolve => setTimeout(resolve, 3000));
         const retryRes = await fetch(`/api/payment/mtjree-status?booking_id=${bookingId}`);
         const retryData = await retryRes.json();
@@ -47,14 +45,12 @@ export default function PaymentResultPage() {
         if (retryData.payment_status === "paid") {
           setVerifiedStatus("paid");
         } else if (statusParam === "success") {
-          // Mtjree redirected to success URL, trust their redirect
           setVerifiedStatus("paid");
         } else {
           setVerifiedStatus("failed");
         }
       } catch (error) {
         console.error("Failed to verify payment:", error);
-        // Fall back to URL status param
         setVerifiedStatus(statusParam === "success" ? "paid" : "failed");
       }
     }
@@ -62,6 +58,42 @@ export default function PaymentResultPage() {
     verifyPayment();
   }, [bookingId, statusParam, tranRef]);
 
+  // Retry payment handler
+  const handleRetryPayment = async () => {
+    if (!bookingId || isRetrying) return;
+    setIsRetrying(true);
+
+    try {
+      // Save to localStorage for redirect detection (same as initial payment)
+      localStorage.setItem("mtjree_pending_booking", JSON.stringify({
+        booking_id: bookingId,
+        locale: locale,
+        timestamp: Date.now()
+      }));
+
+      const res = await fetch("/api/payment/mtjree-retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ booking_id: bookingId, locale })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.redirect_url) {
+        window.location.href = data.redirect_url;
+      } else {
+        alert(data.error || "فشل في إعادة إنشاء رابط الدفع");
+        localStorage.removeItem("mtjree_pending_booking");
+        setIsRetrying(false);
+      }
+    } catch (error) {
+      console.error("Retry payment error:", error);
+      alert("حدث خطأ أثناء إعادة المحاولة");
+      localStorage.removeItem("mtjree_pending_booking");
+      setIsRetrying(false);
+    }
+  };
+
+  // Loading state
   if (verifiedStatus === "loading") {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
@@ -80,6 +112,7 @@ export default function PaymentResultPage() {
     );
   }
 
+  // Failed state
   if (verifiedStatus === "failed") {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
@@ -91,14 +124,28 @@ export default function PaymentResultPage() {
             فشلت عملية الدفع
           </h2>
           <p className="text-text-secondary leading-relaxed mb-8">
-            عذراً، لم نتمكن من إتمام عملية الدفع الخاصة بك. يرجى التأكد من بيانات البطاقة أو المحاولة مرة أخرى لاحقاً.
+            عذراً، لم نتمكن من إتمام عملية الدفع الخاصة بك. يرجى التأكد من بيانات البطاقة أو المحاولة مرة أخرى.
           </p>
-          <div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            {bookingId && (
+              <button
+                onClick={handleRetryPayment}
+                disabled={isRetrying}
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all shadow-sm hover:shadow-md disabled:opacity-60"
+              >
+                {isRetrying ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <RefreshCw size={18} />
+                )}
+                {isRetrying ? "جاري إعادة المحاولة..." : "إعادة محاولة الدفع"}
+              </button>
+            )}
             <Link
               href="/booking"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all shadow-sm hover:shadow-md"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg border border-border text-text-primary font-medium hover:bg-gray-50 transition-all"
             >
-              العودة للحجز
+              حجز جديد
             </Link>
           </div>
         </div>
@@ -106,6 +153,7 @@ export default function PaymentResultPage() {
     );
   }
 
+  // Success state
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center">
       <div className="bg-white rounded-2xl border border-border p-8 lg:p-12">
