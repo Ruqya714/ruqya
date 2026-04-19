@@ -68,9 +68,9 @@ export async function POST(req: Request) {
     // Prepare API URL and headers
     const MTJREE_PROXY_URL = "https://mtjree.link/wp-json/custom/v1/proxy";
     const API_KEY = process.env.MTJREE_API_KEY || "";
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://ruqyacenter.com";
-    const shopUrl = process.env.MTJREE_SHOP_URL || baseUrl;
-    const isTestMode = process.env.MTJREE_TEST_MODE === "true";
+    // IMPORTANT: Hardcode production domain. DO NOT use NEXT_PUBLIC_BASE_URL 
+    // because it gets embedded at build time and can be "localhost:3000" locally.
+    const PRODUCTION_DOMAIN = "https://ruqyacenter.com";
 
     // Split name to first and last
     const nameParts = user_name?.split(" ") || ["Customer", ""];
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
       order_id: booking_id,
       email: user_email || "customer@ruqyacenter.com",
       shop_type: "react",
-      shop_url: baseUrl,
+      shop_url: PRODUCTION_DOMAIN,
       currency: "USD",
       total: Number(amount),
       first_name: firstName,
@@ -104,13 +104,13 @@ export async function POST(req: Request) {
       city: countryInfo.city,
       billing_address: `${countryInfo.city}, ${countryInfo.code}`,
       postcode: countryInfo.postcode,
-      hookUrl: `${baseUrl}/api/payment/mtjree-webhook`,
+      hookUrl: `${PRODUCTION_DOMAIN}/api/payment/mtjree-webhook`,
       customer_id: booking_id,
       timestamp: timestamp,
       phone: cleanPhone,
-      fail_url: `${baseUrl}/${locale || "ar"}/payment-result?status=failed`,
+      fail_url: `${PRODUCTION_DOMAIN}/${locale || "ar"}/payment-result?status=failed`,
       meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),
-      logo_url: process.env.MTJREE_LOGO_URL || `${baseUrl}/logo.png`,
+      logo_url: process.env.MTJREE_LOGO_URL || `${PRODUCTION_DOMAIN}/logo.png`,
       vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"
     };
 
@@ -124,8 +124,8 @@ export async function POST(req: Request) {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
         "Accept": "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
-        "Origin": shopUrl,
-        "Referer": `${shopUrl}/`
+        "Origin": PRODUCTION_DOMAIN,
+        "Referer": `${PRODUCTION_DOMAIN}/`
       },
       body: JSON.stringify(payload)
     });
