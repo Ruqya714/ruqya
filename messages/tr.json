@@ -538,5 +538,17 @@
     "c_62": "Endonezya",
     "c_92": "Pakistan",
     "c_91": "Hindistan"
+  },
+  "UpdatePassword": {
+    "title": "Şifreyi Güncelle",
+    "subtitle": "Lütfen hesap için yeni şifrenizi girin",
+    "newPassword": "Yeni Şifre",
+    "confirmPassword": "Şifreyi Onayla",
+    "updateButton": "Şifreyi Kaydet",
+    "successTitle": "Başarıyla Güncellendi",
+    "successDesc": "Şifreniz başarıyla değiştirildi, artık giriş yapmak için kullanabilirsiniz.",
+    "backToLogin": "Giriş Yapmaya Git",
+    "passwordMismatch": "Şifreler eşleşmiyor",
+    "genericError": "Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
   }
 }
