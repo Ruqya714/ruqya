@@ -5,6 +5,7 @@ import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import {routing} from '@/i18n/routing';
 import {notFound} from 'next/navigation';
+import AuthRedirectHandler from '@/components/AuthRedirectHandler';
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   weight: ["300", "400", "500", "600", "700"],
@@ -61,6 +62,7 @@ export default async function RootLayout({
     <html lang={locale} dir={locale === 'tr' ? 'ltr' : 'rtl'} className={ibmPlexArabic.className}>
       <body className="min-h-screen flex flex-col overflow-x-hidden bg-bg">
         <NextIntlClientProvider messages={messages}>
+          <AuthRedirectHandler />
           {children}
         </NextIntlClientProvider>
       </body>

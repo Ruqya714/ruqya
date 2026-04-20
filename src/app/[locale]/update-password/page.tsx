@@ -32,7 +32,10 @@ function UpdatePasswordForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState("");
 
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
+    // Check for URL query param errors (e.g. from auth callback redirect)
     const urlError = searchParams.get("error");
     if (urlError) {
       if (urlError === "access_denied") {
@@ -40,7 +43,44 @@ function UpdatePasswordForm() {
       } else {
         setError(searchParams.get("error_description") || t("genericError"));
       }
+      setIsReady(true);
+      return;
     }
+
+    // Wait for Supabase client to pick up tokens from URL hash
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // Session established from recovery link - form is ready
+        setIsReady(true);
+      } else if (event === "SIGNED_IN" && session) {
+        // Also handle generic sign-in (PKCE flow)
+        setIsReady(true);
+      }
+    });
+
+    // Also check if there's already a session (in case event fired before listener)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsReady(true);
+      }
+    });
+
+    // Timeout fallback - if no session after 3s, show error
+    const timeout = setTimeout(() => {
+      if (!isReady) {
+        setIsReady(true);
+        // Only show error if no hash tokens present (direct visit)
+        if (!window.location.hash.includes("access_token")) {
+          setError("لم يتم العثور على جلسة صالحة. يرجى طلب رابط إعادة تعيين كلمة المرور مرة أخرى.");
+        }
+      }
+    }, 3000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, [searchParams, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,7 +126,12 @@ function UpdatePasswordForm() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-[var(--shadow-card)] border border-border p-8">
-          {isSuccess ? (
+          {!isReady ? (
+            <div className="text-center py-8">
+              <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-sm text-text-secondary">جاري التحقق من الرابط...</p>
+            </div>
+          ) : isSuccess ? (
             <div className="text-center py-4">
               <div className="w-16 h-16 rounded-full bg-green-50 mx-auto flex items-center justify-center mb-4">
                 <CheckCircle size={32} className="text-green-500" />
