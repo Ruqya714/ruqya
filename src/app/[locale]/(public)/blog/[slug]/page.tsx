@@ -76,7 +76,7 @@ export default async function ArticlePage({
           className="inline-flex items-center gap-2 text-xs sm:text-sm text-text-secondary hover:text-primary transition-colors mb-6 md:mb-8 bg-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm hover:shadow-md border border-border"
         >
           <ArrowRight size={16} />
-          {t("backToArticles") || "{t("backToArticles") || "العودة للمقالات"}"}
+          {t("backToArticles") || "العودة للمقالات"}
         </Link>
 
         {/* Header */}
@@ -136,7 +136,7 @@ export default async function ArticlePage({
             className="inline-flex w-full sm:w-auto justify-center items-center gap-2 px-6 py-3 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary-light transition-all shadow-md hover:shadow-lg"
           >
             <ArrowRight size={16} />
-            {t("browseMore") || "{t("browseMore") || "تصفح المزيد من المقالات"}"}
+            {t("browseMore") || "تصفح المزيد من المقالات"}
           </Link>
         </div>
       </div>
