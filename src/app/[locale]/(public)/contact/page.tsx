@@ -27,9 +27,9 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const formatPhone = (phone: string) => phone.replace(/[^0-9+]/g, '');
 
   const contactItems = [
-    { icon: <Phone size={20} />, label: t("phone"), value: settings.phone || "+90 XXX XXX XXXX", href: `tel:${formatPhone(settings.phone || "+905300000000")}`, dir: "ltr" as const },
-    { icon: <MessageCircle size={20} />, label: t("whatsapp"), value: settings.whatsapp || "+90 XXX XXX XXXX", href: `https://wa.me/${formatPhone(settings.whatsapp || "+905300000000").replace('+', '')}`, dir: "ltr" as const },
-    { icon: <Mail size={20} />, label: t("email"), value: settings.email || "info@ruqyah-center.com", href: `mailto:${settings.email || "info@ruqyah-center.com"}`, dir: "ltr" as const },
+    { icon: <Phone size={20} />, label: t("phone"), value: settings.phone || "+90 537 859 88 50", href: `tel:${formatPhone(settings.phone || "+905378598850")}`, dir: "ltr" as const },
+    { icon: <MessageCircle size={20} />, label: t("whatsapp"), value: settings.whatsapp || "+90 537 859 88 50", href: `https://wa.me/${formatPhone(settings.whatsapp || "+905378598850").replace('+', '')}`, dir: "ltr" as const },
+    { icon: <Mail size={20} />, label: t("email"), value: settings.email || "ruqya714@gmail.com", href: `mailto:${settings.email || "ruqya714@gmail.com"}`, dir: "ltr" as const },
     { icon: <MapPin size={20} />, label: t("address"), value: locale === 'tr' ? t("addressValue") : (settings.address || t("addressValue")), dir: "rtl" as const },
     { icon: <Clock size={20} />, label: t("workHours"), value: t("workHoursValue"), dir: "rtl" as const },
   ];

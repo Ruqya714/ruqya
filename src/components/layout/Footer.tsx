@@ -90,11 +90,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
                 <Phone size={16} className="text-accent flex-shrink-0" />
-                <span className="text-sm text-gray-300" dir="ltr">{settings.phone || "+90 5XX XXX XXXX"}</span>
+                <span className="text-sm text-gray-300" dir="ltr">{settings.phone || "+90 537 859 88 50"}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={16} className="text-accent flex-shrink-0" />
-                <span className="text-sm text-gray-300">{settings.email || "info@ruqyah-center.com"}</span>
+                <span className="text-sm text-gray-300">{settings.email || "ruqya714@gmail.com"}</span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="text-accent flex-shrink-0 mt-0.5" />
