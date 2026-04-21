@@ -137,9 +137,9 @@ export default function ForgotPasswordPage() {
 
               <form onSubmit={handleVerifyOtp} className="space-y-5">
                 <div>
-                  <label htmlFor="otpCode" className="block text-sm font-medium text-text-primary mb-1.5 text-center">رمز التحقق السداسي (OTP)</label>
-                  <input id="otpCode" type="text" inputMode="numeric" required maxLength={6} value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} placeholder="123456"
-                    className="w-full px-4 py-4 text-center tracking-[1em] text-2xl font-bold rounded-lg border border-border bg-white placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" dir="ltr" />
+                  <label htmlFor="otpCode" className="block text-sm font-medium text-text-primary mb-1.5 text-center">رمز التحقق (OTP)</label>
+                  <input id="otpCode" type="text" inputMode="numeric" required minLength={6} maxLength={8} value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} placeholder="12345678"
+                    className="w-full px-4 py-4 text-center tracking-[0.5em] text-2xl font-bold rounded-lg border border-border bg-white placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" dir="ltr" />
                 </div>
 
                 <button type="submit" disabled={isLoading || otpCode.length < 6}
