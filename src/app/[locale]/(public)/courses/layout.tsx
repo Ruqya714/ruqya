@@ -53,13 +53,32 @@ export default async function CoursesLayout({
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={courseSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <h1 className="sr-only">{isTr ? "Ruqya Center Eğitim ve Uzmanlık Kursları" : "أكاديمية تأهيل ودورات الرقاة والمعالجين المعتمدة"}</h1>
       <div className="sr-only">
-        <h2>{isTr ? "Ruqya ve Manevi Şifa Kursları" : "دورات تأهيل وتدريب المعالجين والرقاة"}</h2>
+        <h2>{isTr ? "Manevi Şifa ve Ruqya Eğitim Programları" : "برامج تدريب وتأهيل الرقاة والمهتمين بالعلوم الشرعية والطب النبوي"}</h2>
         <p>
           {isTr
-            ? "Ruqya Center eğitim programları ile Kuran ve Sünnet ışığında manevi teşhis, ruqya teknikleri ve korunma duaları konularında uzmanlık kazanın."
-            : "دورات تعليمية وتأهيلية متقدمة تهدف لترسيخ القواعد الشرعية والضوابط العلمية للرقية والتأهيل الروحاني المعتمد."}
+            ? "Ruqya Center eğitim akademi programları ile Kur'an-ı Kerim ve Sünnet-i Seniyye ışığında manevi teşhis, ruqya teknikleri, ayetlerle tedavi ilkeleri ve korunma metotları konularında derinlemesine bilgi ve uzmanlık kazanın. Eğitimlerimiz hem yeni başlayanlar hem de manevi danışmanlık alanında kendini geliştirmek isteyen uzmanlar için tasarlanmıştır."
+            : "تقدم أكاديمية مركز الرقية بكلام الرحمن برامج تدريبية وتأهيلية متخصصة تهدف إلى إعداد رقاة ومعالجين متقنين للضوابط الشرعية والقواعد العلمية في التعامل مع الحالات والتشخيص الدقيق. تشمل برامجنا دراسة أحكام الرقية الشرعية، فقه الأدعية والتحصينات، وإبطال الشبهات والخرافات في هذا المجال."}
         </p>
+        <h3>{isTr ? "Eğitim Müfredatı ve Ders İçerikleri" : "المحاور العلمية والدراسية للدورات"}</h3>
+        <ul>
+          {isTr ? (
+            <>
+              <li>Kur'an ile Şifa ve Teşhis Esasları Eğitimi.</li>
+              <li>Ayeti Kerimeler ve Zikirler ile Manevi Korunma Gücü.</li>
+              <li>Psikolojik Durumlar ile Manevi Hastalıkların Ayırt Edilmesi.</li>
+              <li>Sünnet Usulü Sağlıklı Yaşam ve Manevi Beslenme Rehberi.</li>
+            </>
+          ) : (
+            <>
+              <li>التأصيل الشرعي لفقه الرقية والطب النبوي المستمد من الكتاب والسنة.</li>
+              <li>قواعد وأسس التشخيص الفارق بين السحر والعين والمس والاضطرابات النفسية.</li>
+              <li>البرامج العلاجية والوقائية للأفراد والعائلات وكيفية إعداد جدول التحصين.</li>
+              <li>الأخلاقيات والضوابط الشرعية الواجب توافرها في المعالج والراقي المعتمد.</li>
+            </>
+          )}
+        </ul>
       </div>
       {children}
     </>

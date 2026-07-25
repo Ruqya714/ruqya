@@ -42,13 +42,32 @@ export default async function TreatmentJourneyLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <h1 className="sr-only">{isTr ? "Ruqya Center Adım Adım Tedavi ve Şifa Yolculuğu" : "مراحل رحلة العلاج والتعافي التام بمركز الرقية الشرعية"}</h1>
       <div className="sr-only">
-        <h2>{isTr ? "Manevi Tedavi Aşamaları ve Rehberlik" : "مراحل رحلة العلاج والتعافي بالقرآن والرقية الشرعية"}</h2>
+        <h2>{isTr ? "Manevi Tedavi Aşamaları ve Bireysel Takip Süreci" : "خطوات ومراحل البرامج العلاجية المخصصة للمرضى والمستفيدين"}</h2>
         <p>
           {isTr
-            ? "Ruqya Center bünyesinde uygulanan adım adım tedavi süreci: İlk teşhis, kişiselleştirilmiş ruqya programı, ev ödevleri ve düzenli takip aşamaları ile tam şifa hedeflenmektedir."
-            : "خطوات متكاملة ومبرمجة تبدأ بالتشخيص الدقيق واستكشاف الأعراض، ثم تطبيق الرقية الفردية والبرنامج اليومي المعتمد مع المتابعة المستمرة حتى حصول الشفاء التام بإذن الله."}
+            ? "Ruqya Center bünyesinde uygulanan adım adım tedavi süreci: İlk teşhis seansı, kişiselleştirilmiş ruqya programı, günlük zikir ve korunma ödevleri, düzenli doktor ve معالج takibi ile tam manevi şifa hedeflenmektedir. Tedavi sürecimiz şeffaf, güvenilir ve tamamen Kur'an ve Sünnet temellidir."
+            : "نقدم في مركز الرقية بكلام الرحمن منهجاً علاجياً واضحاً ومبرمجاً يعتمد على مراحل متتالية تبدأ بالتشخيص الدقيق واستكشاف نوع الإصابة (عين، حسد، سحر، أو مس)، ثم تصميم البرنامج العلاجي المناسب المكون من الرقية المباشرة والورد اليومي والمتابعة الدورية حتى الشفاء التام بإذن الله تعالى."}
         </p>
+        <h3>{isTr ? "Tedavinin 4 Temel Aşaması" : "المراحل الأربع الأساسية لرحلة العلاج"}</h3>
+        <ol>
+          {isTr ? (
+            <>
+              <li>İlk Teşhis ve Durum Analizi: Semptomların belirlenmesi.</li>
+              <li>Özel Tedavi Programının Hazırlanması: Ayetler ve zikirler.</li>
+              <li>Uygulama ve Seanslar: Birebir canlı ruqya ve ev programı.</li>
+              <li>Değerlendirme ve Korunma: Şifa sonrası manevi zırh.</li>
+            </>
+          ) : (
+            <>
+              <li>مرحلة التشخيص والتقييم الأولية: تحديد نوع وطبيعة الحالة.</li>
+              <li>مرحلة بناء البرنامج العلاجي المخصص: تحديد السور والتحصينات.</li>
+              <li>مرحلة الجلسات والمتابعة المباشرة: الرقية الفردية والتوجيه المستمر.</li>
+              <li>مرحلة التعافي والتحصين النهائي: الوقاية الدائمة ومنع الانتكاس.</li>
+            </>
+          )}
+        </ol>
       </div>
       {children}
     </>

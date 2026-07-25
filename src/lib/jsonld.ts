@@ -171,6 +171,7 @@ export function getCourseSchema(courses: Array<{
         name: course.name,
         description: course.description,
         url: course.url,
+        category: locale === 'tr' ? 'Rukye Eğitimi ve Danışmanlık' : 'علوم الرقية الشرعية والطب النبوي والتأهيل المعرفي',
         provider: {
           '@type': 'Organization',
           name: locale === 'tr' ? 'Ruqya Center' : 'مركز الرقية بكلام الرحمن',

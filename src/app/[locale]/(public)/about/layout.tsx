@@ -42,13 +42,32 @@ export default async function AboutLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <h1 className="sr-only">{isTr ? "Ruqya Center Kurumsal Bilgiler ve Şifa Misyonumuz" : "التعريف بمركز الرقية بكلام الرحمن ورسالتنا السامية"}</h1>
       <div className="sr-only">
         <h2>{isTr ? "Ruqya Center Hakkında ve Misyonumuz" : "عن مركز الرقية بكلام الرحمن ورؤيتنا العلاجية"}</h2>
         <p>
           {isTr
-            ? "Ruqya Center, Kur'an-ı Kerim ve Sünnet-i Seniyye ilkelerine bağlı kalarak manevi danışmanlık ve şifa hizmetleri sunan güvenilir bir kurumdur. Uzman kadromuz ile ruhsal ve manevi rahatsızlıklarda doğru diagnosis ve tedavi metodları uyguluyoruz."
-            : "مركز الرقية بكلام الرحمن مؤسسة علاجية وتوعوية متخصصة تعتمد الكتاب والسنة النبوية في تقديم الرقية الشرعية والاستشارات الروحانية، تحت إشراف نخبة من الرقاة والمعالجين المعتمدين."}
+            ? "Ruqya Center, Kur'an-ı Kerim ve Sünnet-i Seniyye ilkelerine tam bağlılıkla manevi danışmanlık, ruqya tedavisi ve psikolojik-manevi şifa hizmetleri sunan uluslararası alanda güvenilir bir kurumdur. Alanında uzman المعالج kadromuz ile ruhsal, zihinsel ve manevi rahatsızlıklarda doğru teşhis ve bilimsel-شرعي tedavi metodları uyguluyoruz."
+            : "مركز الرقية بكلام الرحمن هو مؤسسة علاجية واستشارية رائدة تعتمد أصول الكتاب والسنة النبوية الشريفة في تقديم خدمات الرقية الشرعية المعتمدة. نهدف إلى تقديم نهج شرعي نقي بعيداً عن الخرافات والشعوذة، مع توفير بيئة علاجية آمنة وموثوقة لجميع المستفيدين من مختلف دول العالم."}
         </p>
+        <h3>{isTr ? "Temel İlke ve Değerlerimiz" : "القيم والمبادئ الأساسية للمركز"}</h3>
+        <ul>
+          {isTr ? (
+            <>
+              <li>Kur'an ve Sünnet Çizgisinden Ayrılmama İlkesi.</li>
+              <li>Tam Gizlilik ve Kişisel Verilerin Korunması.</li>
+              <li>Bilimsel ve Manevi Teşhis Metotlarının Sentezi.</li>
+              <li>Manevi Destek ve Sürekli Hasta Takip Mimarisi.</li>
+            </>
+          ) : (
+            <>
+              <li>الالتزام التام بالمنهج الشرعي الصحيح الخالي من أي بدع أو مخالفات.</li>
+              <li>السرية التامة والمحافظة على خصوصية المرضى والمستفيدين.</li>
+              <li>الجمع بين التشخيص الدقيق والمتابعة العلاجية المستمرة.</li>
+              <li>تقديم التوعية والتحصين الوقائي لحماية الأسرة والمجتمع.</li>
+            </>
+          )}
+        </ul>
       </div>
       {children}
     </>

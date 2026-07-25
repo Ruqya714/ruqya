@@ -31,12 +31,13 @@ export default async function PrivacyLayout({
   return (
     <>
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <h1 className="sr-only">{isTr ? "Ruqya Center Gizlilik Politikası ve Kişisel Veri Korunması" : "سياسة الخصوصية وحماية بيانات المرضى والمستفيدين"}</h1>
       <div className="sr-only">
-        <h2>{isTr ? "Kişisel Verilerin Korunması ve Gizlilik" : "سياسة الخصوصية والسرية التامة لبيانات المرضى"}</h2>
+        <h2>{isTr ? "Kişisel Verilerin Korunması ve Gizlilik Standartları" : "معايير السرية التامة وحماية البيانات الشخصية والعلاجية"}</h2>
         <p>
           {isTr
-            ? "Ruqya Center olarak hastalarımızın ve danışanlarımızın özel hayatının gizliliğine ve kişisel verilerinin korunmasına büyük önem veriyoruz. Tüm görüşmeler ve kayıtlar son derece gizli tutulmaktadır."
-            : "نلتزم التزاماً كاملاً بحماية خصوصية كافة المرضى والمستفيدين من خدمات مركز الرقية الشرعية، مع ضمان السرية التامة للبيانات والمعلومات والمحاضر التشخيصية وعدم مشاركتها مع أي طرف."}
+            ? "Ruqya Center olarak hastalarımızın, danışanlarımızın ve site ziyaretçilerimizin özel hayatının gizliliğine ve kişisel verilerinin korunmasına en yüksek seviyede önem veriyoruz. Tüm manevi teşhis görüşmeleri, randevu kayıtları ve kişisel bilgiler son derece gizli tutulmakta olup 6698 sayılı KVKK ilkelerine tam uygun olarak işlenmektedir."
+            : "نلتزم في مركز الرقية بكلام الرحمن التزاماً كاملاً بحماية خصوصية كافة المرضى والمستفيدين من خدماتنا. نضمن السرية التامة للمعلومات الاستشارية والمحاضر العلاجية والسجلات المرضية وعدم إفشائها أو مشاركتها مع أي جهة كانت تحت أي ظرف من الظروف."}
         </p>
       </div>
       {children}
