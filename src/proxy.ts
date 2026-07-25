@@ -7,10 +7,19 @@ import { routing } from "./i18n/routing";
 const intlMiddleware = createIntlMiddleware(routing);
 
 // Paths that should skip next-intl completely (even after auth)
-const NON_INTL_PATHS = ["/api"];
+const NON_INTL_PATHS = [
+  "/api",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/sitemap",
+  "/llms.txt",
+  "/manifest.json",
+  "/manifest.webmanifest",
+  "/favicon.ico",
+];
 
 function isNonIntlPath(pathname: string): boolean {
-  return NON_INTL_PATHS.some((p) => pathname.startsWith(p));
+  return NON_INTL_PATHS.some((p) => pathname === p || pathname.startsWith(p));
 }
 
 function getCleanPathname(pathname: string): string {
@@ -128,6 +137,6 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|sitemap|llms.txt|manifest.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|pdf)$).*)",
   ],
 };

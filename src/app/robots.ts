@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
+import { getBaseUrl } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = getBaseUrl();
   return {
     rules: [
       {
@@ -19,6 +21,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://ruqyacenter.com/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

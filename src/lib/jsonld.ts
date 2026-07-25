@@ -1,6 +1,8 @@
+import { getBaseUrl } from './site-url';
+
 export function getOrganizationSchema(locale: string) {
   const isTr = locale === 'tr';
-  const baseUrl = 'https://ruqyacenter.com';
+  const baseUrl = getBaseUrl();
 
   return {
     '@context': 'https://schema.org',
@@ -91,7 +93,7 @@ export function getServicesSchema(
   services: Array<{ name: string; description: string; url: string }>,
   locale: string
 ) {
-  const baseUrl = 'https://ruqyacenter.com';
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -120,7 +122,7 @@ export function getArticleSchema(article: {
   publishedAt?: string;
   authorName?: string;
 }, locale: string) {
-  const baseUrl = 'https://ruqyacenter.com';
+  const baseUrl = getBaseUrl();
   const url = `${baseUrl}/${locale}/blog/${encodeURIComponent(article.slug)}`;
   const defaultImage = `${baseUrl}/logo.png`;
 
@@ -156,7 +158,7 @@ export function getCourseSchema(courses: Array<{
   description: string;
   url: string;
 }>, locale: string) {
-  const baseUrl = 'https://ruqyacenter.com';
+  const baseUrl = getBaseUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',

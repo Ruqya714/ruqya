@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
+import { getBaseUrl } from '@/lib/site-url';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://ruqyacenter.com';
+  const baseUrl = getBaseUrl();
   const locales = ['ar', 'tr'];
   const routes = [
     '',

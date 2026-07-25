@@ -14,6 +14,8 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
+import { getBaseUrl } from "@/lib/site-url";
+
 export async function generateMetadata({
   params
 }: {
@@ -21,6 +23,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = locale === 'tr';
+  const baseUrl = getBaseUrl();
 
   const titleDefault = isTr
     ? "Ruqya Center | Kur'an ile Şifa ve Danışmanlık Merkezi"
@@ -31,7 +34,7 @@ export async function generateMetadata({
     : "مركز متخصص في الرقية الشرعية والعلاج بالقرآن الكريم في إسطنبول. نقدم استشارات أونلاين، تشخيص روحاني، وعلاج بإشراف خاص.";
 
   return {
-    metadataBase: new URL("https://ruqyacenter.com"),
+    metadataBase: new URL(baseUrl),
     title: {
       default: titleDefault,
       template: isTr ? "%s | Ruqya Center" : "%s | مركز الرقية بكلام الرحمن",
@@ -41,17 +44,17 @@ export async function generateMetadata({
       ? ["ruqya", "manevi tedavi", "kuran ile sifa", "danismanlik", "istanbul"]
       : ["رقية شرعية", "علاج بالقرآن", "رقية", "علاج روحاني", "اسطنبول", "استشارة أونلاين"],
     alternates: {
-      canonical: `https://ruqyacenter.com/${locale}`,
+      canonical: `${baseUrl}/${locale}`,
       languages: {
-        ar: 'https://ruqyacenter.com/ar',
-        tr: 'https://ruqyacenter.com/tr',
-        'x-default': 'https://ruqyacenter.com/ar',
+        ar: `${baseUrl}/ar`,
+        tr: `${baseUrl}/tr`,
+        'x-default': `${baseUrl}/ar`,
       },
     },
     openGraph: {
       type: "website",
       locale: isTr ? "tr_TR" : "ar_SA",
-      url: `https://ruqyacenter.com/${locale}`,
+      url: `${baseUrl}/${locale}`,
       siteName: isTr ? "Ruqya Center" : "مركز الرقية بكلام الرحمن",
       title: titleDefault,
       description,
