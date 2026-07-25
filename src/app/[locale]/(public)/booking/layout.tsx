@@ -41,6 +41,15 @@ export default async function BookingLayout({
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Manevi Danışmanlık ve Ruqya Randevusu" : "حجز مواعيد الرقية الشرعية والاستشارات الروحانية"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center uzman kadrosundan hızlı ve güvenli bir şekilde online veya yüz yüze randevu alabilirsiniz. Tedavi sürecinizi başlatmak için uygun günü ve saati seçebilirsiniz."
+            : "يمكنكم حجز جلسات رقية شرعية واستشارات تشخيصية أونلاين أو مباشرة مع نخبة من الرقاة والمعالجين المعتمدين لتلقي العلاج والمتابعة الدقيقة."}
+        </p>
+      </div>
       {children}
     </>
   );
