@@ -1,23 +1,22 @@
-# مركز الرقية بكلام الرحمن لرد كيد الشيطان - Ruqya Center
+# Ruqya Center - مركز الرقية بكلام الرحمن
 
 > مركز متخصص في الرقية الشرعية والعلاج بالقرآن الكريم، تشخيص الحالات الروحانية، وإتاحة الاستشارات أونلاين والمباشرة بإشراف نخبة من الرقاة والمختصين.
 
-## خدمات المركز الرئيسية
-- **التشخيص الروحاني الفردي:** تشخيص حالات العين، الحسد، السحر، والمس بأسلوب شرعي علمي.
-- **جلسات الرقية الشرعية أونلاين وحضورياً:** جلسات فردية برقية الآيات والأدعية المأثورة.
-- **استشارات حجز المواعيد:** نظام حجز مرن للاستشارات والجلسات العلاجية.
-- **دورات تعليمية وتوعوية:** دورات في علوم الرقية الوقائية والعلاجية.
-- **رحلة العلاج والمتابعة:** خطط علاجية شاملة ومتابعة دورية مع الكادر.
+## Core Services / الخدمات الرئيسية
 
-## اللغات المدعومة
-- العربية (Arabic): https://ruqyacenter.com/ar
-- التركية (Turkish): https://ruqyacenter.com/tr
+- [التشخيص الروحاني الفردي](https://ruqya-center-v2.vercel.app/services): تشخيص حالات العين والحسد والسحر بأسلوب شرعي علمي.
+- [جلسات الرقية الشرعية](https://ruqya-center-v2.vercel.app/booking): جلسات فردية برقية الآيات والأدعية المأثورة.
+- [دورات الرقية والتعليم](https://ruqya-center-v2.vercel.app/courses): دورات في علوم الرقية الوقائية والعلاجية.
+- [رحلة العلاج والمتابعة](https://ruqya-center-v2.vercel.app/treatment-journey): خطط علاجية شاملة ومتابعة دورية مع الكادر.
 
-## صفحات مهمة للتصفح
-- الرئيسية: https://ruqyacenter.com/ar
-- من نحن: https://ruqyacenter.com/ar/about
-- الخدمات: https://ruqyacenter.com/ar/services
-- حجز موعد: https://ruqyacenter.com/ar/booking
-- رحلة العلاج: https://ruqyacenter.com/ar/treatment-journey
-- الأسئلة الشائعة: https://ruqyacenter.com/ar/faq
-- اتصل بنا: https://ruqyacenter.com/ar/contact
+## Key Pages / الصفحات الرئيسية
+
+- [الرئيسية - Arabic Home](https://ruqya-center-v2.vercel.app): الصفحة الرئيسية باللغة العربية.
+- [Ana Sayfa - Turkish Home](https://ruqya-center-v2.vercel.app/tr): الصفحة الرئيسية باللغة التركية.
+- [من نحن - About Us](https://ruqya-center-v2.vercel.app/about): التعريف بمركز الرقية بكلام الرحمن ورسالته.
+- [الخدمات - Services](https://ruqya-center-v2.vercel.app/services): جميع الخدمات العلاجية والتشخيصية المتاحة.
+- [حجز موعد - Booking](https://ruqya-center-v2.vercel.app/booking): حجز استشارة أو جلسة رقية شرعية مباشرة.
+- [رحلة العلاج - Treatment Journey](https://ruqya-center-v2.vercel.app/treatment-journey): خطوات ومراحل البرامج العلاجية والتعافي.
+- [الأسئلة الشائعة - FAQ](https://ruqya-center-v2.vercel.app/faq): إجابات شرعية وعلمية موثوقة لكافة الاستفسارات.
+- [المدونة - Blog](https://ruqya-center-v2.vercel.app/blog): مقالات وتوجيهات الرقية الشرعية والعلاج بالقرآن.
+- [اتصل بنا - Contact Us](https://ruqya-center-v2.vercel.app/contact): طرق التواصل المباشر ومواعيد العمل في المركز.
