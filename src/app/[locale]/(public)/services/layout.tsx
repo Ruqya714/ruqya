@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import JsonLd from "@/components/JsonLd";
-import { getServicesSchema } from "@/lib/jsonld";
+import { getBreadcrumbSchema, getServicesSchema } from "@/lib/jsonld";
+import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
 
 export async function generateMetadata({
   params,
@@ -9,10 +9,14 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Services" });
+  const isTr = locale === "tr";
+
   return {
-    title: t("heroTitle"),
-    description: t("heroDesc"),
+    title: isTr ? "Hizmetlerimiz" : "الخدمات العلاجية",
+    description: isTr
+      ? "Ruqya Center bünyesinde sunulan tüm manevi tedavi ve danışmanlık hizmetleri."
+      : "استكشف خدمات الرقية الشرعية، العلاج بالقرآن، والتشخيص الروحاني أونلاين ومباشر.",
+    alternates: getPageAlternates(locale, "/services"),
   };
 }
 
@@ -25,36 +29,33 @@ export default async function ServicesLayout({
 }) {
   const { locale } = await params;
   const isTr = locale === "tr";
-  const baseUrl = "https://ruqyacenter.com";
+  const baseUrl = getBaseUrl();
+  const arUrl = `${baseUrl}/services`;
+  const trUrl = `${baseUrl}/tr/services`;
 
-  const services = [
+  const servicesList = [
     {
-      name: isTr ? "Manevi Şifa ve Ruqya Teşhisi" : "التشخيص الروحاني المبدئي",
-      description: isTr
-        ? "Uzman ekibimizle manevi durum tespiti ve kişiye özel teşhis görüşmesi."
-        : "تشخيص فردي متخصص لمعرفة الحالة الروحانية وتحديد خطة العلاج المناسبة.",
-      url: `${baseUrl}/${locale}/services`,
+      name: isTr ? "Manevi Teşhis ve Danışmanlık" : "التشخيص والاستشارة الروحانية",
+      description: isTr ? "Detaylı manevi durum analizi ve uzman görüşü." : "جلسة تشخيصية دقيقة لتحديد الحالة وتقديم العلاج المناسب.",
+      url: isTr ? trUrl : arUrl,
     },
     {
-      name: isTr ? "Kişiye Özel Ruqya Seansları" : "جلسات الرقية الشرعية المباشرة",
-      description: isTr
-        ? "Kur'an-ı Kerim ve Sünnet ışığında birebir manevi tedavi seansı."
-        : "جلسات علاجية خاصة بآيات القرآن الكريمة والأدعية المأثورة بإشراف راقٍ مختص.",
-      url: `${baseUrl}/${locale}/services`,
-    },
-    {
-      name: isTr ? "Manevi Danışmanlık ve Takip Programı" : "برنامج المتابعة والاستشارات العلاجية",
-      description: isTr
-        ? "Tedavi süreci boyunca sürekli manevi rehberlik ve takip hizmeti."
-        : "برنامج متابعة دورية وتقييم مستمر لمستويات التحسن وتأكيد الوقاية.",
-      url: `${baseUrl}/${locale}/services`,
+      name: isTr ? "Birebir Ruqya Seansı" : "جلسات الرقية الشرعية المباشرة",
+      description: isTr ? "Uzman kadromuzla birebir şifa seansları." : "جلسات رقيه فردية ومباشرة أونلاين أو في المركز.",
+      url: isTr ? trUrl : arUrl,
     },
   ];
 
-  const servicesSchema = getServicesSchema(services, locale);
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: isTr ? "Ana Sayfa" : "الرئيسية", url: isTr ? `${baseUrl}/tr` : baseUrl },
+    { name: isTr ? "Hizmetlerimiz" : "الخدمات العلاجية", url: isTr ? trUrl : arUrl },
+  ]);
+
+  const servicesSchema = getServicesSchema(servicesList, locale);
 
   return (
     <>
+      <JsonLd data={breadcrumbSchema} />
       <JsonLd data={servicesSchema} />
       {children}
     </>

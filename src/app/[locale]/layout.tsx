@@ -14,7 +14,7 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-import { getBaseUrl } from "@/lib/site-url";
+import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
 
 export async function generateMetadata({
   params
@@ -43,14 +43,7 @@ export async function generateMetadata({
     keywords: isTr
       ? ["ruqya", "manevi tedavi", "kuran ile sifa", "danismanlik", "istanbul"]
       : ["رقية شرعية", "علاج بالقرآن", "رقية", "علاج روحاني", "اسطنبول", "استشارة أونلاين"],
-    alternates: {
-      canonical: isTr ? `${baseUrl}/tr` : `${baseUrl}`,
-      languages: {
-        ar: `${baseUrl}`,
-        tr: `${baseUrl}/tr`,
-        'x-default': `${baseUrl}`,
-      },
-    },
+    alternates: getPageAlternates(locale, ''),
     openGraph: {
       type: "website",
       locale: isTr ? "tr_TR" : "ar_SA",

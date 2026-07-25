@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import JsonLd from "@/components/JsonLd";
-import { getCourseSchema, getBreadcrumbSchema } from "@/lib/jsonld";
+import { getBreadcrumbSchema, getCourseSchema } from "@/lib/jsonld";
+import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
 
 export async function generateMetadata({
   params,
@@ -9,10 +9,14 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Courses" });
+  const isTr = locale === "tr";
+
   return {
-    title: t("heroTitle"),
-    description: t("heroDesc"),
+    title: isTr ? "Kurslarımız" : "تأهيل ودورات المعالجين",
+    description: isTr
+      ? "Ruqya ve manevi şifa alanında uzmanlık ve eğitim kursları."
+      : "دورات تدريبية متخصصة في تأهيل الرقاة والمعالجين وفق الكتاب والسنة.",
+    alternates: getPageAlternates(locale, "/courses"),
   };
 }
 
@@ -25,30 +29,29 @@ export default async function CoursesLayout({
 }) {
   const { locale } = await params;
   const isTr = locale === "tr";
-  const baseUrl = "https://ruqyacenter.com";
+  const baseUrl = getBaseUrl();
+  const arUrl = `${baseUrl}/courses`;
+  const trUrl = `${baseUrl}/tr/courses`;
 
-  const courses = [
+  const coursesList = [
     {
-      name: isTr
-        ? "Manevi Şifa ve Ruqya Eğitimi Programı"
-        : "برنامج الكورسات والدورات التعليمية في علوم الرقية الشرعية",
-      description: isTr
-        ? "Kur'an ve Sünnet ışığında manevi şifa, korunma ve ruqya esasları eğitimi."
-        : "برنامج تعليمي متكامل للتوعية بعلوم الرقية الشرعية والوقاية والعلاج وفق الكتاب والسنة.",
-      url: `${baseUrl}/${locale}/courses`,
+      name: isTr ? "Temel Ruqya Eğitimi Programı" : "دورة تأهيل المعالجين المبتدئة",
+      description: isTr ? "Manevi şifa prensipleri ve Kuran ile tedavi temelleri." : "تأهيل علمي وعملي لإتقان ضوابط الرقية الشرعية وإبطال السحر.",
+      url: isTr ? trUrl : arUrl,
     },
   ];
 
-  const courseSchema = getCourseSchema(courses, locale);
   const breadcrumbSchema = getBreadcrumbSchema([
-    { name: isTr ? "Ana Sayfa" : "الرئيسية", url: `${baseUrl}/${locale}` },
-    { name: isTr ? "Kurslar" : "الكورسات والدورات", url: `${baseUrl}/${locale}/courses` },
+    { name: isTr ? "Ana Sayfa" : "الرئيسية", url: isTr ? `${baseUrl}/tr` : baseUrl },
+    { name: isTr ? "Kurslarımız" : "الدورات والتدريب", url: isTr ? trUrl : arUrl },
   ]);
+
+  const courseSchema = getCourseSchema(coursesList, locale);
 
   return (
     <>
-      <JsonLd data={courseSchema} />
       <JsonLd data={breadcrumbSchema} />
+      <JsonLd data={courseSchema} />
       {children}
     </>
   );

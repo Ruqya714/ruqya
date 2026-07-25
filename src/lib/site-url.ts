@@ -10,3 +10,19 @@ export function getBaseUrl(): string {
   }
   return 'https://ruqyacenter.com';
 }
+
+export function getPageAlternates(locale: string, path: string = '') {
+  const baseUrl = getBaseUrl();
+  const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
+  const arUrl = `${baseUrl}${cleanPath || ''}`;
+  const trUrl = `${baseUrl}/tr${cleanPath || ''}`;
+
+  return {
+    canonical: locale === 'tr' ? trUrl : arUrl,
+    languages: {
+      ar: arUrl,
+      tr: trUrl,
+      'x-default': arUrl,
+    },
+  };
+}
