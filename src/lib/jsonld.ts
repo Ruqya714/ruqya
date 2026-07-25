@@ -174,8 +174,23 @@ export function getCourseSchema(courses: Array<{
         provider: {
           '@type': 'Organization',
           name: locale === 'tr' ? 'Ruqya Center' : 'مركز الرقية بكلام الرحمن',
-          sameAs: `${baseUrl}/${locale}`,
+          sameAs: locale === 'tr' ? `${baseUrl}/tr` : baseUrl,
         },
+        hasCourseInstance: [
+          {
+            '@type': 'CourseInstance',
+            courseMode: 'Online',
+            courseWorkload: 'PT10H',
+          },
+        ],
+        offers: [
+          {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock',
+          },
+        ],
       },
     })),
   };
