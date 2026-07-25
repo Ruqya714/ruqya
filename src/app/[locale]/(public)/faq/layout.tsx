@@ -18,10 +18,28 @@ export async function generateMetadata({
   };
 }
 
-export default function FaqLayout({
+export default async function FaqLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  return <>{children}</>;
+  const { locale } = await params;
+  const isTr = locale === "tr";
+
+  return (
+    <>
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Sıkça Sorulan Sorular ve Cevaplar" : "الأسئلة الشائعة والأجوبة الشرعية"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center olarak manevi tedavi, Kuran ile şifa, online danışmanlık seansları ve randevu süreçleri hakkında en çok merak edilen soruları ve detaylı yanıtlarını sizin için derledik."
+            : "نقدم إجابات وتوضيحات شرعية وتفصيلية عن أهم الأسئلة المتكررة حول أعراض الإصابة الروحية، طريقة تشخيص العين والحسد والسحر، وكيفية حجز المواعيد والاستفادة من الاستشارات أونلاين."}
+        </p>
+      </div>
+      {children}
+    </>
+  );
 }

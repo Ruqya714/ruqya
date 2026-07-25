@@ -18,10 +18,28 @@ export async function generateMetadata({
   };
 }
 
-export default function TermsLayout({
+export default async function TermsLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  return <>{children}</>;
+  const { locale } = await params;
+  const isTr = locale === "tr";
+
+  return (
+    <>
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Hizmet ve Kullanım Şartları" : "شروط وأحكام استخدام خدمات مركز الرقية"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center web sitesini ve danışmanlık hizmetlerini kullanırken tabi olunan genel şartlar, randevu kuralları ve hizmet politikaları."
+            : "تحدد هذه الوثيقة الضوابط والشروط الشاملة لاستخدام الخدمات والاستشارات والرقية الشرعية المقدمة عبر موقع مركز الرقية الشرعية، بالإضافة إلى سياسة المواعيد والإلغاء."}
+        </p>
+      </div>
+      {children}
+    </>
+  );
 }
