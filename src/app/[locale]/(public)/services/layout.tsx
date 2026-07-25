@@ -57,6 +57,15 @@ export default async function ServicesLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={servicesSchema} />
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Manevi Tedavi ve Danışmanlık Hizmetleri" : "خدمات الرقية الشرعية والعلاج بالقرآن الكريم"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center bünyesinde sunulan uzman manevi teşhis, birebir ruqya seansları, aile danışmanlığı ve şifa programları hakkında detaylı bilgiler."
+            : "يقدم مركز الرقية الشرعية خدمات تشخيصية وعلاجية شمولية تشمل الاستشارات الصوتية المباشرة، جلسات الرقية الشرعية الفردية، والبرامج العلاجية المخصصة لعلاج العين والحسد والسحر."}
+        </p>
+      </div>
       {children}
     </>
   );

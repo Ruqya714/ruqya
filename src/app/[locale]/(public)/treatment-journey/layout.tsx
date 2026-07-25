@@ -41,6 +41,15 @@ export default async function TreatmentJourneyLayout({
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Manevi Tedavi Aşamaları ve Rehberlik" : "مراحل رحلة العلاج والتعافي بالقرآن والرقية الشرعية"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center bünyesinde uygulanan adım adım tedavi süreci: İlk teşhis, kişiselleştirilmiş ruqya programı, ev ödevleri ve düzenli takip aşamaları ile tam şifa hedeflenmektedir."
+            : "خطوات متكاملة ومبرمجة تبدأ بالتشخيص الدقيق واستكشاف الأعراض، ثم تطبيق الرقية الفردية والبرنامج اليومي المعتمد مع المتابعة المستمرة حتى حصول الشفاء التام بإذن الله."}
+        </p>
+      </div>
       {children}
     </>
   );

@@ -41,6 +41,15 @@ export default async function AboutLayout({
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Ruqya Center Hakkında ve Misyonumuz" : "عن مركز الرقية بكلام الرحمن ورؤيتنا العلاجية"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center, Kur'an-ı Kerim ve Sünnet-i Seniyye ilkelerine bağlı kalarak manevi danışmanlık ve şifa hizmetleri sunan güvenilir bir kurumdur. Uzman kadromuz ile ruhsal ve manevi rahatsızlıklarda doğru diagnosis ve tedavi metodları uyguluyoruz."
+            : "مركز الرقية بكلام الرحمن مؤسسة علاجية وتوعوية متخصصة تعتمد الكتاب والسنة النبوية في تقديم الرقية الشرعية والاستشارات الروحانية، تحت إشراف نخبة من الرقاة والمعالجين المعتمدين."}
+        </p>
+      </div>
       {children}
     </>
   );

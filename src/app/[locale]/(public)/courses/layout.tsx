@@ -52,6 +52,15 @@ export default async function CoursesLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={courseSchema} />
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Ruqya ve Manevi Şifa Kursları" : "دورات تأهيل وتدريب المعالجين والرقاة"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center eğitim programları ile Kuran ve Sünnet ışığında manevi teşhis, ruqya teknikleri ve korunma duaları konularında uzmanlık kazanın."
+            : "دورات تعليمية وتأهيلية متقدمة تهدف لترسيخ القواعد الشرعية والضوابط العلمية للرقية والتأهيل الروحاني المعتمد."}
+        </p>
+      </div>
       {children}
     </>
   );

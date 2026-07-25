@@ -41,6 +41,15 @@ export default async function ContactLayout({
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
+      {/* Hidden SSR SEO text for crawlers with JS disabled */}
+      <div className="sr-only">
+        <h2>{isTr ? "Ruqya Center İletişim Bilgileri ve Destek" : "معلومات التواصل والدعم الفني لمركز الرقية الشرعية"}</h2>
+        <p>
+          {isTr
+            ? "Ruqya Center ile iletişime geçin. Uzmanlarımızla doğrudan görüşmek, randevu almak veya adres ve konum bilgisi öğrenmek için telefon, WhatsApp ve e-posta kanallarımız aktiftir."
+            : "يسعدنا تواصلكم مع مركز الرقية الشرعية للاستفسار عن العلاج والمواعيد وإرسال الاستشارات المباشرة عبر خط الهاتف المباشر والواتساب أو عبر زيارة موقعنا."}
+        </p>
+      </div>
       {children}
     </>
   );
