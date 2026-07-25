@@ -2,7 +2,7 @@ import { defineRouting } from 'next-intl/routing';
 import { createNavigation } from 'next-intl/navigation';
 
 export const routing = defineRouting({
-  locales: ['ar'],
+  locales: ['ar', 'tr'],
   defaultLocale: 'ar',
   localePrefix: 'as-needed', // Arabic will run at `/`
 });

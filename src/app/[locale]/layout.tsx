@@ -44,17 +44,17 @@ export async function generateMetadata({
       ? ["ruqya", "manevi tedavi", "kuran ile sifa", "danismanlik", "istanbul"]
       : ["رقية شرعية", "علاج بالقرآن", "رقية", "علاج روحاني", "اسطنبول", "استشارة أونلاين"],
     alternates: {
-      canonical: `${baseUrl}/${locale}`,
+      canonical: isTr ? `${baseUrl}/tr` : `${baseUrl}`,
       languages: {
-        ar: `${baseUrl}/ar`,
+        ar: `${baseUrl}`,
         tr: `${baseUrl}/tr`,
-        'x-default': `${baseUrl}/ar`,
+        'x-default': `${baseUrl}`,
       },
     },
     openGraph: {
       type: "website",
       locale: isTr ? "tr_TR" : "ar_SA",
-      url: `${baseUrl}/${locale}`,
+      url: isTr ? `${baseUrl}/tr` : `${baseUrl}`,
       siteName: isTr ? "Ruqya Center" : "مركز الرقية بكلام الرحمن",
       title: titleDefault,
       description,

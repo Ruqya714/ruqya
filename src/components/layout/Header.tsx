@@ -57,9 +57,9 @@ export default function Header() {
               priority
             />
             <div className="hidden sm:block">
-              <h1 className="text-sm lg:text-base font-bold text-primary-dark leading-tight">
+              <span className="text-sm lg:text-base font-bold text-primary-dark leading-tight block">
                 مركز الرقية بكلام الرحمن
-              </h1>
+              </span>
               <p className="text-xs text-text-secondary">
                 لرد كيد الشيطان
               </p>

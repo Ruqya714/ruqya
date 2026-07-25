@@ -21,20 +21,40 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];
 
   for (const route of routes) {
-    for (const locale of locales) {
-      entries.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: new Date(),
-        changeFrequency: route === '' ? 'daily' : 'weekly',
-        priority: route === '' ? 1.0 : 0.8,
-        alternates: {
-          languages: {
-            ar: `${baseUrl}/ar${route}`,
-            tr: `${baseUrl}/tr${route}`,
-          },
+    // Arabic (default locale: no prefix)
+    const arUrl = `${baseUrl}${route}`;
+    // Turkish (secondary locale: /tr prefix)
+    const trUrl = `${baseUrl}/tr${route}`;
+
+    // Entry for Arabic
+    entries.push({
+      url: arUrl,
+      lastModified: new Date(),
+      changeFrequency: route === '' ? 'daily' : 'weekly',
+      priority: route === '' ? 1.0 : 0.8,
+      alternates: {
+        languages: {
+          ar: arUrl,
+          tr: trUrl,
+          'x-default': arUrl,
         },
-      });
-    }
+      },
+    });
+
+    // Entry for Turkish
+    entries.push({
+      url: trUrl,
+      lastModified: new Date(),
+      changeFrequency: route === '' ? 'daily' : 'weekly',
+      priority: route === '' ? 1.0 : 0.8,
+      alternates: {
+        languages: {
+          ar: arUrl,
+          tr: trUrl,
+          'x-default': arUrl,
+        },
+      },
+    });
   }
 
   return entries;
