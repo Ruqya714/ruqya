@@ -7,27 +7,51 @@ import ShareArticleButtons from "./ShareArticleButtons";
 import { formatDate } from "@/lib/helpers";
 import { getTranslations } from "next-intl/server";
 
+import JsonLd from "@/components/JsonLd";
+import { getArticleSchema, getBreadcrumbSchema } from "@/lib/jsonld";
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string, slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const t = await getTranslations({ locale, namespace: "Blog" });
   const decodedSlug = decodeURIComponent(slug);
   const supabase = createAdminClient();
   const { data: article } = await supabase
     .from("articles")
-    .select("title, excerpt")
+    .select("title, excerpt, cover_image, content, published_at")
     .eq("slug", decodedSlug)
     .eq("is_published", true)
     .single();
 
-  if (!article) return { title: "مقال غير موجود" };
+  if (!article) return { title: locale === 'tr' ? "Makale Bulunamadı" : "مقال غير موجود" };
+
+  const imgMatch = article.content?.match(/<img[^>]+src="([^">]+)"/);
+  const coverImage = article.cover_image || (imgMatch ? imgMatch[1] : null);
+  const baseUrl = "https://ruqyacenter.com";
+  const url = `${baseUrl}/${locale}/blog/${encodeURIComponent(slug)}`;
 
   return {
     title: article.title,
     description: article.excerpt || article.title,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt || article.title,
+      url,
+      type: "article",
+      publishedTime: article.published_at,
+      images: coverImage ? [{ url: coverImage }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt || article.title,
+      images: coverImage ? [coverImage] : undefined,
+    },
   };
 }
 
@@ -58,9 +82,31 @@ export default async function ArticlePage({
 
   const imgMatch = article.content?.match(/<img[^>]+src="([^">]+)"/);
   const coverImage = article.cover_image || (imgMatch ? imgMatch[1] : null);
+  const baseUrl = "https://ruqyacenter.com";
+
+  const articleSchema = getArticleSchema(
+    {
+      title: article.title,
+      excerpt: article.excerpt,
+      slug: article.slug,
+      coverImage,
+      publishedAt: article.published_at || article.created_at,
+      authorName: article.author?.full_name,
+    },
+    locale
+  );
+
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: locale === "tr" ? "Ana Sayfa" : "الرئيسية", url: `${baseUrl}/${locale}` },
+    { name: locale === "tr" ? "Makaleler" : "المقالات", url: `${baseUrl}/${locale}/blog` },
+    { name: article.title, url: `${baseUrl}/${locale}/blog/${encodeURIComponent(article.slug)}` },
+  ]);
 
   return (
-    <article className="py-6 sm:py-8 lg:py-20 bg-gray-50/30">
+    <>
+      <JsonLd data={articleSchema} />
+      <JsonLd data={breadcrumbSchema} />
+      <article className="py-6 sm:py-8 lg:py-20 bg-gray-50/30">
       {/* Hero Image if exists */}
       {coverImage && (
         <div className="w-full h-[30vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mb-6 md:mb-12 bg-gray-900 border-b border-white/10">
@@ -141,5 +187,6 @@ export default async function ArticlePage({
         </div>
       </div>
     </article>
+    </>
   );
 }

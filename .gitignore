@@ -37,7 +37,9 @@ yarn-error.log*
 .vercel
 
 # temp scripts (may contain API keys)
+# temp scripts and scratch
 /tmp/
+/scratch/
 
 # typescript
 *.tsbuildinfo

@@ -16,7 +16,6 @@ const SETTING_LABELS: Record<string, string> = {
   whatsapp: "واتساب",
   email: "البريد الإلكتروني",
   address: "العنوان",
-  about_text: "نص من نحن",
   instagram: "Instagram URL",
   youtube: "YouTube URL",
   facebook: "Facebook URL",

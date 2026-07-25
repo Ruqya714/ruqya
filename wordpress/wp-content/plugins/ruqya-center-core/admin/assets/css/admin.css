@@ -1,0 +1,319 @@
+/* ═══════════════════════════════════════════════
+   Ruqya Center — WordPress Admin Styles
+   ═══════════════════════════════════════════════ */
+
+.ruqya-admin {
+    font-family: 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
+    max-width: 1400px;
+}
+
+.ruqya-admin h1 {
+    font-size: 1.8rem;
+    color: #0f3d1a;
+    margin-bottom: 24px;
+}
+
+.ruqya-admin h2 {
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+/* ── Stats Grid ────────────────────────────────── */
+.ruqya-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.ruqya-stat-card {
+    background: #fff;
+    border: 1px solid #e5e2d9;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+}
+
+.ruqya-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* ── Section ───────────────────────────────────── */
+.ruqya-section {
+    background: #fff;
+    border: 1px solid #e5e2d9;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* ── Table ─────────────────────────────────────── */
+.ruqya-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #e5e2d9;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ruqya-table thead {
+    background: #f7f5f0;
+}
+
+.ruqya-table th {
+    padding: 12px 16px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e2d9;
+    white-space: nowrap;
+}
+
+.ruqya-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0ede6;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    vertical-align: middle;
+}
+
+.ruqya-table tr:hover td {
+    background: #fafaf7;
+}
+
+.ruqya-table small {
+    color: #9ca3af;
+    font-size: 0.8rem;
+}
+
+/* ── Badge ─────────────────────────────────────── */
+.ruqya-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ruqya-badge.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.ruqya-badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.ruqya-badge.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.ruqya-badge.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ── Status Select ─────────────────────────────── */
+.ruqya-status-select {
+    padding: 5px 8px;
+    border: 1px solid #d4d0c6;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: #fff;
+}
+
+/* ── Forms ──────────────────────────────────────── */
+.ruqya-form-group {
+    margin-bottom: 18px;
+}
+
+.ruqya-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #1a1a1a;
+}
+
+.ruqya-form-group input,
+.ruqya-form-group select,
+.ruqya-form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d4d0c6;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.ruqya-form-group input:focus,
+.ruqya-form-group select:focus,
+.ruqya-form-group textarea:focus {
+    outline: none;
+    border-color: #1a5c2a;
+    box-shadow: 0 0 0 3px rgba(26, 92, 42, 0.1);
+}
+
+/* ── Inline Form (for slots) ───────────────────── */
+.ruqya-form-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.ruqya-form-inline select,
+.ruqya-form-inline input {
+    padding: 8px 12px;
+    border: 1px solid #d4d0c6;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+/* ── Buttons ───────────────────────────────────── */
+.ruqya-admin .button-primary {
+    background: #1a5c2a !important;
+    border-color: #0f3d1a !important;
+    border-radius: 8px !important;
+    padding: 8px 20px !important;
+    font-weight: 600 !important;
+}
+
+.ruqya-admin .button-primary:hover {
+    background: #2d7a3e !important;
+}
+
+.ruqya-save-status {
+    font-size: 0.8rem !important;
+    padding: 4px 12px !important;
+    border-radius: 6px !important;
+}
+
+.ruqya-delete-slot {
+    color: #dc2626 !important;
+    border-color: #fecaca !important;
+    font-size: 0.8rem !important;
+    padding: 4px 12px !important;
+    border-radius: 6px !important;
+}
+
+.ruqya-delete-slot:hover {
+    background: #fef2f2 !important;
+    color: #991b1b !important;
+}
+
+/* ── Modal & Patient Details ───────────────────── */
+.ruqya-modal {
+    position: fixed;
+    z-index: 99999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ruqya-modal-content {
+    background-color: #fefefe;
+    padding: 30px;
+    border: 1px solid #d4d0c6;
+    width: 90%;
+    max-width: 650px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: relative;
+    direction: rtl;
+    box-sizing: border-box;
+}
+
+.ruqya-modal-close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.ruqya-modal-close:hover,
+.ruqya-modal-close:focus {
+    color: #1a1a1a;
+    text-decoration: none;
+}
+
+.patient-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.patient-detail-item {
+    border-bottom: 1px solid #f0ede6;
+    padding-bottom: 8px;
+}
+
+.patient-detail-item.full-width {
+    grid-column: span 2;
+}
+
+.patient-detail-label {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.patient-detail-value {
+    color: #1a1a1a;
+    font-size: 0.95rem;
+}
+

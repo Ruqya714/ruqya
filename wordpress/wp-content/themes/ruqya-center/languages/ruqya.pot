@@ -1,0 +1,24 @@
+# Copyright (C) 2026 Ruqya Center
+# This file is distributed under the same license as the Ruqya Center theme.
+msgid ""
+msgstr ""
+"Project-Id-Version: Ruqya Center 2.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-26 05:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco Translate\n"
+"X-Domain: ruqya\n"
+
+#: functions.php:23
+msgid "القائمة الرئيسية"
+msgstr ""
+
+#: functions.php:24
+msgid "قائمة الفوتر"
+msgstr ""

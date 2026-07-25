@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  wordpress:
+    image: wordpress:6.7-php8.2-apache
+    container_name: ruqya_wordpress
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Supabase credentials */
+        define('SUPABASE_URL', '${SUPABASE_URL}');
+        define('SUPABASE_ANON_KEY', '${SUPABASE_ANON_KEY}');
+        define('SUPABASE_SERVICE_KEY', '${SUPABASE_SERVICE_KEY}');
+        /* Resend email */
+        define('RESEND_API_KEY', '${RESEND_API_KEY}');
+        define('ADMIN_EMAIL', '${ADMIN_EMAIL}');
+        /* Mtjree payment */
+        define('MTJREE_API_KEY', '${MTJREE_API_KEY}');
+        define('MTJREE_SHOP_URL', '${MTJREE_SHOP_URL}');
+        define('MTJREE_LOGO_URL', '${MTJREE_LOGO_URL}');
+        define('MTJREE_VENDOR_NAME', '${MTJREE_VENDOR_NAME}');
+        define('MTJREE_TEST_MODE', ${MTJREE_TEST_MODE});
+        /* Debug */
+        define('WP_DEBUG', ${WP_DEBUG});
+        define('WP_DEBUG_LOG', ${WP_DEBUG_LOG});
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content/themes/ruqya-center:/var/www/html/wp-content/themes/ruqya-center
+      - ./wp-content/plugins/ruqya-center-core:/var/www/html/wp-content/plugins/ruqya-center-core
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:11.4
+    container_name: ruqya_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: ruqya_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: ${WORDPRESS_DB_USER}
+      PMA_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+
+volumes:
+  wp_data:
+  db_data:

@@ -18,6 +18,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 
 
+import JsonLd from "@/components/JsonLd";
+import { getFAQSchema } from "@/lib/jsonld";
+
 export default async function FAQPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "FAQ.items" });
@@ -29,5 +32,12 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
     { id: "4", question: t("q4"), answer: t("a4") }
   ];
 
-  return <FAQContent faqs={faqs as any} />;
+  const faqSchema = getFAQSchema(faqs);
+
+  return (
+    <>
+      <JsonLd data={faqSchema} />
+      <FAQContent faqs={faqs as any} />
+    </>
+  );
 }

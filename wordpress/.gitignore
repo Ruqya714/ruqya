@@ -1,0 +1,33 @@
+# WordPress Core (not needed in repo)
+/wp-admin/
+/wp-includes/
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/blogs.dir/
+wp-config.php
+.htaccess
+sitemap.xml
+sitemap.xml.gz
+
+# Environment & Secrets
+.env
+.env.local
+docker-compose.override.yml
+wp-content/debug.log
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

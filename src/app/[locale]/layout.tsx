@@ -14,27 +14,64 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "مركز الرقية بكلام الرحمن لرد كيد الشيطان",
-    template: "%s | مركز الرقية بكلام الرحمن",
-  },
-  description:
-    "مركز متخصص في الرقية الشرعية والعلاج بالقرآن الكريم في إسطنبول. نقدم استشارات أونلاين، تشخيص روحاني، وعلاج بإشراف خاص.",
-  keywords: [
-    "رقية شرعية",
-    "علاج بالقرآن",
-    "رقية",
-    "علاج روحاني",
-    "اسطنبول",
-    "استشارة أونلاين",
-  ],
-  openGraph: {
-    type: "website",
-    locale: "ar_SA",
-    siteName: "مركز الرقية بكلام الرحمن",
-  },
-};
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const isTr = locale === 'tr';
+
+  const titleDefault = isTr
+    ? "Ruqya Center | Kur'an ile Şifa ve Danışmanlık Merkezi"
+    : "مركز الرقية بكلام الرحمن لرد كيد الشيطان";
+
+  const description = isTr
+    ? "İstanbul'da Kur'an-ı Kerim ve Sünnet ışığında uzman ekibimizle Manevi Şifa, Ruqya ve Danışmanlık Hizmetleri sunuyoruz."
+    : "مركز متخصص في الرقية الشرعية والعلاج بالقرآن الكريم في إسطنبول. نقدم استشارات أونلاين، تشخيص روحاني، وعلاج بإشراف خاص.";
+
+  return {
+    metadataBase: new URL("https://ruqyacenter.com"),
+    title: {
+      default: titleDefault,
+      template: isTr ? "%s | Ruqya Center" : "%s | مركز الرقية بكلام الرحمن",
+    },
+    description,
+    keywords: isTr
+      ? ["ruqya", "manevi tedavi", "kuran ile sifa", "danismanlik", "istanbul"]
+      : ["رقية شرعية", "علاج بالقرآن", "رقية", "علاج روحاني", "اسطنبول", "استشارة أونلاين"],
+    alternates: {
+      canonical: `https://ruqyacenter.com/${locale}`,
+      languages: {
+        ar: 'https://ruqyacenter.com/ar',
+        tr: 'https://ruqyacenter.com/tr',
+        'x-default': 'https://ruqyacenter.com/ar',
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: isTr ? "tr_TR" : "ar_SA",
+      url: `https://ruqyacenter.com/${locale}`,
+      siteName: isTr ? "Ruqya Center" : "مركز الرقية بكلام الرحمن",
+      title: titleDefault,
+      description,
+      images: [
+        {
+          url: "/logo.png",
+          width: 800,
+          height: 600,
+          alt: isTr ? "Ruqya Center Logo" : "شعار مركز الرقية الشرعية",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: titleDefault,
+      description,
+      images: ["/logo.png"],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -42,6 +79,9 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
 };
+
+import JsonLd from "@/components/JsonLd";
+import { getOrganizationSchema } from "@/lib/jsonld";
 
 export default async function RootLayout({
   children,
@@ -57,10 +97,12 @@ export default async function RootLayout({
   }
 
   const messages = await getMessages();
+  const orgSchema = getOrganizationSchema(locale);
 
   return (
     <html lang={locale} dir={locale === 'tr' ? 'ltr' : 'rtl'} className={ibmPlexArabic.className}>
       <body className="min-h-screen flex flex-col overflow-x-hidden bg-bg">
+        <JsonLd data={orgSchema} />
         <NextIntlClientProvider messages={messages}>
           <AuthRedirectHandler />
           {children}

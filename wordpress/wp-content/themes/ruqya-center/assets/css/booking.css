@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════
+   Booking Page — Custom Styles
+   ═══════════════════════════════════════════════ */
+
+.booking-step { animation: fade-in 0.3s ease-out; }
+
+/* Option cards (service type selection) */
+.booking-option { cursor: pointer; display: block; }
+.booking-option-inner {
+    padding: 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+.booking-option:hover .booking-option-inner { border-color: var(--green); }
+.booking-option input:checked + .booking-option-inner {
+    border-color: var(--green);
+    background: rgba(26, 92, 42, 0.04);
+    box-shadow: 0 0 0 3px rgba(26, 92, 42, 0.1);
+}
+
+/* Navigation bar */
+.booking-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 16px 0;
+}
+
+/* Date cards */
+.date-card {
+    padding: 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+.date-card:hover { border-color: var(--green); }
+.date-card.selected {
+    border-color: var(--green);
+    background: rgba(26, 92, 42, 0.06);
+    box-shadow: 0 0 0 3px rgba(26, 92, 42, 0.1);
+}
+.date-card .day-name { font-size: 0.8rem; color: var(--text-muted); }
+.date-card .day-num { font-size: 1.3rem; font-weight: 700; margin: 4px 0; }
+.date-card .month { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* Time slots */
+.time-slot {
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.time-slot:hover { border-color: var(--green); }
+.time-slot.selected {
+    border-color: var(--green);
+    background: var(--green);
+    color: #fff;
+}
+.time-slot .healer-name {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+.time-slot.selected .healer-name { color: rgba(255,255,255,0.8); }
+
+/* Review table */
+.review-table { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.review-row {
+    display: flex;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.9rem;
+}
+.review-row:last-child { border-bottom: none; }
+.review-label {
+    width: 140px;
+    padding: 12px 16px;
+    background: var(--bg);
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+.review-value { padding: 12px 16px; flex: 1; }
+
+@media (max-width: 640px) {
+    .review-row { flex-direction: column; }
+    .review-label { width: 100%; padding: 8px 16px 4px; }
+    .review-value { padding: 4px 16px 12px; }
+}
