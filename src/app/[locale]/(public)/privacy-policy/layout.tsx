@@ -31,7 +31,7 @@ export default async function PrivacyLayout({
   return (
     <>
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Gizlilik Politikası ve Kişisel Veri Korunması" : "سياسة الخصوصية وحماية بيانات المرضى والمستفيدين"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Gizlilik Politikası ve Kişisel Veri Korunması" : "سياسة الخصوصية وحماية بيانات المرضى والمستفيدين"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Kişisel Verilerin Korunması ve Gizlilik Standartları" : "معايير السرية التامة وحماية البيانات الشخصية والعلاجية"}</h2>
         <p>

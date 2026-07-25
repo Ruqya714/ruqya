@@ -42,7 +42,7 @@ export default async function AboutLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Kurumsal Bilgiler ve Şifa Misyonumuz" : "التعريف بمركز الرقية بكلام الرحمن ورسالتنا السامية"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Kurumsal Bilgiler ve Şifa Misyonumuz" : "التعريف بمركز الرقية بكلام الرحمن ورسالتنا السامية"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Ruqya Center Hakkında ve Misyonumuz" : "عن مركز الرقية بكلام الرحمن ورؤيتنا العلاجية"}</h2>
         <p>

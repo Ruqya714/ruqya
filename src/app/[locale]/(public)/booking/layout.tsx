@@ -42,7 +42,7 @@ export default async function BookingLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       {/* SSR SEO Title H1 & Rich Text for Crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Online Randevu ve Uzman Danışmanlık Sistemi" : "حجز استشارة وتحديد مواعيد جلسات الرقية الشرعية المعتمدة"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Online Randevu ve Uzman Danışmanlık Sistemi" : "حجز استشارة وتحديد مواعيد جلسات الرقية الشرعية المعتمدة"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Manevi Danışmanlık ve Rukye Randevu Süreci" : "خطوات حجز جلسة استشارية وعلاجية مع الراقي المعالج"}</h2>
         <p>

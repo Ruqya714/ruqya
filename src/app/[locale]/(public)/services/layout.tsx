@@ -58,7 +58,7 @@ export default async function ServicesLayout({
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={servicesSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Manevi Tedavi ve Danışmanlık Hizmetleri" : "الخدمات العلاجية والتشخيصية لمركز الرقية بكلام الرحمن"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Manevi Tedavi ve Danışmanlık Hizmetleri" : "الخدمات العلاجية والتشخيصية لمركز الرقية بكلام الرحمن"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Manevi Tedavi ve Şifa Hizmetleri Rehberi" : "دليل خدمات الرقية الشرعية والعلاج بالقرآن الكريم والاستشارات الروحانية"}</h2>
         <p>

@@ -31,7 +31,7 @@ export default async function FaqLayout({
   return (
     <>
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Sıkça Sorulan Sorular ve Şifa Rehberi" : "الأسئلة الشائعة والإجابات الشرعية المعتمدة لمركز الرقية"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Sıkça Sorulan Sorular ve Şifa Rehberi" : "الأسئلة الشائعة والإجابات الشرعية المعتمدة لمركز الرقية"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Manevi Tedavi ve Danışmanlık Hakkında Sorular" : "إجابات شمولية وحلول شرعية لمختلف الأسئلة والاستفسارات"}</h2>
         <p>

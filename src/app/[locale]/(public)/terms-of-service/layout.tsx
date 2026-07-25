@@ -31,7 +31,7 @@ export default async function TermsLayout({
   return (
     <>
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Hizmet Kullanım Şartları ve Yasal Sözleşme" : "شروط وأحكام استخدام خدمات مركز الرقية بكلام الرحمن"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Hizmet Kullanım Şartları ve Yasal Sözleşme" : "شروط وأحكام استخدام خدمات مركز الرقية بكلام الرحمن"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Hizmet ve Kullanım Şartları Prensipleri" : "الضوابط والشروط الأحكام الشاملة للاستشارات والخدمات العلاجية"}</h2>
         <p>

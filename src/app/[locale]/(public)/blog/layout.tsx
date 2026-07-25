@@ -31,7 +31,7 @@ export default async function BlogListLayout({
   return (
     <>
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Blog ve Manevi Şifa Rehberi" : "المدونة الشرعية والمقالات العلمية لمركز الرقية بكلام الرحمن"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Blog ve Manevi Şifa Rehberi" : "المدونة الشرعية والمقالات العلمية لمركز الرقية بكلام الرحمن"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Manevi Şifa ve Ruqya Makaleleri Kütüphanesi" : "مكتبة مقالات وتوجيهات الرقية الشرعية والعلاج بالقرآن والتأهيل النفسي"}</h2>
         <p>

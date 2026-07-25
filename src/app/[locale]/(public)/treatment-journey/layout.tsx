@@ -42,7 +42,7 @@ export default async function TreatmentJourneyLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Adım Adım Tedavi ve Şifa Yolculuğu" : "مراحل رحلة العلاج والتعافي التام بمركز الرقية الشرعية"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Adım Adım Tedavi ve Şifa Yolculuğu" : "مراحل رحلة العلاج والتعافي التام بمركز الرقية الشرعية"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Manevi Tedavi Aşamaları ve Bireysel Takip Süreci" : "خطوات ومراحل البرامج العلاجية المخصصة للمرضى والمستفيدين"}</h2>
         <p>

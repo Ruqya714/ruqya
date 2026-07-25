@@ -42,7 +42,7 @@ export default async function ContactLayout({
     <>
       <JsonLd data={breadcrumbSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center İletişim ve Destek Merkezi" : "التواصل المباشر والاستفسارات مع مركز الرقية الشرعية"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center İletişim ve Destek Merkezi" : "التواصل المباشر والاستفسارات مع مركز الرقية الشرعية"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Ruqya Center İletişim Bilgileri ve Destek Channels" : "طرق التواصل المباشرة ومواعيد العمل في مركز الرقية بكلام الرحمن"}</h2>
         <p>

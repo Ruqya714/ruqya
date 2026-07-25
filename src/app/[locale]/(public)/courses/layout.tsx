@@ -53,7 +53,7 @@ export default async function CoursesLayout({
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={courseSchema} />
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
-      <h1 className="sr-only">{isTr ? "Ruqya Center Eğitim ve Uzmanlık Kursları" : "أكاديمية تأهيل ودورات الرقاة والمعالجين المعتمدة"}</h1>
+      <h2 className="sr-only">{isTr ? "Ruqya Center Eğitim ve Uzmanlık Kursları" : "أكاديمية تأهيل ودورات الرقاة والمعالجين المعتمدة"}</h2>
       <div className="sr-only">
         <h2>{isTr ? "Manevi Şifa ve Ruqya Eğitim Programları" : "برامج تدريب وتأهيل الرقاة والمهتمين بالعلوم الشرعية والطب النبوي"}</h2>
         <p>
