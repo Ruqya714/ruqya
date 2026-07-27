@@ -13,6 +13,7 @@ import {
   Globe,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
 import PaymentReturnDetector from "@/components/PaymentReturnDetector";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -27,6 +28,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Home" });
+
+  const supabase = await createClient();
+  const { data: dbFaqs } = await supabase
+    .from("faqs")
+    .select("id, question, answer, display_order")
+    .order("display_order", { ascending: true })
+    .limit(6);
 
   const aboutFeatures = [
     { icon: <Shield size={24} />, titleKey: "feature1Title" as const, descKey: "feature1Desc" as const },
@@ -48,12 +56,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     { icon: <CheckCircle size={28} />, titleKey: "treat4Title" as const, itemsKey: "treat4Items" as const, gradient: "from-primary-light to-primary" },
   ];
 
-  const faqs = [
-    { qKey: "faq1Q" as const, aKey: "faq1A" as const },
-    { qKey: "faq2Q" as const, aKey: "faq2A" as const },
-    { qKey: "faq3Q" as const, aKey: "faq3A" as const },
-    { qKey: "faq4Q" as const, aKey: "faq4A" as const },
-  ];
+  const faqs = (dbFaqs && dbFaqs.length > 0)
+    ? dbFaqs.map((f) => ({ question: f.question, answer: f.answer }))
+    : [
+        { question: t("faq1Q"), answer: t("faq1A") },
+        { question: t("faq2Q"), answer: t("faq2A") },
+        { question: t("faq3Q"), answer: t("faq3A") },
+        { question: t("faq4Q"), answer: t("faq4A") },
+      ];
 
   return (
     <>
@@ -229,11 +239,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             {faqs.map((faq, i) => (
               <details key={i} className="group bg-bg rounded-lg border border-border overflow-hidden">
                 <summary className="flex items-center justify-between px-6 py-4 cursor-pointer text-sm font-medium text-text-primary hover:bg-gray-50 transition-colors list-none">
-                  {t(faq.qKey)}
+                  {faq.question}
                   <Clock size={16} className="text-text-secondary transition-transform duration-300 group-open:rotate-90 flex-shrink-0 ms-4" />
                 </summary>
                 <div className="px-6 pb-4 text-sm text-text-secondary leading-relaxed">
-                  {t(faq.aKey)}
+                  {faq.answer}
                 </div>
               </details>
             ))}

@@ -25,12 +25,20 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "FAQ.items" });
   
-  const faqs = [
-    { id: "1", question: t("q1"), answer: t("a1") },
-    { id: "2", question: t("q2"), answer: t("a2") },
-    { id: "3", question: t("q3"), answer: t("a3") },
-    { id: "4", question: t("q4"), answer: t("a4") }
-  ];
+  const supabase = await createClient();
+  const { data: dbFaqs } = await supabase
+    .from("faqs")
+    .select("id, question, answer, display_order")
+    .order("display_order", { ascending: true });
+
+  const faqs = (dbFaqs && dbFaqs.length > 0)
+    ? dbFaqs
+    : [
+        { id: "1", question: t("q1"), answer: t("a1") },
+        { id: "2", question: t("q2"), answer: t("a2") },
+        { id: "3", question: t("q3"), answer: t("a3") },
+        { id: "4", question: t("q4"), answer: t("a4") }
+      ];
 
   const faqSchema = getFAQSchema(faqs);
 
