@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -25,6 +26,13 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "About" });
 
+  const supabase = await createClient();
+  const { data: dbHealers } = await supabase
+    .from("healers")
+    .select("id, display_name, title, photo_url, specialization, experience_years")
+    .eq("is_visible", true)
+    .order("created_at", { ascending: true });
+
   const features = [
     { icon: <Shield size={24} />, titleKey: "feat1Title" as const, descKey: "feat1Desc" as const },
     { icon: <Award size={24} />, titleKey: "feat2Title" as const, descKey: "feat2Desc" as const },
@@ -34,14 +42,23 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     { icon: <Users size={24} />, titleKey: "feat6Title" as const, descKey: "feat6Desc" as const },
   ];
 
-  const teamMembers = [
-    { nameKey: "member0Name" as const, roleKey: "member0Role" as const, image: "/الإدارة2.jpeg", zoomClasses: "scale-100" },
-    { nameKey: "member1Name" as const, roleKey: "member1Role" as const, image: "/الراقي سيف الله أبو عامر.png", zoomClasses: "scale-[1.7] origin-top" },
-    { nameKey: "member2Name" as const, roleKey: "member2Role" as const, image: "/الراقي ابو إبراهيم.jpeg", zoomClasses: "scale-150 origin-top" },
-    { nameKey: "member3Name" as const, roleKey: "member3Role" as const, image: "/الراقي ابو إلياس.jpeg", zoomClasses: "scale-125 origin-top" },
-    { nameKey: "member4Name" as const, roleKey: "member4Role" as const, image: "/الراقي ياووز سليم.jpeg", zoomClasses: "scale-[1.6] origin-top" },
-    { nameKey: "member5Name" as const, roleKey: "member5Role" as const, image: "/الكادر الطبي.jpeg", zoomClasses: "scale-100" },
+  const defaultTeamMembers = [
+    { name: t("member0Name"), title: t("member0Role"), image: "/الإدارة2.jpeg", zoomClasses: "scale-100" },
+    { name: t("member1Name"), title: t("member1Role"), image: "/الراقي سيف الله أبو عامر.png", zoomClasses: "scale-[1.7] origin-top" },
+    { name: t("member2Name"), title: t("member2Role"), image: "/الراقي ابو إبراهيم.jpeg", zoomClasses: "scale-150 origin-top" },
+    { name: t("member3Name"), title: t("member3Role"), image: "/الراقي ابو إلياس.jpeg", zoomClasses: "scale-125 origin-top" },
+    { name: t("member4Name"), title: t("member4Role"), image: "/الراقي ياووز سليم.jpeg", zoomClasses: "scale-[1.6] origin-top" },
+    { name: t("member5Name"), title: t("member5Role"), image: "/الكادر الطبي.jpeg", zoomClasses: "scale-100" },
   ];
+
+  const teamMembers = (dbHealers && dbHealers.length > 0)
+    ? dbHealers.map((h) => ({
+        name: h.display_name,
+        title: h.title || h.specialization || (locale === "tr" ? "Manevi المعالج" : "معالج معتمد"),
+        image: h.photo_url || "/logo.png",
+        zoomClasses: "scale-100 object-cover",
+      }))
+    : defaultTeamMembers;
 
   const values = t.raw("values") as string[];
 
@@ -145,15 +162,15 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               <div key={i} className="bg-white p-6 rounded-xl border border-border text-center hover:shadow-lg transition-all">
                 {member.image ? (
                   <div className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-primary/10 overflow-hidden relative shadow-sm">
-                    <Image src={member.image} alt={t(member.nameKey)} fill className="object-cover" sizes="96px" />
+                    <Image src={member.image} alt={member.name} fill className="object-cover" sizes="96px" />
                   </div>
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
                     <Users size={32} />
                   </div>
                 )}
-                <h3 className="font-bold text-lg text-text-primary mb-1">{t(member.nameKey)}</h3>
-                <p className="text-sm text-text-secondary">{t(member.roleKey)}</p>
+                <h3 className="font-bold text-lg text-text-primary mb-1">{member.name}</h3>
+                <p className="text-sm text-text-secondary">{member.title}</p>
               </div>
             ))}
           </div>

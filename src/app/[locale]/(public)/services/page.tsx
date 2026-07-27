@@ -10,16 +10,22 @@ import { useTranslations } from "next-intl";
 export default function ServicesPage() {
   const t = useTranslations("Services");
   const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
+  const [dbServices, setDbServices] = useState<Array<{ id: string; name: string; description: string; price: number | null }> | null>(null);
 
   useEffect(() => {
-    async function loadSettings() {
+    async function loadData() {
       const supabase = createClient();
-      const { data } = await supabase.from("site_settings").select("value").eq("key", "infographic_image_url").single();
-      if (data && data.value) {
-        setInfographicUrl(data.value);
+      const { data: infoData } = await supabase.from("site_settings").select("value").eq("key", "infographic_image_url").single();
+      if (infoData && infoData.value) {
+        setInfographicUrl(infoData.value);
+      }
+
+      const { data: svcData } = await supabase.from("services").select("id, name, description, price, display_order").order("display_order", { ascending: true });
+      if (svcData && svcData.length > 0) {
+        setDbServices(svcData);
       }
     }
-    loadSettings();
+    loadData();
   }, []);
 
   const whyItems = t.raw("whyItems") as string[];
@@ -156,32 +162,56 @@ export default function ServicesPage() {
             <p className="text-text-secondary max-w-2xl mx-auto leading-relaxed text-lg">{t("afterConsultDesc")}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {servicesList.map((service, i) => {
-              const features = t.raw(service.featuresKey) as string[];
-              return (
-                <div key={i} className="bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col relative">
-                  <div className={`h-2 bg-gradient-to-l ${service.gradient}`} />
+            {dbServices && dbServices.length > 0 ? (
+              dbServices.map((service, i) => (
+                <div key={service.id || i} className="bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col relative">
+                  <div className="h-2 bg-gradient-to-l from-primary to-accent" />
                   <div className="p-8 flex-1 flex flex-col">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
-                      {service.icon}
+                      <BookOpen size={28} />
                     </div>
-                    <h3 className="text-xl font-bold text-text-primary mb-3">{t(service.titleKey)}</h3>
-                    <p className="text-text-secondary leading-relaxed mb-6">{t(service.descKey)}</p>
-                    <div className="bg-bg rounded-xl p-5 border border-border/50">
-                      <h4 className="text-sm font-semibold text-text-primary mb-3">{t("serviceFeatures")}</h4>
-                      <ul className="space-y-3">
-                        {features.map((f: string, j: number) => (
-                          <li key={j} className="flex items-start gap-2 text-sm text-text-secondary">
-                            <CheckCircle size={16} className="text-primary flex-shrink-0 mt-0.5" />
-                            <span className="leading-tight">{f}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-bold text-text-primary">{service.name}</h3>
+                      {service.price !== null && (
+                        <span className="text-lg font-bold text-primary" dir="ltr">${service.price}</span>
+                      )}
                     </div>
+                    <p className="text-text-secondary leading-relaxed mb-6 flex-1">{service.description}</p>
+                    <Link href="/booking" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-light transition-all text-sm">
+                      <Phone size={16} />
+                      {t("bookConsult")}
+                    </Link>
                   </div>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              servicesList.map((service, i) => {
+                const features = t.raw(service.featuresKey) as string[];
+                return (
+                  <div key={i} className="bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col relative">
+                    <div className={`h-2 bg-gradient-to-l ${service.gradient}`} />
+                    <div className="p-8 flex-1 flex flex-col">
+                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
+                        {service.icon}
+                      </div>
+                      <h3 className="text-xl font-bold text-text-primary mb-3">{t(service.titleKey)}</h3>
+                      <p className="text-text-secondary leading-relaxed mb-6">{t(service.descKey)}</p>
+                      <div className="bg-bg rounded-xl p-5 border border-border/50">
+                        <h4 className="text-sm font-semibold text-text-primary mb-3">{t("serviceFeatures")}</h4>
+                        <ul className="space-y-3">
+                          {features.map((f: string, j: number) => (
+                            <li key={j} className="flex items-start gap-2 text-sm text-text-secondary">
+                              <CheckCircle size={16} className="text-primary flex-shrink-0 mt-0.5" />
+                              <span className="leading-tight">{f}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </section>

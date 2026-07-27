@@ -36,6 +36,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     .order("display_order", { ascending: true })
     .limit(6);
 
+  const { data: dbTestimonials } = await supabase
+    .from("testimonials")
+    .select("id, patient_name, content, rating")
+    .eq("is_approved", true)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
   const aboutFeatures = [
     { icon: <Shield size={24} />, titleKey: "feature1Title" as const, descKey: "feature1Desc" as const },
     { icon: <Globe size={24} />, titleKey: "feature2Title" as const, descKey: "feature2Desc" as const },
@@ -257,6 +264,42 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
       </section>
+
+      {/* ========== Testimonials Section (Managed from Admin Panel) ========== */}
+      {dbTestimonials && dbTestimonials.length > 0 && (
+        <section className="py-16 lg:py-24 bg-bg border-t border-border">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <span className="text-sm font-semibold text-accent uppercase tracking-wider">{t("badge")}</span>
+              <h2 className="text-2xl lg:text-4xl font-bold text-text-primary mt-2 mb-4">آراء وتجارب المستفيدين</h2>
+              <p className="text-text-secondary max-w-2xl mx-auto">تجارب واقعية لبعض الحالات التي تلقت الرقية والعلاج بفضل الله وتوفيقه</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dbTestimonials.map((item) => (
+                <div key={item.id} className="bg-white rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-1 text-accent">
+                      {Array.from({ length: item.rating || 5 }).map((_, i) => (
+                        <Star key={i} size={16} className="fill-accent" />
+                      ))}
+                    </div>
+                    <p className="text-text-secondary text-sm leading-relaxed italic">
+                      "{item.content}"
+                    </p>
+                  </div>
+                  <div className="pt-4 mt-4 border-t border-border/50 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                      {item.patient_name ? item.patient_name.charAt(0) : "م"}
+                    </div>
+                    <span className="font-semibold text-sm text-text-primary">{item.patient_name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ========== Final CTA ========== */}
       <section className="py-16 lg:py-24">
