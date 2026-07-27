@@ -161,40 +161,33 @@ export function getCourseSchema(courses: Array<{
   url: string;
 }>, locale: string) {
   const baseUrl = getBaseUrl();
-  return {
+  return courses.map((course) => ({
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: locale === 'tr' ? 'Kurslarımız' : 'الدورات والكورسات',
-    itemListElement: courses.map((course, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'Course',
-        name: course.name,
-        description: course.description,
-        url: course.url,
-        category: locale === 'tr' ? 'Rukye Eğitimi ve Danışmanlık' : 'علوم الرقية الشرعية والطب النبوي والتأهيل المعرفي',
-        provider: {
-          '@type': 'Organization',
-          name: locale === 'tr' ? 'Ruqya Center' : 'مركز الرقية بكلام الرحمن',
-          sameAs: locale === 'tr' ? `${baseUrl}/tr` : baseUrl,
-        },
-        hasCourseInstance: [
-          {
-            '@type': 'CourseInstance',
-            courseMode: 'Online',
-            courseWorkload: 'PT10H',
-          },
-        ],
-        offers: [
-          {
-            '@type': 'Offer',
-            price: '0',
-            priceCurrency: 'USD',
-            availability: 'https://schema.org/InStock',
-          },
-        ],
+    '@type': 'Course',
+    name: course.name,
+    description: course.description,
+    url: course.url,
+    category: locale === 'tr' ? 'Rukye Eğitimi ve Danışmanlık' : 'علوم الرقية الشرعية والطب النبوي والتأهيل المعرفي',
+    provider: {
+      '@type': 'Organization',
+      name: locale === 'tr' ? 'Ruqya Center' : 'مركز الرقية بكلام الرحمن',
+      sameAs: locale === 'tr' ? `${baseUrl}/tr` : baseUrl,
+    },
+    hasCourseInstance: [
+      {
+        '@type': 'CourseInstance',
+        courseMode: 'Online',
+        courseWorkload: 'PT10H',
       },
-    })),
-  };
+    ],
+    offers: [
+      {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        category: 'Free',
+        availability: 'https://schema.org/InStock',
+      },
+    ],
+  }));
 }

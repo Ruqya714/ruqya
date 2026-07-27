@@ -32,8 +32,12 @@ export async function generateMetadata({
   const baseUrl = "https://ruqyacenter.com";
   const url = `${baseUrl}/${locale}/blog/${encodeURIComponent(slug)}`;
 
+  const rawTitle = article.title || "";
+  const trimmedTitle = rawTitle.length > 50 ? rawTitle.substring(0, 50) + "..." : rawTitle;
+  const pageTitle = `${trimmedTitle} | ${locale === 'tr' ? 'Ruqya Center' : 'مركز الرقية'}`;
+
   return {
-    title: article.title,
+    title: pageTitle,
     description: article.excerpt || article.title,
     alternates: {
       canonical: url,
@@ -166,7 +170,9 @@ export default async function ArticlePage({
               [&_a]:text-primary [&_a]:underline
               [&_img]:rounded-lg md:[&_img]:rounded-xl [&_img]:shadow-md [&_img]:mx-auto [&_img]:my-6 md:[&_img]:my-8 [&_img]:border [&_img]:border-border [&_img]:w-full
             "
-            dangerouslySetInnerHTML={{ __html: article.content || "" }}
+            dangerouslySetInnerHTML={{
+              __html: (article.content || "").replace(/<img(?![^>]*\balt=)/gi, '<img alt="مركز الرقية الشرعية والعلاج بالقرآن" ')
+            }}
           />
         </div>
 

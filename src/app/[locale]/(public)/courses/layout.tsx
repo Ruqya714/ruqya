@@ -46,12 +46,14 @@ export default async function CoursesLayout({
     { name: isTr ? "Kurslarımız" : "الدورات والتدريب", url: isTr ? trUrl : arUrl },
   ]);
 
-  const courseSchema = getCourseSchema(coursesList, locale);
+  const courseSchemas = getCourseSchema(coursesList, locale);
 
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
-      <JsonLd data={courseSchema} />
+      {courseSchemas.map((schema, i) => (
+        <JsonLd key={i} data={schema} />
+      ))}
       {/* Hidden SSR SEO text for crawlers with JS disabled */}
       <h2 className="sr-only">{isTr ? "Ruqya Center Eğitim ve Uzmanlık Kursları" : "أكاديمية تأهيل ودورات الرقاة والمعالجين المعتمدة"}</h2>
       <div className="sr-only">
