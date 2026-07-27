@@ -1,12 +1,18 @@
-"use client";
-
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { Calendar, ArrowLeft, BookOpen, Clock } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
-import { useEffect, useState } from "react";
-
+import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
 import { formatDate, truncateText } from "@/lib/helpers";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
+  return {
+    title: t("heroTitle"),
+    description: t("heroDesc"),
+  };
+}
 
 interface Article {
   id: string;
@@ -20,30 +26,23 @@ interface Article {
   reading_time?: string;
 }
 
-export default function BlogPage() {
-  const t = useTranslations("Blog");
-  const locale = useLocale();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Blog" });
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const response = await fetch(`/api/articles?locale=${locale}`);
-        const { articles, error } = await response.json();
-        
-        if (error) throw new Error(error);
-        
-        setArticles(articles || []);
-      } catch (err) {
-        console.error("Failed to load articles:", err);
-        setArticles([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    load();
-  }, []);
+  let articles: Article[] = [];
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("articles")
+      .select("*")
+      .eq("is_published", true)
+      .order("published_at", { ascending: false });
+
+    articles = (data as unknown as Article[]) || [];
+  } catch (e) {
+    console.error("Error loading SSR articles for blog page:", e);
+  }
 
   const categoryLabels: Record<string, string> = {
     article: t("article"),
@@ -73,11 +72,7 @@ export default function BlogPage() {
       {/* Articles Grid */}
       <section className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {isLoading ? (
-            <div className="py-16 text-center">
-              <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
-            </div>
-          ) : !articles || articles.length === 0 ? (
+          {!articles || articles.length === 0 ? (
             <div className="text-center py-16">
               <BookOpen size={48} className="text-text-muted mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-text-primary mb-2">{t("noArticles")}</h3>
@@ -102,7 +97,7 @@ export default function BlogPage() {
                     <span className={`self-start px-2.5 py-0.5 rounded-full text-xs font-medium mb-3 ${categoryColors[article.category] || "bg-gray-100 text-gray-700"}`}>
                       {categoryLabels[article.category] || article.category}
                     </span>
-                    <h3 className="font-semibold text-text-primary mb-2 line-clamp-2 group-hover:text-primary transition-colors">{article.title}</h3>
+                    <h2 className="font-semibold text-base text-text-primary mb-2 line-clamp-2 group-hover:text-primary transition-colors">{article.title}</h2>
                     {article.excerpt && (
                       <p className="text-sm text-text-secondary line-clamp-2 mb-4 flex-1">{truncateText(article.excerpt, 120)}</p>
                     )}
