@@ -12,7 +12,7 @@ export function getOrganizationSchema(locale: string) {
       ? "Ruqya Center | Kur'an ile Şifa ve Danışmanlık Merkezi"
       : 'مركز الرقية بكلام الرحمن لرد كيد الشيطان',
     alternateName: isTr ? 'Ruqya Center' : 'مركز الرقية الشرعية',
-    url: `${baseUrl}/${locale}`,
+    url: isTr ? `${baseUrl}/tr` : baseUrl,
     logo: {
       '@type': 'ImageObject',
       url: `${baseUrl}/logo.png`,
@@ -123,7 +123,9 @@ export function getArticleSchema(article: {
   authorName?: string;
 }, locale: string) {
   const baseUrl = getBaseUrl();
-  const url = `${baseUrl}/${locale}/blog/${encodeURIComponent(article.slug)}`;
+  const url = locale === 'tr' 
+    ? `${baseUrl}/tr/blog/${encodeURIComponent(article.slug)}` 
+    : `${baseUrl}/blog/${encodeURIComponent(article.slug)}`;
   const defaultImage = `${baseUrl}/logo.png`;
 
   return {
