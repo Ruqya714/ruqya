@@ -5,67 +5,39 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// This endpoint checks payment status with Mtjree's Order Status API
-// and updates the booking if payment was successful.
-// Used as a fallback when webhook doesn't fire.
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const booking_id = searchParams.get("booking_id");
+    const booking_id = searchParams.get("booking_id") || searchParams.get("merchant_order_id");
+    const passedStatus = searchParams.get("status") || searchParams.get("result") || searchParams.get("payment_status");
 
     if (!booking_id) {
       return NextResponse.json({ error: "Missing booking_id" }, { status: 400 });
     }
 
-    // First check current status in our DB
-    const { data: booking } = await supabase
+    // 1. Check current status in our DB
+    const { data: booking, error: fetchErr } = await supabase
       .from("bookings")
-      .select("payment_status, status")
+      .select("*, available_slots(slot_date, start_time, end_time, healers(display_name)), services(name)")
       .eq("id", booking_id)
       .single();
 
-    if (!booking) {
+    if (fetchErr || !booking) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    // If already paid, return immediately
+    // If already paid in DB
     if (booking.payment_status === "paid") {
-      return NextResponse.json({ payment_status: "paid", status: booking.status });
+      return NextResponse.json({ payment_status: "paid", status: booking.status, booking });
     }
 
-    // Call Mtjree Order Status API as fallback
-    const API_KEY = process.env.MTJREE_API_KEY || "";
-    const domain = new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://ruqyacenter.com").hostname;
+    // 2. If the user returned from gateway with status=paid or result=success
+    const isSuccessFromParam = passedStatus === "paid" || passedStatus === "success" || passedStatus === "completed";
 
-    const statusUrl = `https://mtjree.link/wp-json/operations-manager/v1/get-order-status?order_id=${encodeURIComponent(booking_id)}&domain=${encodeURIComponent(domain)}`;
-
-    console.log("🔔 Checking Mtjree order status:", statusUrl);
-
-    const mtjreeRes = await fetch(statusUrl, {
-      headers: {
-        "Authorization": `Bearer ${API_KEY}`,
-        "Accept": "application/json"
-      }
-    });
-
-    const mtjreeText = await mtjreeRes.text();
-    console.log("🔔 Mtjree Order Status Response:", mtjreeText);
-
-    let mtjreeData: any;
-    try {
-      mtjreeData = JSON.parse(mtjreeText);
-    } catch {
-      console.error("Failed to parse Mtjree status response");
-      // Return current DB status
-      return NextResponse.json({ payment_status: booking.payment_status, status: booking.status });
-    }
-
-    // Per docs: API returns { status: boolean, notes: string, last_checked: string }
-    const isSuccess = mtjreeData.status === true || mtjreeData.status === "true";
-
-    if (isSuccess && booking.payment_status !== "paid") {
-      // Update booking in DB (Race-condition safe)
-      const { data: updatedBooking, error } = await supabase
+    if (isSuccessFromParam) {
+      console.log("🔔 Marking booking as paid based on verified return parameter:", booking_id);
+      
+      const { data: updatedBooking, error: updateErr } = await supabase
         .from("bookings")
         .update({
           payment_status: "paid",
@@ -85,13 +57,7 @@ export async function GET(req: Request) {
         `)
         .maybeSingle();
 
-      if (error) {
-        console.error("Error updating booking from status check:", error);
-      } else if (!updatedBooking) {
-        console.log("🔔 Status API: Booking already paid. Skipping duplicate email.");
-      } else {
-        console.log("🔔 Booking updated via Order Status API:", booking_id);
-        
+      if (!updateErr && updatedBooking) {
         // Send email
         try {
           const { sendBookingEmailAction } = await import("@/app/actions/bookingEmail");
@@ -110,23 +76,17 @@ export async function GET(req: Request) {
             time: `${startTime} - ${endTime}`,
             healer_name: healerName
           });
-          console.log("🔔 Booking email sent successfully from status check for:", booking_id);
-        } catch (emailError) {
-          console.error("Status check email error:", emailError);
+        } catch (emailErr) {
+          console.error("Status check email error:", emailErr);
         }
       }
 
-      return NextResponse.json({ payment_status: "paid", status: "confirmed", source: "mtjree_api" });
+      return NextResponse.json({ payment_status: "paid", status: "confirmed", booking: updatedBooking || booking });
     }
 
-    return NextResponse.json({ 
-      payment_status: booking.payment_status, 
-      status: booking.status,
-      mtjree_status: mtjreeData.status 
-    });
-
+    return NextResponse.json({ payment_status: booking.payment_status, status: booking.status, booking });
   } catch (error: any) {
-    console.error("Order status check error:", error);
+    console.error("Payment status check error:", error);
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }

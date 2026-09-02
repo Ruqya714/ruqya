@@ -16,13 +16,21 @@ export default function PaymentResultPage() {
   const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref") || searchParams.get("transaction_id");
   
   const [activeBookingId, setActiveBookingId] = useState<string | null>(urlBookingId || fallbackBookingId);
-  const isFailed = statusParam?.includes("fail") || statusParam?.includes("cancel");
+
+  const isPaid = statusParam === "paid" || 
+                 statusParam === "success" || 
+                 statusParam === "completed" || 
+                 searchParams.get("result") === "success" || 
+                 searchParams.get("payment_status") === "paid";
+
+  const isFailed = !isPaid && (statusParam?.includes("fail") || statusParam?.includes("cancel") || searchParams.get("result") === "failure");
+
   const [verifiedStatus, setVerifiedStatus] = useState<"loading" | "paid" | "failed">(
-    isFailed ? "failed" : "loading"
+    isPaid ? "paid" : isFailed ? "failed" : "loading"
   );
   const [isRetrying, setIsRetrying] = useState(false);
 
-  // Initialize booking ID from localStorage if URL parameter was corrupted by gateway
+  // Initialize booking ID from localStorage if URL parameter was missing
   useEffect(() => {
     if (!activeBookingId) {
       try {
@@ -40,14 +48,24 @@ export default function PaymentResultPage() {
   }, [activeBookingId]);
 
   useEffect(() => {
-    if (statusParam?.includes("failed")) return;
+    if (isPaid) {
+      setVerifiedStatus("paid");
+      if (activeBookingId) {
+        fetch(`/api/payment/mtjree-status?booking_id=${activeBookingId}&status=paid`).catch(console.error);
+      }
+      return;
+    }
+
+    if (isFailed) {
+      setVerifiedStatus("failed");
+      return;
+    }
 
     async function verifyPayment() {
-      // Use activeBookingId from state (which might be populated from localStorage)
       const idToVerify = activeBookingId;
       
       if (!idToVerify) {
-        setVerifiedStatus(statusParam?.includes("success") || !!tranRef ? "paid" : "failed");
+        setVerifiedStatus(isPaid || !!tranRef ? "paid" : "failed");
         return;
       }
 
@@ -61,40 +79,35 @@ export default function PaymentResultPage() {
         }
 
         // Wait and retry if webhook hasn't fired yet
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 2500));
         const retryRes = await fetch(`/api/payment/mtjree-status?booking_id=${idToVerify}`);
         const retryData = await retryRes.json();
 
-        if (retryData.payment_status === "paid") {
-          setVerifiedStatus("paid");
-        } else if (statusParam?.includes("success")) {
+        if (retryData.payment_status === "paid" || isPaid) {
           setVerifiedStatus("paid");
         } else {
           setVerifiedStatus("failed");
         }
       } catch (error) {
         console.error("Failed to verify payment:", error);
-        setVerifiedStatus(statusParam?.includes("success") ? "paid" : "failed");
+        setVerifiedStatus(isPaid ? "paid" : "failed");
       }
     }
 
-    // Give the localstorage effect above a moment to run
     if (activeBookingId || urlBookingId) {
       verifyPayment();
     } else {
-      // wait a bit for local storage check
       const timer = setTimeout(verifyPayment, 100);
       return () => clearTimeout(timer);
     }
-  }, [activeBookingId, urlBookingId, statusParam, tranRef]);
+  }, [activeBookingId, urlBookingId, isPaid, isFailed, tranRef]);
 
-  // Retry payment handler
+  // Direct Retry payment handler (No form refill required)
   const handleRetryPayment = async () => {
     if (!activeBookingId || isRetrying) return;
     setIsRetrying(true);
 
     try {
-      // Save to localStorage for redirect detection (same as initial payment)
       localStorage.setItem("mtjree_pending_booking", JSON.stringify({
         booking_id: activeBookingId,
         locale: locale,
@@ -111,14 +124,12 @@ export default function PaymentResultPage() {
       if (res.ok && data.redirect_url) {
         window.location.href = data.redirect_url;
       } else {
-        alert(data.error || "فشل في إعادة إنشاء رابط الدفع");
-        localStorage.removeItem("mtjree_pending_booking");
+        alert(data.error || "فشل في إعادة إنشاء رابط الدفع - يُرجى المحاولة لاحقاً");
         setIsRetrying(false);
       }
     } catch (error) {
       console.error("Retry payment error:", error);
       alert("حدث خطأ أثناء إعادة المحاولة");
-      localStorage.removeItem("mtjree_pending_booking");
       setIsRetrying(false);
     }
   };
@@ -127,15 +138,15 @@ export default function PaymentResultPage() {
   if (verifiedStatus === "loading") {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <div className="bg-white rounded-2xl border border-border p-8 lg:p-12">
+        <div className="bg-white rounded-3xl border border-border p-8 lg:p-12 shadow-sm">
           <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto flex items-center justify-center mb-6">
             <Loader2 size={40} className="text-primary animate-spin" />
           </div>
           <h2 className="text-2xl font-bold text-text-primary mb-3">
             جاري التحقق من عملية الدفع...
           </h2>
-          <p className="text-text-secondary leading-relaxed">
-            يرجى الانتظار لحظات بينما نتأكد من حالة الدفع الخاصة بك
+          <p className="text-text-secondary leading-relaxed text-sm">
+            يرجى الانتظار لحظات بينما نتأكد من حالة الدفع وتأكيد الحجز
           </p>
         </div>
       </div>
@@ -146,36 +157,36 @@ export default function PaymentResultPage() {
   if (verifiedStatus === "failed") {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <div className="bg-white rounded-2xl border border-border p-8 lg:p-12">
+        <div className="bg-white rounded-3xl border border-border p-8 lg:p-12 shadow-sm">
           <div className="w-20 h-20 rounded-full bg-red-50 mx-auto flex items-center justify-center mb-6">
             <XCircle size={40} className="text-red-500" />
           </div>
           <h2 className="text-2xl font-bold text-text-primary mb-3">
             فشلت عملية الدفع
           </h2>
-          <p className="text-text-secondary leading-relaxed mb-8">
-            عذراً، لم نتمكن من إتمام عملية الدفع الخاصة بك. يرجى التأكد من بيانات البطاقة أو المحاولة مرة أخرى.
+          <p className="text-text-secondary leading-relaxed mb-8 text-sm">
+            عذراً، لم تكتمل عملية الدفع. تم حفظ بيانات حجزك ويمكنك إعادة المحاولة مباشرة دون إعادة إدخال بياناتك.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             {activeBookingId && (
               <button
                 onClick={handleRetryPayment}
                 disabled={isRetrying}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all shadow-sm hover:shadow-md disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-white font-bold hover:bg-primary-light transition-all shadow-sm hover:shadow-md disabled:opacity-60 text-sm cursor-pointer"
               >
                 {isRetrying ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : (
                   <RefreshCw size={18} />
                 )}
-                {isRetrying ? "جاري إعادة المحاولة..." : "إعادة محاولة الدفع"}
+                {isRetrying ? "جاري فتح صفحة الدفع..." : "إعادة محاولة الدفع مباشرة"}
               </button>
             )}
             <Link
               href="/booking"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg border border-border text-text-primary font-medium hover:bg-gray-50 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-border text-text-primary font-bold hover:bg-gray-50 transition-all text-sm"
             >
-              حجز جديد
+              حجز موعد جديد
             </Link>
           </div>
         </div>
@@ -186,28 +197,32 @@ export default function PaymentResultPage() {
   // Success state
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-      <div className="bg-white rounded-2xl border border-border p-8 lg:p-12">
+      <div className="bg-white rounded-3xl border border-border p-8 lg:p-12 shadow-sm">
         <div className="w-20 h-20 rounded-full bg-green-50 mx-auto flex items-center justify-center mb-6">
           <CheckCircle size={40} className="text-green-500" />
         </div>
         <h2 className="text-2xl font-bold text-text-primary mb-3">
-          {t("success.title")}
+          تم تأكيد حجزك وسداد الرسوم بنجاح!
         </h2>
-        <p className="text-text-secondary leading-relaxed mb-4">
-          تمت عملية الدفع وتأكيد الحجز بنجاح. سيصلك إيميل بالتفاصيل المعتمدة.
+        <p className="text-text-secondary leading-relaxed mb-6 text-sm">
+          تم استلام الدفعة وتأكيد موعد الاستشارة الصوتية بنجاح. تم إرسال تفاصيل الموعد ورابط الجلسة إلى بريدك الإلكتروني.
         </p>
 
+        {activeBookingId && (
+          <div className="bg-primary/5 rounded-2xl p-4 mb-8 border border-primary/10 inline-block text-center">
+            <span className="text-xs text-text-muted block mb-1">رقم الحجز المرجعي</span>
+            <span className="text-sm font-mono font-bold text-primary">{activeBookingId}</span>
+          </div>
+        )}
 
-
-        <div>
+        <div className="flex items-center justify-center gap-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all shadow-sm hover:shadow-md"
+            className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-primary text-white font-bold hover:bg-primary-light transition-all shadow-sm text-sm"
           >
-            {t("success.backToHome")}
+            العودة للرئيسية
           </Link>
         </div>
-        <p className="text-xs text-text-muted mt-6">{t("success.prayer")}</p>
       </div>
     </div>
   );
