@@ -195,6 +195,9 @@ export default function PaymentResultPage() {
   }
 
   // Success state
+  const orderIdParam = searchParams.get("order_id") || searchParams.get("orderId") || searchParams.get("order_number") || searchParams.get("transaction_id") || searchParams.get("tranRef") || searchParams.get("tran_ref");
+  const displayReference = orderIdParam || activeBookingId;
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center">
       <div className="bg-white rounded-3xl border border-border p-8 lg:p-12 shadow-sm">
@@ -202,16 +205,20 @@ export default function PaymentResultPage() {
           <CheckCircle size={40} className="text-green-500" />
         </div>
         <h2 className="text-2xl font-bold text-text-primary mb-3">
-          تم تأكيد حجزك وسداد الرسوم بنجاح!
+          {locale === "tr" ? "Randevunuz ve Ödemeniz Başarıyla Onaylandı!" : "تم تأكيد حجزك وسداد الرسوم بنجاح!"}
         </h2>
-        <p className="text-text-secondary leading-relaxed mb-6 text-sm">
-          تم استلام الدفعة وتأكيد موعد الاستشارة الصوتية بنجاح. تم إرسال تفاصيل الموعد ورابط الجلسة إلى بريدك الإلكتروني.
+        <p className="text-text-secondary leading-relaxed mb-6 text-sm max-w-lg mx-auto">
+          {locale === "tr" 
+            ? "Ödemeniz alındı ve sesli danışmanlık randevunuz başarıyla onaylandı. Randevu detayları ve seans bağlantısı e-posta adresinize gönderilecektir." 
+            : "تم استلام الدفعة وتأكيد موعد الاستشارة الصوتية بنجاح. سيتم إرسال تفاصيل الموعد ورابط الجلسة إلى بريدك الإلكتروني."}
         </p>
 
-        {activeBookingId && (
-          <div className="bg-primary/5 rounded-2xl p-4 mb-8 border border-primary/10 inline-block text-center">
-            <span className="text-xs text-text-muted block mb-1">رقم الحجز المرجعي</span>
-            <span className="text-sm font-mono font-bold text-primary">{activeBookingId}</span>
+        {displayReference && (
+          <div className="bg-primary/5 rounded-2xl p-4 mb-8 border border-primary/10 inline-block text-center min-w-[240px]">
+            <span className="text-xs text-text-muted block mb-1">
+              {locale === "tr" ? "Sipariş Numarası (Order ID)" : "رقم الطلب المرجعي (Order ID)"}
+            </span>
+            <span className="text-base font-mono font-bold text-primary">{displayReference}</span>
           </div>
         )}
 
@@ -220,7 +227,7 @@ export default function PaymentResultPage() {
             href="/"
             className="inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-primary text-white font-bold hover:bg-primary-light transition-all shadow-sm text-sm"
           >
-            العودة للرئيسية
+            {locale === "tr" ? "Ana Sayfaya Dön" : "العودة للرئيسية"}
           </Link>
         </div>
       </div>
