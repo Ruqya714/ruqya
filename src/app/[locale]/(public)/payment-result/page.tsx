@@ -195,8 +195,8 @@ export default function PaymentResultPage() {
   }
 
   // Success state
-  const orderIdParam = searchParams.get("order_id") || searchParams.get("orderId") || searchParams.get("order_number") || searchParams.get("transaction_id") || searchParams.get("tranRef") || searchParams.get("tran_ref");
-  const displayReference = orderIdParam || activeBookingId;
+  const transactionIdParam = searchParams.get("transaction_id") || searchParams.get("tranRef") || searchParams.get("tran_ref") || searchParams.get("order_id") || searchParams.get("orderId") || searchParams.get("order_number");
+  const displayReference = transactionIdParam || activeBookingId;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-20 text-center">
@@ -216,7 +216,7 @@ export default function PaymentResultPage() {
         {displayReference && (
           <div className="bg-primary/5 rounded-2xl p-4 mb-8 border border-primary/10 inline-block text-center min-w-[240px]">
             <span className="text-xs text-text-muted block mb-1">
-              {locale === "tr" ? "Sipariş Numarası (Order ID)" : "رقم الطلب المرجعي (Order ID)"}
+              {locale === "tr" ? "İşlem Numarası (Transaction ID)" : "رقم المعاملة (Transaction ID)"}
             </span>
             <span className="text-base font-mono font-bold text-primary">{displayReference}</span>
           </div>
