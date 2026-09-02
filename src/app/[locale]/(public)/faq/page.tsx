@@ -1,35 +1,26 @@
-import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import FAQContent from "./faq-content";
-
-
-
-
 import { getTranslations } from "next-intl/server";
-
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "FAQ" });
-  return {
-    title: t("heroTitle"),
-    description: t("heroDesc")
-  };
-}
-
-
-
 import JsonLd from "@/components/JsonLd";
 import { getFAQSchema } from "@/lib/jsonld";
+import { getCmsContent } from "@/lib/cms";
+import { fetchFaqsAction } from "@/app/actions/cms";
 
 export default async function FAQPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const tFaq = await getTranslations({ locale, namespace: "FAQ" });
   const t = await getTranslations({ locale, namespace: "FAQ.items" });
+
+  const hero = await getCmsContent("faq", "hero", locale, {
+    heroTitle: tFaq("heroTitle"),
+    heroDesc: tFaq("heroDesc"),
+    ctaTitle: tFaq("ctaTitle"),
+    ctaDesc: tFaq("ctaDesc"),
+    ctaContact: tFaq("ctaContact"),
+    ctaBook: tFaq("ctaBook"),
+  });
   
-  const supabase = await createClient();
-  const { data: dbFaqs } = await supabase
-    .from("faqs")
-    .select("id, question, answer, display_order")
-    .order("display_order", { ascending: true });
+  const faqsRes = await fetchFaqsAction(locale as "ar" | "tr");
+  const dbFaqs = faqsRes.success ? faqsRes.data : [];
 
   const faqs = (dbFaqs && dbFaqs.length > 0)
     ? dbFaqs
@@ -45,7 +36,15 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
   return (
     <>
       <JsonLd data={faqSchema} />
-      <FAQContent faqs={faqs as any} />
+      <FAQContent 
+        faqs={faqs as any} 
+        heroTitle={hero.heroTitle} 
+        heroDesc={hero.heroDesc}
+        ctaTitle={hero.ctaTitle}
+        ctaDesc={hero.ctaDesc}
+        ctaContact={hero.ctaContact}
+        ctaBook={hero.ctaBook}
+      />
     </>
   );
 }

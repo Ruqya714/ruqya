@@ -50,6 +50,10 @@ interface Service {
   description: string;
   duration_minutes: number;
   price: number;
+  min_days_delay?: number | null;
+  max_days_limit?: number | null;
+  is_active?: boolean;
+  display_order?: number;
 }
 
 interface SlotRow {
@@ -132,7 +136,6 @@ export default function BookingPage() {
     patient_previous_ruqya: "",
     patient_can_travel: "" as "" | "yes" | "no",
     patient_need_type: "",
-    consultation_type: "" as "" | "urgent" | "normal",
     patient_phone_code: "+90",
     patient_phone_number: "",
     agreed_to_terms: false,
@@ -147,51 +150,69 @@ export default function BookingPage() {
     }
   }, [currentStep, submitted]);
 
-  const [urgentPrice, setUrgentPrice] = useState<number | null>(null);
-
-  // Load services
+  // Load services with I18n support
   useEffect(() => {
     async function load() {
       const { data } = await supabase
         .from("services")
         .select("*")
         .eq("is_active", true)
-        .order("display_order");
-      setServices(data || []);
+        .order("display_order", { ascending: true });
       
-      const consultationService = data?.find((s: Service) => s.name.includes("الاستشارة"));
-      if (consultationService) {
-        setForm(prev => ({ ...prev, service_id: consultationService.id }));
+      let activeServices = (data as Service[]) || [];
+
+      if (locale === "tr") {
+        const { data: trSetting } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "i18n:services:tr")
+          .maybeSingle();
+
+        let trMap: Record<string, { name_tr?: string; description_tr?: string }> = {};
+        if (trSetting?.value) {
+          try {
+            trMap = JSON.parse(trSetting.value);
+          } catch {
+            // ignore
+          }
+        }
+
+        activeServices = activeServices.map((s) => {
+          const tr = trMap[s.id];
+          const name = tr?.name_tr || (s.name.includes("مستعجل") ? "Acil Sesli Danışmanlık" : s.name.includes("عادي") ? "Normal Sesli Danışmanlık" : s.name);
+          const description = tr?.description_tr || (s.name.includes("مستعجل") ? "24 saat içinde randevu alma imkânı sağlar" : s.name.includes("عادي") ? "7 gün ve sonrası için randevu tarihleri" : s.description);
+          return {
+            ...s,
+            name,
+            description,
+          };
+        });
       }
+
+      setServices(activeServices);
       
-      const { data: settings } = await supabase.from("site_settings").select("*");
-      const uPrice = settings?.find(s => s.key === "urgent_consultation_price")?.value;
-      if (uPrice) setUrgentPrice(parseFloat(uPrice));
+      if (activeServices.length > 0) {
+        setForm((prev) => ({
+          ...prev,
+          service_id: prev.service_id || activeServices[0].id,
+        }));
+      }
       
       setIsLoading(false);
     }
     load();
-  }, [supabase]);
+  }, [supabase, locale]);
 
-  // Load available dates (slots with remaining capacity)
+  // Load available dates based on selected service's min_days_delay and max_days_limit
   const loadAvailableDates = useCallback(async () => {
     if (!form.service_id) return;
     
-    const isConsultation = services.find((s: Service) => s.id === form.service_id)?.name.includes('الاستشارة');
+    const selectedService = services.find((s: Service) => s.id === form.service_id);
+    const minDays = selectedService?.min_days_delay ?? 0;
+    const maxDays = selectedService?.max_days_limit;
     
-    let minDate = new Date();
-    
-    if (isConsultation && form.consultation_type) {
-      if (form.consultation_type === 'urgent') {
-        // Urgent: starting from today/now (no max date limit)
-        minDate = new Date();
-      } else if (form.consultation_type === 'normal') {
-        // Normal: from 7 days onwards
-        minDate = new Date();
-        minDate.setDate(minDate.getDate() + 7);
-      }
-    }
-
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + minDays);
     const minDateStr = minDate.toISOString().split("T")[0];
 
     let query = supabase
@@ -199,6 +220,13 @@ export default function BookingPage() {
       .select("slot_date, max_capacity, current_bookings")
       .eq("is_booked", false)
       .gte("slot_date", minDateStr);
+
+    if (maxDays && maxDays >= minDays) {
+      const maxDate = new Date();
+      maxDate.setDate(maxDate.getDate() + maxDays);
+      const maxDateStr = maxDate.toISOString().split("T")[0];
+      query = query.lte("slot_date", maxDateStr);
+    }
 
     query = query.order("slot_date");
 
@@ -208,7 +236,7 @@ export default function BookingPage() {
     const availableSlots = (data as unknown as SlotRow[])?.filter((s) => s.current_bookings < s.max_capacity) || [];
     const uniqueDates = [...new Set(availableSlots.map((s) => s.slot_date))] as string[];
     setAvailableDates(uniqueDates);
-  }, [form.service_id, form.consultation_type, services, supabase]);
+  }, [form.service_id, services, supabase]);
 
   useEffect(() => {
     if (currentStep === 2 && form.service_id) {
@@ -288,6 +316,7 @@ export default function BookingPage() {
         return;
       }
 
+      const selectedService = services.find((s) => s.id === form.service_id);
       const res = await createBookingAction({
         slot_id: selectedSlotId,
         service_id: form.service_id,
@@ -303,8 +332,8 @@ export default function BookingPage() {
         patient_previous_ruqya: form.patient_previous_ruqya || null,
         patient_can_travel: form.patient_can_travel === "yes" ? true : form.patient_can_travel === "no" ? false : null,
         patient_need_type: form.patient_need_type || null,
-        patient_notes: selectedService?.name.includes('الاستشارة') && form.consultation_type 
-          ? `نوع الاستشارة: ${form.consultation_type === 'urgent' ? 'مستعجلة (خلال 24 ساعة)' : 'عادية (من 7 أيام وما فوق)'}\n\n${form.patient_previous_ruqya || ''}`
+        patient_notes: selectedService?.name
+          ? `نوع الاستشارة: ${selectedService.name}\n\n${form.patient_previous_ruqya || ''}`
           : form.patient_previous_ruqya || null,
         status: "pending",
         payment_status: "pending",
@@ -322,8 +351,8 @@ export default function BookingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           booking_id: res.bookingId,
-          amount: (selectedService?.name.includes('الاستشارة') && form.consultation_type === 'urgent' && urgentPrice) ? urgentPrice : (selectedService?.price || 0),
-          description: selectedService?.name,
+          amount: selectedService?.price || 0,
+          description: selectedService?.name || "استشارة صوتية",
           user_name: form.patient_name,
           user_email: form.patient_email,
           user_phone: fullPhone,
@@ -405,17 +434,17 @@ export default function BookingPage() {
   }
 
   const selectedService = services.find((s) => s.id === form.service_id);
-  const isConsultation = selectedService?.name.includes('الاستشارة') || false;
 
   const canProceed = () => {
     switch (currentStep) {
       case 0: 
-        if (!form.service_id) return false;
-        if (isConsultation && !form.consultation_type) return false;
+        return !!form.service_id;
+      case 1: 
+        return !!form.patient_name && !!form.patient_phone_number && !!form.patient_email && !!form.patient_gender;
+      case 2: 
+        return !!selectedSlotId;
+      default: 
         return true;
-      case 1: return !!form.patient_name && !!form.patient_phone_number && !!form.patient_email && !!form.patient_gender;
-      case 2: return !!selectedSlotId;
-      default: return true;
     }
   };
 
@@ -457,51 +486,43 @@ export default function BookingPage() {
 
                 <h2 className="text-lg font-bold text-text-primary mb-4">{t("serviceStep.selectType")}</h2>
                 
-                {form.service_id ? (
+                {services.length > 0 ? (
                   <div className="space-y-3">
-                    <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      form.consultation_type === "urgent" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30 bg-white"
-                    }`}>
-                      <input 
-                        type="radio" 
-                        name="consultation_type" 
-                        value="urgent" 
-                        checked={form.consultation_type === "urgent"} 
-                        onChange={(e) => setForm({ ...form, consultation_type: "urgent" })} 
-                        className="mt-1 accent-primary" 
-                      />
-                      <div className="flex-1 w-full flex justify-between items-start">
-                        <div>
-                          <p className="font-semibold text-text-primary">{t("serviceStep.urgent")}</p>
-                          <p className="text-sm text-text-secondary mt-1">{t("serviceStep.urgentDesc")}</p>
-                        </div>
-                        {urgentPrice !== null && (
-                          <p className="font-bold text-primary" dir="ltr">${urgentPrice}</p>
-                        )}
-                      </div>
-                    </label>
-                    
-                    <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      form.consultation_type === "normal" ? "border-primary bg-primary/5" : "border-border hover:border-primary/30 bg-white"
-                    }`}>
-                      <input 
-                        type="radio" 
-                        name="consultation_type" 
-                        value="normal" 
-                        checked={form.consultation_type === "normal"} 
-                        onChange={(e) => setForm({ ...form, consultation_type: "normal" })} 
-                        className="mt-1 accent-primary" 
-                      />
-                      <div className="flex-1 w-full flex justify-between items-start">
-                        <div>
-                          <p className="font-semibold text-text-primary">{t("serviceStep.normal")}</p>
-                          <p className="text-sm text-text-secondary mt-1">{t("serviceStep.normalDesc")}</p>
-                        </div>
-                        {selectedService && (
-                          <p className="font-bold text-primary" dir="ltr">${selectedService.price || 0}</p>
-                        )}
-                      </div>
-                    </label>
+                    {services.map((service) => {
+                      const isSelected = form.service_id === service.id;
+                      return (
+                        <label
+                          key={service.id}
+                          className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                            isSelected
+                              ? "border-primary bg-primary/5 shadow-sm"
+                              : "border-border hover:border-primary/30 bg-white"
+                          }`}
+                        >
+                          <input 
+                            type="radio" 
+                            name="service_id" 
+                            value={service.id} 
+                            checked={isSelected} 
+                            onChange={() => setForm({ ...form, service_id: service.id })} 
+                            className="mt-1 accent-primary" 
+                          />
+                          <div className="flex-1 w-full flex justify-between items-start gap-4">
+                            <div>
+                              <p className="font-semibold text-text-primary">{service.name}</p>
+                              {service.description && (
+                                <p className="text-sm text-text-secondary mt-1">{service.description}</p>
+                              )}
+                            </div>
+                            {service.price !== null && (
+                              <p className="font-bold text-primary text-base shrink-0" dir="ltr">
+                                ${service.price}
+                              </p>
+                            )}
+                          </div>
+                        </label>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-sm text-text-secondary text-center py-6">{t("serviceStep.loadingService")}</p>
@@ -692,8 +713,13 @@ export default function BookingPage() {
                   <div className="flex justify-between py-2 border-b border-border">
                     <span className="text-sm text-text-secondary">{t("confirmStep.details.service")}</span>
                     <span className="text-sm font-medium text-text-primary">
-                      {selectedService?.name} 
-                      {isConsultation && form.consultation_type && ` - ${form.consultation_type === 'urgent' ? t("confirmStep.urgentLabel") : t("confirmStep.normalLabel")}`}
+                      {selectedService?.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-border">
+                    <span className="text-sm text-text-secondary">المبلغ المستحق</span>
+                    <span className="text-sm font-bold text-primary" dir="ltr">
+                      ${selectedService?.price ?? 0}
                     </span>
                   </div>
 

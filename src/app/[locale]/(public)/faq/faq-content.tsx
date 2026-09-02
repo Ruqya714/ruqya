@@ -11,7 +11,23 @@ interface FAQ {
   answer: string;
 }
 
-export default function FAQContent({ faqs }: { faqs: FAQ[] }) {
+export default function FAQContent({
+  faqs,
+  heroTitle,
+  heroDesc,
+  ctaTitle,
+  ctaDesc,
+  ctaContact,
+  ctaBook,
+}: {
+  faqs: FAQ[];
+  heroTitle?: string;
+  heroDesc?: string;
+  ctaTitle?: string;
+  ctaDesc?: string;
+  ctaContact?: string;
+  ctaBook?: string;
+}) {
   const t = useTranslations("FAQ");
 
   const items = faqs.map((faq) => ({
@@ -28,8 +44,8 @@ export default function FAQContent({ faqs }: { faqs: FAQ[] }) {
           <div className="absolute top-10 start-20 w-72 h-72 rounded-full bg-accent blur-3xl" />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl lg:text-5xl font-bold mb-6">{t("heroTitle")}</h1>
-          <p className="text-lg text-gray-200 leading-relaxed max-w-2xl mx-auto">{t("heroDesc")}</p>
+          <h1 className="text-3xl lg:text-5xl font-bold mb-6">{heroTitle || t("heroTitle")}</h1>
+          <p className="text-lg text-gray-200 leading-relaxed max-w-2xl mx-auto">{heroDesc || t("heroDesc")}</p>
         </div>
       </section>
 
@@ -50,16 +66,16 @@ export default function FAQContent({ faqs }: { faqs: FAQ[] }) {
       <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <MessageCircle size={40} className="text-primary mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-text-primary mb-3">{t("ctaTitle")}</h2>
-          <p className="text-text-secondary mb-8">{t("ctaDesc")}</p>
+          <h2 className="text-2xl font-bold text-text-primary mb-3">{ctaTitle || t("ctaTitle")}</h2>
+          <p className="text-text-secondary mb-8">{ctaDesc || t("ctaDesc")}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-light transition-all">
               <MessageCircle size={18} />
-              {t("ctaContact")}
+              {ctaContact || t("ctaContact")}
             </Link>
             <Link href="/booking" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-medium hover:bg-accent-light transition-all">
               <Phone size={18} />
-              {t("ctaBook")}
+              {ctaBook || t("ctaBook")}
             </Link>
           </div>
         </div>

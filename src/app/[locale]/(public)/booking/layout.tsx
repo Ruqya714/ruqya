@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import { getBreadcrumbSchema } from "@/lib/jsonld";
 import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
+import { getCmsPageSeo } from "@/lib/cms";
 
 export async function generateMetadata({
   params,
@@ -11,11 +12,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const isTr = locale === "tr";
 
-  return {
-    title: isTr ? "Randevu Al" : "حجز استشارة",
+  const seo = await getCmsPageSeo("/booking", locale, {
+    title: isTr ? "Randevu Al | Ruqya Center" : "سجّل حالتك واحجز موعد استشارة | مركز الرقية",
     description: isTr
       ? "Ruqya Center'dan uzmanlarımızla görüşmek için hemen randevu oluşturun."
       : "احجز موعد استشارة أو جلسة رقية شرعية مع أطبائنا ومعالجينا المعتمدين.",
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: seo.og_image_url ? { images: [seo.og_image_url] } : undefined,
     alternates: getPageAlternates(locale, "/booking"),
   };
 }

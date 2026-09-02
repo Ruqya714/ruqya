@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import { getBreadcrumbSchema, getCourseSchema } from "@/lib/jsonld";
 import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
+import { getCmsPageSeo } from "@/lib/cms";
 
 export async function generateMetadata({
   params,
@@ -11,11 +12,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const isTr = locale === "tr";
 
-  return {
-    title: isTr ? "Kurslarımız" : "تأهيل ودورات المعالجين",
+  const seo = await getCmsPageSeo("/courses", locale, {
+    title: isTr ? "Kurslarımız | Ruqya Center" : "تأهيل ودورات المعالجين | مركز الرقية",
     description: isTr
       ? "Ruqya ve manevi şifa alanında uzmanlık ve eğitim kursları."
       : "دورات تدريبية متخصصة في تأهيل الرقاة والمعالجين وفق الكتاب والسنة.",
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: seo.og_image_url ? { images: [seo.og_image_url] } : undefined,
     alternates: getPageAlternates(locale, "/courses"),
   };
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import { getBreadcrumbSchema } from "@/lib/jsonld";
 import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
+import { getCmsPageSeo } from "@/lib/cms";
 
 export async function generateMetadata({
   params,
@@ -11,11 +12,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const isTr = locale === "tr";
 
-  return {
-    title: isTr ? "İletişim" : "اتصل بنا",
+  const seo = await getCmsPageSeo("/contact", locale, {
+    title: isTr ? "İletişim | Ruqya Center" : "اتصل بنا | مركز الرقية بكلام الرحمن",
     description: isTr
       ? "Ruqya Center iletişim bilgileri, adresimiz ve destek hattımız."
       : "تواصل مع مركز الرقية الشرعية في إسطنبول عبر الهاتف، الواتساب، أو الاستمارة المباشرة.",
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: seo.og_image_url ? { images: [seo.og_image_url] } : undefined,
     alternates: getPageAlternates(locale, "/contact"),
   };
 }

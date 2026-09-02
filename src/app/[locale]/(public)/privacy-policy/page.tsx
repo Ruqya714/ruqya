@@ -1,13 +1,16 @@
-"use client";
-
 import { SITE_NAME } from "@/lib/constants";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, ShieldCheck } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
+import { getCmsContent } from "@/lib/cms";
 
-export default function PrivacyPolicyPage() {
-  const locale = useLocale();
+export default async function PrivacyPolicyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const isAr = locale === "ar";
+
+  const content = await getCmsContent("privacy_policy", "content", locale, {
+    title: isAr ? "سياسة الخصوصية" : "Gizlilik Politikası",
+    body: "",
+  });
 
   return (
     <>
@@ -17,7 +20,7 @@ export default function PrivacyPolicyPage() {
             <ShieldCheck size={32} className="text-primary" />
           </div>
           <h1 className="text-3xl lg:text-4xl font-bold text-text-primary mb-4">
-            {isAr ? "سياسة الخصوصية" : "Gizlilik Politikası"}
+            {content.title || (isAr ? "سياسة الخصوصية" : "Gizlilik Politikası")}
           </h1>
           <p className="text-text-secondary">
             {isAr ? "آخر تحديث:" : "Son güncelleme:"} {new Date().toLocaleDateString(isAr ? 'ar-EG' : 'tr-TR')}
@@ -28,7 +31,11 @@ export default function PrivacyPolicyPage() {
       <section className="py-12 lg:py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl border border-border p-8 lg:p-12 shadow-sm prose prose-slate prose-lg md:prose-xl max-w-none text-text-primary" dir={isAr ? "rtl" : "ltr"}>
-            {isAr ? (
+            {content.body ? (
+              <div className="whitespace-pre-line leading-relaxed text-text-secondary">
+                {content.body}
+              </div>
+            ) : isAr ? (
               <>
                 <p className="lead text-text-secondary leading-relaxed mb-8">
                   في {SITE_NAME || "مركز الرقية الشرعية والاستشارات"}، نضع خصوصية المرضى والمستفيدين في أعلى درجات الأهمية. نحن ندرك تماماً حساسية المعلومات التي يتم مشاركتها معنا، ونلتزم التزاماً كاملاً بحمايتها وفقاً لأعلى معايير السرية والأمان.

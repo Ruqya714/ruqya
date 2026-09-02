@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getPageAlternates } from "@/lib/site-url";
+import { getCmsPageSeo } from "@/lib/cms";
 
 export async function generateMetadata({
   params,
@@ -9,11 +10,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const isTr = locale === "tr";
 
-  return {
-    title: isTr ? "Kullanım Şartları" : "شروط الاستخدام",
+  const seo = await getCmsPageSeo("/terms-of-service", locale, {
+    title: isTr ? "Kullanım Şartları | Ruqya Center" : "شروط الاستخدام | مركز الرقية الشرعية",
     description: isTr
       ? "Ruqya Center hizmet kullanım şartları ve yasal sözleşme."
       : "شروط وأحكام استخدام الاستشارات والخدمات في مركز الرقية الشرعية.",
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: seo.og_image_url ? { images: [seo.og_image_url] } : undefined,
     alternates: getPageAlternates(locale, "/terms-of-service"),
   };
 }

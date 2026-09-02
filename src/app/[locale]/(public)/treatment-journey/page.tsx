@@ -1,20 +1,49 @@
-"use client";
-
 import { Link } from "@/i18n/routing";
 import { Phone, ClipboardList, Stethoscope, BookOpen, HeartPulse, ShieldCheck, ArrowLeft, Home } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { getCmsContent } from "@/lib/cms";
 
-export default function TreatmentJourneyPage() {
-  const t = useTranslations("Journey");
+export default async function TreatmentJourneyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Journey" });
+
+  const hero = await getCmsContent("treatment_journey", "hero", locale, {
+    heroTitle: t("heroTitle"),
+    heroDesc: t("heroDesc"),
+  });
+
+  const stepsData = await getCmsContent("treatment_journey", "steps", locale, {
+    step1Title: t("step1Title"),
+    step1Desc: t("step1Desc"),
+    step2Title: t("step2Title"),
+    step2Desc: t("step2Desc"),
+    step3Title: t("step3Title"),
+    step3Desc: t("step3Desc"),
+    step4Title: t("step4Title"),
+    step4Desc: t("step4Desc"),
+    step5Title: t("step5Title"),
+    step5Desc: t("step5Desc"),
+    step6Title: t("step6Title"),
+    step6Desc: t("step6Desc"),
+    step7Title: t("step7Title"),
+    step7Desc: t("step7Desc"),
+  });
+
+  const cta = await getCmsContent("treatment_journey", "cta", locale, {
+    ctaTitle: t("ctaTitle"),
+    ctaDesc: t("ctaDesc"),
+    ctaBook: t("ctaBook"),
+    ctaServices: t("ctaServices"),
+  });
 
   const stages = [
-    { step: 1, icon: <ClipboardList size={24} />, titleKey: "step1Title" as const, descKey: "step1Desc" as const, color: "primary" },
-    { step: 2, icon: <Phone size={24} />, titleKey: "step2Title" as const, descKey: "step2Desc" as const, color: "accent" },
-    { step: 3, icon: <Stethoscope size={24} />, titleKey: "step3Title" as const, descKey: "step3Desc" as const, color: "primary" },
-    { step: 4, icon: <BookOpen size={24} />, titleKey: "step4Title" as const, descKey: "step4Desc" as const, color: "accent" },
-    { step: 5, icon: <Home size={24} />, titleKey: "step5Title" as const, descKey: "step5Desc" as const, color: "primary" },
-    { step: 6, icon: <HeartPulse size={24} />, titleKey: "step6Title" as const, descKey: "step6Desc" as const, color: "accent" },
-    { step: 7, icon: <ShieldCheck size={24} />, titleKey: "step7Title" as const, descKey: "step7Desc" as const, color: "primary" },
+    { step: 1, icon: <ClipboardList size={24} />, title: stepsData.step1Title || t("step1Title"), desc: stepsData.step1Desc || t("step1Desc"), color: "primary" },
+    { step: 2, icon: <Phone size={24} />, title: stepsData.step2Title || t("step2Title"), desc: stepsData.step2Desc || t("step2Desc"), color: "accent" },
+    { step: 3, icon: <Stethoscope size={24} />, title: stepsData.step3Title || t("step3Title"), desc: stepsData.step3Desc || t("step3Desc"), color: "primary" },
+    { step: 4, icon: <BookOpen size={24} />, title: stepsData.step4Title || t("step4Title"), desc: stepsData.step4Desc || t("step4Desc"), color: "accent" },
+    { step: 5, icon: <Home size={24} />, title: stepsData.step5Title || t("step5Title"), desc: stepsData.step5Desc || t("step5Desc"), color: "primary" },
+    { step: 6, icon: <HeartPulse size={24} />, title: stepsData.step6Title || t("step6Title"), desc: stepsData.step6Desc || t("step6Desc"), color: "accent" },
+    { step: 7, icon: <ShieldCheck size={24} />, title: stepsData.step7Title || t("step7Title"), desc: stepsData.step7Desc || t("step7Desc"), color: "primary" },
   ];
 
   return (
@@ -25,8 +54,8 @@ export default function TreatmentJourneyPage() {
           <div className="absolute top-10 end-20 w-72 h-72 rounded-full bg-accent blur-3xl" />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl lg:text-5xl font-bold mb-6">{t("heroTitle")}</h1>
-          <p className="text-lg text-gray-200 leading-relaxed max-w-2xl mx-auto">{t("heroDesc")}</p>
+          <h1 className="text-3xl lg:text-5xl font-bold mb-6">{hero.heroTitle}</h1>
+          <p className="text-lg text-gray-200 leading-relaxed max-w-2xl mx-auto">{hero.heroDesc}</p>
         </div>
       </section>
 
@@ -44,9 +73,9 @@ export default function TreatmentJourneyPage() {
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stage.color === "primary" ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent-dark"}`}>
                           {stage.icon}
                         </div>
-                        <h3 className="font-bold text-lg text-text-primary">{t(stage.titleKey)}</h3>
+                        <h3 className="font-bold text-lg text-text-primary">{stage.title}</h3>
                       </div>
-                      <p className="text-sm text-text-secondary leading-relaxed">{t(stage.descKey)}</p>
+                      <p className="text-sm text-text-secondary leading-relaxed">{stage.desc}</p>
                     </div>
                   </div>
                   <div className="absolute start-0 lg:start-1/2 lg:-ms-6 lg:translate-x-0 flex-shrink-0">
@@ -65,15 +94,15 @@ export default function TreatmentJourneyPage() {
       {/* CTA */}
       <section className="py-16 lg:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl lg:text-3xl font-bold text-text-primary mb-4">{t("ctaTitle")}</h2>
-          <p className="text-text-secondary mb-8">{t("ctaDesc")}</p>
+          <h2 className="text-2xl lg:text-3xl font-bold text-text-primary mb-4">{cta.ctaTitle}</h2>
+          <p className="text-text-secondary mb-8">{cta.ctaDesc}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/booking" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-white font-semibold text-lg hover:bg-accent-light transition-all shadow-lg">
               <Phone size={20} />
-              {t("ctaBook")}
+              {cta.ctaBook || t("ctaBook")}
             </Link>
             <Link href="/services" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border-2 border-primary text-primary font-semibold hover:bg-primary hover:text-white transition-all">
-              {t("ctaServices")}
+              {cta.ctaServices || t("ctaServices")}
               <ArrowLeft size={16} className="rtl:rotate-0 ltr:rotate-180" />
             </Link>
           </div>

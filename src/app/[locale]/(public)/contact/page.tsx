@@ -2,19 +2,24 @@ import { Phone, Mail, MapPin, MessageCircle, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import ContactForm from "@/components/ui/ContactForm";
-
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Contact" });
-  return {
-    title: t("heroTitle"),
-    description: t("heroDesc"),
-  };
-}
+import { getCmsContent } from "@/lib/cms";
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Contact" });
+
+  const hero = await getCmsContent("contact", "hero", locale, {
+    heroTitle: t("heroTitle"),
+    heroDesc: t("heroDesc"),
+    infoTitle: t("infoTitle"),
+    phoneLabel: t("phone"),
+    whatsappLabel: t("whatsapp"),
+    emailLabel: t("email"),
+    addressLabel: t("address"),
+    addressValue: t("addressValue"),
+    workHoursLabel: t("workHours"),
+    workHoursValue: t("workHoursValue"),
+  });
   
   const supabase = await createClient();
   const { data } = await supabase.from("site_settings").select("*");
@@ -27,11 +32,11 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const formatPhone = (phone: string) => phone.replace(/[^0-9+]/g, '');
 
   const contactItems = [
-    { icon: <Phone size={20} />, label: t("phone"), value: settings.phone || "+90 537 859 88 50", href: `tel:${formatPhone(settings.phone || "+905378598850")}`, dir: "ltr" as const },
-    { icon: <MessageCircle size={20} />, label: t("whatsapp"), value: settings.whatsapp || "+90 537 859 88 50", href: `https://api.whatsapp.com/send?phone=${formatPhone(settings.whatsapp || "+905378598850").replace('+', '')}`, dir: "ltr" as const },
-    { icon: <Mail size={20} />, label: t("email"), value: settings.email || "ruqya714@gmail.com", href: `mailto:${settings.email || "ruqya714@gmail.com"}`, dir: "ltr" as const },
-    { icon: <MapPin size={20} />, label: t("address"), value: locale === 'tr' ? t("addressValue") : (settings.address || t("addressValue")), dir: "rtl" as const },
-    { icon: <Clock size={20} />, label: t("workHours"), value: t("workHoursValue"), dir: "rtl" as const },
+    { icon: <Phone size={20} />, label: hero.phoneLabel || t("phone"), value: settings.phone || "+90 537 859 88 50", href: `tel:${formatPhone(settings.phone || "+905378598850")}`, dir: "ltr" as const },
+    { icon: <MessageCircle size={20} />, label: hero.whatsappLabel || t("whatsapp"), value: settings.whatsapp || "+90 537 859 88 50", href: `https://api.whatsapp.com/send?phone=${formatPhone(settings.whatsapp || "+905378598850").replace('+', '')}`, dir: "ltr" as const },
+    { icon: <Mail size={20} />, label: hero.emailLabel || t("email"), value: settings.email || "ruqya714@gmail.com", href: `mailto:${settings.email || "ruqya714@gmail.com"}`, dir: "ltr" as const },
+    { icon: <MapPin size={20} />, label: hero.addressLabel || t("address"), value: hero.addressValue || (locale === 'tr' ? t("addressValue") : (settings.address || t("addressValue"))), dir: "rtl" as const },
+    { icon: <Clock size={20} />, label: hero.workHoursLabel || t("workHours"), value: hero.workHoursValue || t("workHoursValue"), dir: "rtl" as const },
   ];
 
   return (
@@ -42,8 +47,8 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           <div className="absolute bottom-10 start-20 w-96 h-96 rounded-full bg-primary-light blur-3xl" />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl lg:text-5xl font-bold mb-6">{t("heroTitle")}</h1>
-          <p className="text-lg text-gray-200 leading-relaxed max-w-2xl mx-auto">{t("heroDesc")}</p>
+          <h1 className="text-3xl lg:text-5xl font-bold mb-6">{hero.heroTitle}</h1>
+          <p className="text-lg text-gray-200 leading-relaxed max-w-2xl mx-auto">{hero.heroDesc}</p>
         </div>
       </section>
 
@@ -52,7 +57,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Contact info */}
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-text-primary mb-6">{t("infoTitle")}</h2>
+              <h2 className="text-xl font-bold text-text-primary mb-6">{hero.infoTitle}</h2>
               {contactItems.map((item, i) => {
                 const innerContent = (
                   <>

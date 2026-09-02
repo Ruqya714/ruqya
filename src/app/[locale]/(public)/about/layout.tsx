@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import { getBreadcrumbSchema } from "@/lib/jsonld";
 import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
+import { getCmsPageSeo } from "@/lib/cms";
 
 export async function generateMetadata({
   params,
@@ -11,11 +12,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const isTr = locale === "tr";
 
-  return {
-    title: isTr ? "Hakkımızda" : "من نحن",
+  const seo = await getCmsPageSeo("/about", locale, {
+    title: isTr ? "Hakkımızda | Ruqya Şifa Merkezi" : "من نحن | مركز الرقية بكلام الرحمن",
     description: isTr
       ? "Ruqya Center hakkında detaylı bilgi, vizyonumuz ve uzman kadromuz."
       : "تعرف على مركز الرقية بكلام الرحمن، رؤيتنا، وخبرائنا المتخصصين في العلاج بالقرآن.",
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: seo.og_image_url ? { images: [seo.og_image_url] } : undefined,
     alternates: getPageAlternates(locale, "/about"),
   };
 }

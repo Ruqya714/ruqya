@@ -33,12 +33,19 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   let articles: Article[] = [];
   try {
     const supabase = await createClient();
-    const { data } = await supabase
+    let query = supabase
       .from("articles")
       .select("*")
       .eq("is_published", true)
       .order("published_at", { ascending: false });
 
+    if (locale === "tr") {
+      query = query.eq("locale", "tr");
+    } else {
+      query = query.or("locale.eq.ar,locale.is.null");
+    }
+
+    const { data } = await query;
     articles = (data as unknown as Article[]) || [];
   } catch (e) {
     console.error("Error loading SSR articles for blog page:", e);

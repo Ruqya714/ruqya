@@ -8,7 +8,11 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { SITE_NAME_SHORT } from "@/lib/constants";
 import { useTranslations, useLocale } from "next-intl";
 
-export default function Footer() {
+export default function Footer({
+  globalContent,
+}: {
+  globalContent?: Record<string, any>;
+}) {
   const t = useTranslations("Footer");
   const locale = useLocale();
   const nav = useTranslations("Navigation");
@@ -45,6 +49,10 @@ export default function Footer() {
     return url;
   };
 
+  const siteName = globalContent?.siteNameShort || SITE_NAME_SHORT;
+  const aboutText = globalContent?.aboutDesc || t("aboutDesc");
+  const basmalaText = globalContent?.basmala || t("basmala");
+
   return (
     <footer className="bg-teal-dark text-white">
       {/* Main Footer */}
@@ -54,9 +62,9 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <Image src="/logo.png" alt="Logo" width={56} height={56} className="w-14 h-14 rounded-full" />
-              <h3 className="font-bold text-lg">{SITE_NAME_SHORT}</h3>
+              <h3 className="font-bold text-lg">{siteName}</h3>
             </div>
-            <p className="text-sm text-gray-300 leading-relaxed">{t("aboutDesc")}</p>
+            <p className="text-sm text-gray-300 leading-relaxed">{aboutText}</p>
           </div>
 
           {/* Quick Links */}
@@ -129,11 +137,6 @@ export default function Footer() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
                 </a>
               )}
-              {settings.snapchat && (
-                <a href={ensureHttps(settings.snapchat)} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" aria-label="Snapchat">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M11.968 1.488C13.431 1.48 14.88 2.016 16.03 2.909c1.972 1.517 2.656 4.316 2.685 4.542.455.053 1.25.109 1.637.363.387.253.308.775.146 1.05-.184.31-.692.793-1.42 1.353-.162 1.956.12 3.864.814 5.626l.487 1.23c.362.868 1.576 1.164 2.457 1.164h.16V19.34c-1.375.05-3.003.354-4.886 1.565-.547.351-1.226.79-1.928 1.1C14.73 22.648 13.251 22.99 12 23c-1.251-.01-2.73-.352-4.182-.995-.702-.31-1.381-.75-1.928-1.1-1.884-1.21-3.512-1.515-4.887-1.565v-1.103h.161c.88 0 2.094-.296 2.456-1.164L4.108 15.84c.693-1.762.975-3.668.813-5.626-.728-.56-1.236-1.043-1.42-1.352-.162-.275-.241-.798.146-1.05.387-.255 1.182-.31 1.637-.363.03-.226.714-3.025 2.686-4.542C9.118 2.016 10.567 1.48 12.03 1.488ZM9.155 18.257c.502.502 1.341 1.026 2.845 1.026 1.503 0 2.342-.524 2.844-1.026.155-.155.38-.202.576-.118 1.62.68 3.018 1.264 4.148 1.706-.528-.485-1.155-.916-1.83-1.26-1.115-.568-1.487-1.483-1.498-1.513-.153-.352-.572-.497-.931-.322l-.1.05c-.266.136-1.272.585-3.21.585-1.938 0-2.943-.45-3.21-.585 0 0-3.642-1.758-3.053 0-.012.03-.384.945-1.499 1.513-.675.344-1.302.775-1.83 1.26 1.13-.442 2.528-1.026 4.148-1.706.196-.084.421-.037.576.118Z" /></svg>
-                </a>
-              )}
             </div>
           </div>
         </div>
@@ -142,13 +145,13 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400">{t("basmala")}</p>
+          <p className="text-sm text-gray-400">{basmalaText}</p>
           <div className="flex items-center gap-6">
             <Link href="/privacy-policy" className="text-sm text-gray-400 hover:text-white transition-colors">{t("privacyPolicy")}</Link>
             <Link href="/terms-of-service" className="text-sm text-gray-400 hover:text-white transition-colors">{t("termsOfService")}</Link>
           </div>
           <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} {SITE_NAME_SHORT}. {t("allRightsReserved")}
+            © {new Date().getFullYear()} {siteName}. {t("allRightsReserved")}
           </p>
         </div>
       </div>

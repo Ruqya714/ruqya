@@ -66,6 +66,7 @@ export default function AdminArticlesPage() {
           <thead>
             <tr className="border-b border-border bg-gray-50/50">
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">العنوان</th>
+              <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">اللغة</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden sm:table-cell">التصنيف</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary">الحالة</th>
               <th className="text-start px-4 py-3 text-xs font-semibold text-text-secondary hidden md:table-cell">التاريخ</th>
@@ -74,13 +75,20 @@ export default function AdminArticlesPage() {
           </thead>
           <tbody className="divide-y divide-border">
             {isLoading ? (
-              <tr><td colSpan={5} className="py-12 text-center"><div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" /></td></tr>
+              <tr><td colSpan={6} className="py-12 text-center"><div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" /></td></tr>
             ) : articles.length === 0 ? (
-              <tr><td colSpan={5} className="py-12 text-center text-text-secondary">لا توجد مقالات حالياً</td></tr>
+              <tr><td colSpan={6} className="py-12 text-center text-text-secondary">لا توجد مقالات حالياً</td></tr>
             ) : (
               articles.map((a) => (
                 <tr key={a.id} className="hover:bg-gray-50/50">
                   <td className="px-4 py-3 font-medium text-text-primary max-w-xs truncate">{a.title}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell">
+                    <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold ${
+                      a.locale === "tr" ? "bg-amber-100 text-amber-800" : "bg-primary/10 text-primary"
+                    }`}>
+                      {a.locale === "tr" ? "Türkçe" : "العربية"}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 hidden sm:table-cell"><Badge variant={catVariant[a.category] || "default"}>{catLabel[a.category] || a.category}</Badge></td>
                   <td className="px-4 py-3"><Badge variant={a.is_published ? "success" : "default"}>{a.is_published ? "منشور" : "مسودة"}</Badge></td>
                   <td className="px-4 py-3 text-xs text-text-muted hidden md:table-cell">{formatDate(a.published_at || a.created_at)}</td>

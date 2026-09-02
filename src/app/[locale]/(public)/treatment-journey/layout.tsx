@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import { getBreadcrumbSchema } from "@/lib/jsonld";
 import { getBaseUrl, getPageAlternates } from "@/lib/site-url";
+import { getCmsPageSeo } from "@/lib/cms";
 
 export async function generateMetadata({
   params,
@@ -11,11 +12,18 @@ export async function generateMetadata({
   const { locale } = await params;
   const isTr = locale === "tr";
 
-  return {
-    title: isTr ? "Tedavi Süreci" : "رحلة العلاج",
+  const seo = await getCmsPageSeo("/treatment-journey", locale, {
+    title: isTr ? "Tedavi Süreci | Ruqya Center" : "الرحلة العلاجية | خطوات العلاج والشفاء",
     description: isTr
       ? "Ruqya Center tedavi aşamaları, takip ve şifa süreci."
       : "تعرف على مراحل الخطوات العلاجية من التشخيص وحتى التعافي التام بإذن الله.",
+  });
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords ? seo.keywords.split(",").map((k) => k.trim()) : undefined,
+    openGraph: seo.og_image_url ? { images: [seo.og_image_url] } : undefined,
     alternates: getPageAlternates(locale, "/treatment-journey"),
   };
 }

@@ -48,11 +48,14 @@ export const PUBLIC_NAV_LINKS = [
 // Admin navigation
 export const ADMIN_NAV_LINKS = [
   { href: "/admin", label: "الرئيسية", icon: "LayoutDashboard" },
+  { href: "/admin/content", label: "محتوى الموقع", icon: "Layers" },
+  { href: "/admin/seo", label: "محركات البحث (SEO)", icon: "Search" },
   { href: "/admin/inbox", label: "البريد الوارد", icon: "MessageSquare" },
   { href: "/admin/bookings", label: "الحجوزات", icon: "CalendarCheck" },
   { href: "/admin/slots", label: "المواعيد", icon: "Clock" },
   { href: "/admin/healers", label: "المعالجون", icon: "Users" },
   { href: "/admin/services", label: "إدارة الخدمات", icon: "Briefcase" },
+  { href: "/admin/faqs", label: "الأسئلة الشائعة", icon: "HelpCircle" },
   { href: "/admin/articles", label: "المقالات", icon: "FileText" },
   { href: "/admin/settings", label: "الإعدادات", icon: "Settings" },
 ] as const;

@@ -18,12 +18,16 @@ import {
   Menu,
   X,
   ChevronLeft,
+  Layers,
+  Search,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ADMIN_NAV_LINKS, SITE_NAME_SHORT } from "@/lib/constants";
 
 const iconMap: Record<string, React.ReactNode> = {
   LayoutDashboard: <LayoutDashboard size={20} />,
+  Layers: <Layers size={20} />,
+  Search: <Search size={20} />,
   CalendarCheck: <CalendarCheck size={20} />,
   Clock: <Clock size={20} />,
   Users: <Users size={20} />,

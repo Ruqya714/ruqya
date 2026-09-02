@@ -220,6 +220,18 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
 
 
 
+              <div>
+                <label className="block text-sm font-medium mb-1.5">لغة المقال (Language)</label>
+                <select
+                  value={form.locale}
+                  onChange={(e) => setForm({ ...form, locale: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 font-medium bg-white"
+                >
+                  <option value="ar">العربية (Arabic)</option>
+                  <option value="tr">Türkçe (Turkish)</option>
+                </select>
+              </div>
+
               <div className="flex items-center gap-2 pt-2">
                 <input
                   type="checkbox"
@@ -228,7 +240,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
                   onChange={(e) => setForm({ ...form, is_published: e.target.checked })}
                   className="accent-primary"
                 />
-                <label htmlFor="published" className="text-sm">منشور</label>
+                <label htmlFor="published" className="text-sm font-medium">منشور</label>
               </div>
             </div>
           </div>
