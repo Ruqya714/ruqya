@@ -41,11 +41,9 @@ const PHONE_TO_COUNTRY: Record<string, { code: string; city: string; postcode: n
   "+91":  { code: "IN", city: "New Delhi",  postcode: 110001 },
 };
 
-// Extract country code from full phone string like "+90 5551234567"
 function extractPhoneCode(phone: string): string {
   if (!phone) return "+90";
   const trimmed = phone.trim();
-  // Try matching longest codes first (4 digits, then 3, then 2, then 1)
   for (const len of [4, 3, 2]) {
     for (const code of Object.keys(PHONE_TO_COUNTRY)) {
       if (code.length === len + 1 && trimmed.startsWith(code)) {
@@ -53,7 +51,7 @@ function extractPhoneCode(phone: string): string {
       }
     }
   }
-  return "+90"; // default fallback
+  return "+90";
 }
 
 export async function POST(req: Request) {
@@ -65,80 +63,55 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Prepare API URL and headers
-    const MTJREE_PROXY_URL = "https://mtjree.link/wp-json/custom/v1/proxy";
-    const API_KEY = process.env.MTJREE_API_KEY || "";
+    const API_KEY = process.env.MTJREE_API_KEY || "8e60d8e4-5c6e-4349-82a2-de9ab84e1cb7";
+    const MTJREE_V2_URL = "https://mtjree.com/api/v1/payments/initiate";
+    const PRODUCTION_DOMAIN = (process.env.MTJREE_SHOP_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://ruqyacenter.com").replace(/\/+$/, "");
 
-    if (!API_KEY) {
-      console.error("❌ MTJREE_API_KEY is not defined in environment variables.");
-      return NextResponse.json({
-        error: "لم يتم ضبط مفتاح الربط MTJREE_API_KEY في إعدادات البيئة (Environment Variables) على Vercel.",
-      }, { status: 500 });
-    }
-
-    const PRODUCTION_DOMAIN = (process.env.MTJREE_SHOP_URL || "https://ruqyacenter.com").replace(/\/+$/, "");
-
-    // Split name to first and last
+    // Customer Name
     const nameParts = user_name?.split(" ") || ["Customer", ""];
     const firstName = nameParts[0] || "Customer";
     const lastName = nameParts.slice(1).join(" ") || firstName;
+    const fullName = `${firstName} ${lastName}`.trim();
 
-    // Derive country, city, postcode from phone code
+    // Customer Country & Address
     const phoneCode = extractPhoneCode(user_phone || "");
     const countryInfo = PHONE_TO_COUNTRY[phoneCode] || { code: "TR", city: "Istanbul", postcode: 34000 };
 
-    // Clean phone number (digits only, no spaces)
-    const cleanPhone = (user_phone || "").replace(/\s+/g, "").replace(/^\+/, "");
+    // Format phone with leading +
+    let formattedPhone = (user_phone || "+905550000000").replace(/\s+/g, "");
+    if (!formattedPhone.startsWith("+")) formattedPhone = "+" + formattedPhone;
 
-    // Generate accurate 16-char hex timestamp
-    const timestamp = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-
-    // Mtjree validates shop_url against registered domains - must be exact base domain.
-    // Redirect after success goes to shop_url (homepage). Client-side localStorage
-    // handles detecting return from payment and redirecting to payment-result page.
-
+    // Mtjree v2 Payload
     const payload = {
-      order_id: booking_id,
-      email: user_email || "customer@ruqyacenter.com",
-      shop_type: "react",
-      shop_url: PRODUCTION_DOMAIN,
+      amount: Number(amount),
       currency: "USD",
-      total: Number(amount),
-      first_name: firstName,
-      last_name: lastName,
-      country: countryInfo.code,
-      city: countryInfo.city,
+      merchant_order_id: booking_id,
+      customer_name: fullName,
+      customer_email: user_email || "customer@ruqyacenter.com",
+      customer_phone: formattedPhone,
+      return_url: `${PRODUCTION_DOMAIN}/${locale || "ar"}/payment-result?status=paid&booking_id=${booking_id}`,
+      cancel_url: `${PRODUCTION_DOMAIN}/${locale || "ar"}/payment-result?status=failed&booking_id=${booking_id}`,
+      webhook_url: `${PRODUCTION_DOMAIN}/api/payment/mtjree-webhook`,
+      billing_country: countryInfo.code,
+      billing_city: countryInfo.city,
       billing_address: `${countryInfo.city}, ${countryInfo.code}`,
-      postcode: countryInfo.postcode,
-      hookUrl: `${PRODUCTION_DOMAIN}/api/payment/mtjree-webhook`,
-      customer_id: booking_id,
-      timestamp: timestamp,
-      phone: cleanPhone,
-      fail_url: `${PRODUCTION_DOMAIN}/${locale || "ar"}/payment-result?status=failed&booking_id=${booking_id}`,
-      meta_data: JSON.stringify({ description, source: "ruqya_system", booking_id }),
-      logo_url: process.env.MTJREE_LOGO_URL || `${PRODUCTION_DOMAIN}/logo.png`,
-      vendor_name: process.env.MTJREE_VENDOR_NAME || "Ruqya Center"
+      billing_zip: String(countryInfo.postcode),
     };
 
-    console.log("🔔 Creating Mtjree Payment:", JSON.stringify(payload));
+    console.log("🔔 Creating Mtjree v2 Payment:", JSON.stringify(payload));
 
-    const gatewayRes = await fetch(MTJREE_PROXY_URL, {
+    const gatewayRes = await fetch(MTJREE_V2_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${API_KEY}`,
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
-        "Origin": PRODUCTION_DOMAIN,
-        "Referer": `${PRODUCTION_DOMAIN}/`
+        "X-MTJREE-API-KEY": API_KEY,
+        "Accept": "application/json",
       },
       body: JSON.stringify(payload)
     });
 
-    // Read as text first to avoid crashing if the response is HTML
     const responseText = await gatewayRes.text();
-    console.log("🔔 Mtjree Raw Response:", responseText);
+    console.log("🔔 Mtjree v2 Raw Response:", responseText);
 
     let gatewayData: any;
     try {
@@ -146,22 +119,24 @@ export async function POST(req: Request) {
     } catch {
       console.error("Mtjree returned non-JSON response:", responseText.substring(0, 500));
       return NextResponse.json({ 
-        error: `Unexpected response from Mtjree: ${responseText.substring(0, 200)}... Please try again later.`,
-        raw_response: responseText.substring(0, 500)
+        error: `استجابة غير متوقعة من بوابة الدفع: ${responseText.substring(0, 150)}... يُرجى المحاولة لاحقاً.` 
       }, { status: 502 });
     }
 
-    console.log("🔔 Mtjree Parsed Response:", gatewayData);
+    console.log("🔔 Mtjree v2 Parsed Response:", gatewayData);
 
-    // Check all possible redirect URL field names from the gateway
-    const redirectUrl = gatewayData?.checkoutUrl || gatewayData?.redirect_url || gatewayData?.url || gatewayData?.payment_url || gatewayData?.data?.url || gatewayData?.data?.redirect_url;
+    const redirectUrl = gatewayData?.redirect_url || gatewayData?.checkout_url || gatewayData?.payment_url || gatewayData?.url || gatewayData?.data?.redirect_url || gatewayData?.data?.checkout_url;
 
     if (gatewayRes.ok && redirectUrl) {
-      return NextResponse.json({ redirect_url: redirectUrl });
+      return NextResponse.json({ 
+        success: true,
+        redirect_url: redirectUrl,
+        transaction_id: gatewayData?.transaction_id || gatewayData?.session_id
+      });
     } else {
       console.error("Mtjree Gateway Error:", gatewayData);
       return NextResponse.json({ 
-        error: gatewayData?.message || gatewayData?.error || "Failed to create payment session from gateway",
+        error: gatewayData?.message || gatewayData?.error || "فشل في إنشاء جلسة الدفع من البوابة",
         details: gatewayData
       }, { status: 400 });
     }

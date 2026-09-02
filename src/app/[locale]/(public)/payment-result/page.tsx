@@ -10,14 +10,15 @@ export default function PaymentResultPage() {
   const searchParams = useSearchParams();
   const t = useTranslations("Booking");
   const locale = useLocale();
-  const urlBookingId = searchParams.get("booking_id");
-  const fallbackBookingId = searchParams.get("amp;booking_id") || searchParams.get("amp;%3Bbooking_id"); // in case of MTJREE encoding glitches
-  const statusParam = searchParams.get("status");
-  const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref");
+  const urlBookingId = searchParams.get("booking_id") || searchParams.get("merchant_order_id");
+  const fallbackBookingId = searchParams.get("amp;booking_id") || searchParams.get("amp;%3Bbooking_id") || searchParams.get("amp;merchant_order_id");
+  const statusParam = searchParams.get("status") || searchParams.get("result") || searchParams.get("payment_status");
+  const tranRef = searchParams.get("tranRef") || searchParams.get("tran_ref") || searchParams.get("transaction_id");
   
   const [activeBookingId, setActiveBookingId] = useState<string | null>(urlBookingId || fallbackBookingId);
+  const isFailed = statusParam?.includes("fail") || statusParam?.includes("cancel");
   const [verifiedStatus, setVerifiedStatus] = useState<"loading" | "paid" | "failed">(
-    statusParam?.includes("failed") ? "failed" : "loading"
+    isFailed ? "failed" : "loading"
   );
   const [isRetrying, setIsRetrying] = useState(false);
 
