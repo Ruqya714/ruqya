@@ -65,7 +65,12 @@ export async function POST(req: Request) {
 
     const API_KEY = process.env.MTJREE_API_KEY || "8e60d8e4-5c6e-4349-82a2-de9ab84e1cb7";
     const MTJREE_V2_URL = "https://mtjree.com/api/v1/payments/initiate";
-    const PRODUCTION_DOMAIN = (process.env.MTJREE_SHOP_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://ruqyacenter.com").replace(/\/+$/, "");
+
+    // Auto-detect host from request or env
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
+    const proto = req.headers.get("x-forwarded-proto") || "https";
+    const requestOrigin = host ? `${proto}://${host}` : "";
+    const PRODUCTION_DOMAIN = (process.env.MTJREE_SHOP_URL || process.env.NEXT_PUBLIC_BASE_URL || requestOrigin || "https://ruqya-center-v2.vercel.app").replace(/\/+$/, "");
 
     // Customer Name
     const nameParts = user_name?.split(" ") || ["Customer", ""];
