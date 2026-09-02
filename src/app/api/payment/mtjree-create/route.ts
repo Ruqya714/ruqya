@@ -68,9 +68,15 @@ export async function POST(req: Request) {
     // Prepare API URL and headers
     const MTJREE_PROXY_URL = "https://mtjree.link/wp-json/custom/v1/proxy";
     const API_KEY = process.env.MTJREE_API_KEY || "";
-    // IMPORTANT: Hardcode production domain. DO NOT use NEXT_PUBLIC_BASE_URL 
-    // because it gets embedded at build time and can be "localhost:3000" locally.
-    const PRODUCTION_DOMAIN = "https://ruqyacenter.com";
+
+    if (!API_KEY) {
+      console.error("❌ MTJREE_API_KEY is not defined in environment variables.");
+      return NextResponse.json({
+        error: "لم يتم ضبط مفتاح الربط MTJREE_API_KEY في إعدادات البيئة (Environment Variables) على Vercel.",
+      }, { status: 500 });
+    }
+
+    const PRODUCTION_DOMAIN = (process.env.MTJREE_SHOP_URL || "https://ruqyacenter.com").replace(/\/+$/, "");
 
     // Split name to first and last
     const nameParts = user_name?.split(" ") || ["Customer", ""];
